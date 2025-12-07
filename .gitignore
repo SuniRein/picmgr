@@ -1,0 +1,13 @@
+# Frontend
+/webui/node_modules
+/webui/dist
+
+# Backend
+/server/target
+
+# Database
+/postgres_data
+
+# Local configuration files
+.env.local
+mise.local.toml

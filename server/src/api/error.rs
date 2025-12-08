@@ -12,6 +12,9 @@ pub enum ApiError {
     #[error("Resource Not Found")]
     NotFound,
 
+    #[error("Invalid Email Format")]
+    InvalidEmailFormat,
+
     #[error("Username Already Exists")]
     UsernameConflict,
     #[error("Email Already Exists")]
@@ -40,6 +43,7 @@ impl IntoResponse for ApiError {
         let status_code = match self {
             ApiError::NotFound => StatusCode::NOT_FOUND,
             ApiError::Db(_) | ApiError::Argon2 => StatusCode::INTERNAL_SERVER_ERROR,
+            ApiError::InvalidEmailFormat => StatusCode::BAD_REQUEST,
             ApiError::UsernameConflict | ApiError::EmailConflict => StatusCode::CONFLICT,
         };
         let body = Json(ErrorResponse {

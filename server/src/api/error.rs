@@ -5,6 +5,8 @@ use axum::{
 };
 use serde::Serialize;
 
+pub type ApiResult<T> = Result<T, ApiError>;
+
 #[derive(Debug, thiserror::Error)]
 pub enum ApiError {
     #[error("Resource Not Found")]
@@ -12,6 +14,15 @@ pub enum ApiError {
 
     #[error("Database Error")]
     Db(#[from] sqlx::Error),
+
+    #[error("Argon2 Error")]
+    Argon2,
+}
+
+impl From<argon2::password_hash::Error> for ApiError {
+    fn from(_: argon2::password_hash::Error) -> Self {
+        ApiError::Argon2
+    }
 }
 
 #[derive(Serialize)]
@@ -23,7 +34,7 @@ impl IntoResponse for ApiError {
     fn into_response(self) -> Response {
         let status_code = match self {
             ApiError::NotFound => StatusCode::NOT_FOUND,
-            ApiError::Db(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            ApiError::Db(_) | ApiError::Argon2 => StatusCode::INTERNAL_SERVER_ERROR,
         };
         let body = Json(ErrorResponse {
             error: self.to_string(),

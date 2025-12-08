@@ -1,4 +1,4 @@
 mod error;
-pub use error::ApiError;
 
-pub mod user;
+pub mod auth;
+pub mod users;

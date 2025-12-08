@@ -1,0 +1,31 @@
+use super::error::ApiResult;
+use crate::auth::password::hash_password;
+use crate::db::user::{self, NewUserInput};
+use axum::{Json, debug_handler, extract::State, http::StatusCode, response::IntoResponse};
+use serde::Deserialize;
+use sqlx::PgPool;
+
+#[derive(Deserialize)]
+pub struct RegisterPayload {
+    pub username: String,
+    pub email: String,
+    pub password: String,
+}
+
+#[debug_handler]
+pub async fn register(
+    State(pool): State<PgPool>,
+    Json(payload): Json<RegisterPayload>,
+) -> ApiResult<impl IntoResponse> {
+    // TODO: Validate input (e.g., check for existing username/email)
+
+    let password_hash = hash_password(&payload.password)?;
+    let new_user = NewUserInput {
+        username: &payload.username,
+        email: &payload.email,
+        password_hash: &password_hash,
+    };
+    user::create_user(&pool, &new_user).await?;
+
+    Ok((StatusCode::CREATED, Json("User created successfully")))
+}

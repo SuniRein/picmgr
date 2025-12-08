@@ -1,10 +1,15 @@
-use crate::api::user;
-use axum::{Router, routing::get};
+use crate::api::{auth, users};
+use axum::{
+    Router,
+    routing::{get, post},
+};
 use sqlx::PgPool;
 
 pub fn create_router(pool: PgPool) -> Router {
-    Router::new()
-        .route("/api/users/{id}", get(user::get_user))
-        .route("/api/users", get(user::get_all_users))
-        .with_state(pool)
+    let api = Router::new()
+        .route("/auth/register", post(auth::register))
+        .route("/users/{id}", get(users::get_user))
+        .route("/users", get(users::get_all_users));
+
+    Router::new().nest("/api", api).with_state(pool)
 }

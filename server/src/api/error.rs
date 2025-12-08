@@ -12,6 +12,11 @@ pub enum ApiError {
     #[error("Resource Not Found")]
     NotFound,
 
+    #[error("Username Already Exists")]
+    UsernameConflict,
+    #[error("Email Already Exists")]
+    EmailConflict,
+
     #[error("Database Error")]
     Db(#[from] sqlx::Error),
 
@@ -35,6 +40,7 @@ impl IntoResponse for ApiError {
         let status_code = match self {
             ApiError::NotFound => StatusCode::NOT_FOUND,
             ApiError::Db(_) | ApiError::Argon2 => StatusCode::INTERNAL_SERVER_ERROR,
+            ApiError::UsernameConflict | ApiError::EmailConflict => StatusCode::CONFLICT,
         };
         let body = Json(ErrorResponse {
             error: self.to_string(),

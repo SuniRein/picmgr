@@ -36,6 +36,34 @@ pub async fn get_user_by_id(pool: &PgPool, user_id: i32) -> sqlx::Result<Option<
     .await
 }
 
+pub async fn get_user_by_username(pool: &PgPool, username: &str) -> sqlx::Result<Option<User>> {
+    sqlx::query_as!(
+        User,
+        r#"
+         SELECT id, username, email, password_hash, avatar_url, status as "status: _", created_at
+         FROM app_user
+         WHERE username = $1
+        "#,
+        username
+    )
+    .fetch_optional(pool)
+    .await
+}
+
+pub async fn get_user_by_email(pool: &PgPool, email: &str) -> sqlx::Result<Option<User>> {
+    sqlx::query_as!(
+        User,
+        r#"
+         SELECT id, username, email, password_hash, avatar_url, status as "status: _", created_at
+         FROM app_user
+         WHERE email = $1
+        "#,
+        email
+    )
+    .fetch_optional(pool)
+    .await
+}
+
 pub async fn get_all_users(pool: &PgPool) -> sqlx::Result<Vec<User>> {
     sqlx::query_as!(
         User,

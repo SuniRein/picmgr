@@ -1,4 +1,4 @@
-use super::error::ApiResult;
+use super::error::{ApiError, ApiResult};
 use crate::auth::password::hash_password;
 use crate::db::user::{self, NewUserInput};
 use axum::{Json, debug_handler, extract::State, http::StatusCode, response::IntoResponse};
@@ -17,7 +17,19 @@ pub async fn register(
     State(pool): State<PgPool>,
     Json(payload): Json<RegisterPayload>,
 ) -> ApiResult<impl IntoResponse> {
-    // TODO: Validate input (e.g., check for existing username/email)
+    // Check duplicates for username and email
+    if user::get_user_by_username(&pool, &payload.username)
+        .await?
+        .is_some()
+    {
+        return Err(ApiError::UsernameConflict);
+    }
+    if user::get_user_by_email(&pool, &payload.email)
+        .await?
+        .is_some()
+    {
+        return Err(ApiError::EmailConflict);
+    }
 
     let password_hash = hash_password(&payload.password)?;
     let new_user = NewUserInput {

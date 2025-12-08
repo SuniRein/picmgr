@@ -46,7 +46,9 @@ impl IntoResponse for ApiError {
         let status_code = match self {
             ApiError::NotFound => StatusCode::NOT_FOUND,
             ApiError::Db(_) | ApiError::Argon2 => StatusCode::INTERNAL_SERVER_ERROR,
-            ApiError::EmptyField(_) | ApiError::InvalidEmailFormat => StatusCode::BAD_REQUEST,
+            ApiError::EmptyField(_) | ApiError::InvalidEmailFormat => {
+                StatusCode::UNPROCESSABLE_ENTITY
+            }
             ApiError::UsernameConflict | ApiError::EmailConflict => StatusCode::CONFLICT,
         };
         let body = Json(ErrorResponse {

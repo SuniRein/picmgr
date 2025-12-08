@@ -16,8 +16,13 @@ pub struct RegisterPayload {
 #[debug_handler]
 pub async fn register(
     State(pool): State<PgPool>,
-    Json(payload): Json<RegisterPayload>,
+    Json(mut payload): Json<RegisterPayload>,
 ) -> ApiResult<impl IntoResponse> {
+    payload.username = payload.username.trim().to_string();
+    payload.email = payload.email.trim().to_string();
+    payload.password = payload.password.trim().to_string();
+
+    check_empty_fields(&payload)?;
     check_email_format(&payload.email)?;
     check_user_conflicts(&pool, &payload).await?;
 
@@ -30,6 +35,19 @@ pub async fn register(
     user::create_user(&pool, &new_user).await?;
 
     Ok((StatusCode::CREATED, Json("User created successfully")))
+}
+
+fn check_empty_fields(payload: &RegisterPayload) -> ApiResult<()> {
+    if payload.username.is_empty() {
+        return Err(ApiError::EmptyField("username".to_string()));
+    }
+    if payload.email.is_empty() {
+        return Err(ApiError::EmptyField("email".to_string()));
+    }
+    if payload.password.is_empty() {
+        return Err(ApiError::EmptyField("password".to_string()));
+    }
+    Ok(())
 }
 
 fn check_email_format(email: &str) -> ApiResult<()> {

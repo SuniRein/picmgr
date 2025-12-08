@@ -6,6 +6,6 @@ CREATE TABLE app_user(
     email VARCHAR(100) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     avatar_url VARCHAR(255),
-    status user_status DEFAULT 'active',
-    created_at TIMESTAMP DEFAULT NOW()
+    status user_status NOT NULL DEFAULT 'active',
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );

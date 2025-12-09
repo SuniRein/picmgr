@@ -8,6 +8,9 @@
 # Database
 /postgres_data
 
+# Images
+/images
+
 # Local configuration files
 .env.local
 mise.local.toml

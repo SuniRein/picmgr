@@ -1,3 +1,4 @@
+use crate::image::parse::ImageParseError;
 use axum::{
     Json,
     http::StatusCode,
@@ -34,6 +35,12 @@ pub enum ApiError {
 
     #[error("Argon2 Error")]
     Argon2,
+
+    #[error(transparent)]
+    ImageParseError(#[from] ImageParseError),
+
+    #[error("Image Storage Error")]
+    ImageStorageError(std::io::Error),
 }
 
 impl From<argon2::password_hash::Error> for ApiError {
@@ -52,6 +59,11 @@ impl IntoResponse for ApiError {
             }
             ApiError::UsernameConflict | ApiError::EmailConflict => StatusCode::CONFLICT,
             ApiError::WrongCredentials | ApiError::InvalidToken => StatusCode::UNAUTHORIZED,
+            ApiError::ImageParseError(ImageParseError::UnsupportedFormat) => {
+                StatusCode::UNSUPPORTED_MEDIA_TYPE
+            }
+            ApiError::ImageParseError(_) => StatusCode::BAD_REQUEST,
+            ApiError::ImageStorageError(_) => StatusCode::INTERNAL_SERVER_ERROR,
         };
         let body = Json(ErrorResponse {
             error: self.to_string(),

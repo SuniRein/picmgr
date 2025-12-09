@@ -37,8 +37,8 @@ pub fn decode_token(token: &str) -> Result<TokenData<Claims>, TokenError> {
     })
 }
 
-pub fn encode_token(claims: &Claims) -> Option<String> {
-    encode(&Header::default(), claims, &JWT_KEY.encoding).ok()
+pub fn encode_token(claims: &Claims) -> String {
+    encode(&Header::default(), claims, &JWT_KEY.encoding).expect("Token encoding failed")
 }
 
 #[derive(Debug)]

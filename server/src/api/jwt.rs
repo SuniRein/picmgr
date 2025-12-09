@@ -14,7 +14,7 @@ where
     type Rejection = AuthError;
 
     async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
-        let claims = parse_access_token(parts)?;
+        let claims = parse_token(parts, "access")?;
         if claims.is_admin {
             return Err(AuthError::InvalidToken);
         }
@@ -38,7 +38,7 @@ where
     type Rejection = AuthError;
 
     async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
-        let claims = parse_access_token(parts)?;
+        let claims = parse_token(parts, "access")?;
         if !claims.is_admin {
             return Err(AuthError::AdminRequired);
         }
@@ -46,7 +46,22 @@ where
     }
 }
 
-fn parse_access_token(parts: &mut Parts) -> Result<Claims, AuthError> {
+#[derive(Debug, Serialize, Deserialize)]
+pub struct RefreshClaims(Claims);
+
+impl<S> FromRequestParts<S> for RefreshClaims
+where
+    S: Send + Sync,
+{
+    type Rejection = AuthError;
+
+    async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
+        let claims = parse_token(parts, "refresh")?;
+        Ok(RefreshClaims(claims))
+    }
+}
+
+fn parse_token(parts: &mut Parts, expected_use: &str) -> Result<Claims, AuthError> {
     let auth_header = parts
         .headers
         .get(axum::http::header::AUTHORIZATION)
@@ -59,7 +74,7 @@ fn parse_access_token(parts: &mut Parts) -> Result<Claims, AuthError> {
         TokenError::InvalidToken => AuthError::InvalidToken,
     })?;
 
-    if token_data.claims.token_use != "access" {
+    if token_data.claims.token_use != expected_use {
         return Err(AuthError::InvalidToken);
     }
 
@@ -76,7 +91,7 @@ const ACCESS_TOKEN_EXPIRY: Duration = Duration::minutes(15);
 const REFRESH_TOKEN_EXPIRY: Duration = Duration::days(7);
 
 impl Token {
-    pub fn generate_user_token(user_id: i32) -> Option<Self> {
+    pub fn generate_user_token(user_id: i32) -> Self {
         let access_claims = Claims {
             sub: user_id,
             exp: (chrono::Utc::now() + ACCESS_TOKEN_EXPIRY).timestamp() as usize,
@@ -90,16 +105,16 @@ impl Token {
             token_use: "refresh".to_string(),
         };
 
-        let access_token = encode_token(&access_claims)?;
-        let refresh_token = encode_token(&refresh_claims)?;
+        let access_token = encode_token(&access_claims);
+        let refresh_token = encode_token(&refresh_claims);
 
-        Some(Token {
+        Self {
             access_token,
             refresh_token,
-        })
+        }
     }
 
-    pub fn generate_admin_token() -> Option<Self> {
+    pub fn generate_admin_token() -> Self {
         let access_claims = Claims {
             sub: 0,
             exp: (chrono::Utc::now() + ACCESS_TOKEN_EXPIRY).timestamp() as usize,
@@ -113,12 +128,22 @@ impl Token {
             token_use: "refresh".to_string(),
         };
 
-        let access_token = encode_token(&access_claims)?;
-        let refresh_token = encode_token(&refresh_claims)?;
+        let access_token = encode_token(&access_claims);
+        let refresh_token = encode_token(&refresh_claims);
 
-        Some(Token {
+        Self {
             access_token,
             refresh_token,
-        })
+        }
+    }
+
+    pub fn refresh(RefreshClaims(claims): &RefreshClaims) -> String {
+        let new_access_claims = Claims {
+            sub: claims.sub,
+            exp: (chrono::Utc::now() + ACCESS_TOKEN_EXPIRY).timestamp() as usize,
+            is_admin: claims.is_admin,
+            token_use: "access".to_string(),
+        };
+        encode_token(&new_access_claims)
     }
 }

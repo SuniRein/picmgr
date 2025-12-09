@@ -15,6 +15,9 @@ where
 
     async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
         let claims = parse_access_token(parts)?;
+        if claims.is_admin {
+            return Err(AuthError::InvalidToken);
+        }
         Ok(UserClaims(claims))
     }
 }

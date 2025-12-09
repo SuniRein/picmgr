@@ -1,4 +1,4 @@
-use crate::api::{auth, users};
+use crate::api::{auth, user, users};
 use axum::{
     Router,
     routing::{get, post},
@@ -10,6 +10,7 @@ pub fn create_router(pool: PgPool) -> Router {
         .route("/auth/register", post(auth::register))
         .route("/auth/login", post(auth::login))
         .route("/auth/login/admin", post(auth::login_as_admin))
+        .route("/user/me", get(user::get_current_user))
         .route("/users/{id}", get(users::get_user))
         .route("/users", get(users::get_all_users));
 

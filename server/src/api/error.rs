@@ -26,6 +26,9 @@ pub enum ApiError {
     #[error("Wrong Credentials")]
     WrongCredentials,
 
+    #[error("Invalid Token")]
+    InvalidToken,
+
     #[error("Database Error")]
     Db(#[from] sqlx::Error),
 
@@ -48,7 +51,7 @@ impl IntoResponse for ApiError {
                 StatusCode::UNPROCESSABLE_ENTITY
             }
             ApiError::UsernameConflict | ApiError::EmailConflict => StatusCode::CONFLICT,
-            ApiError::WrongCredentials => StatusCode::UNAUTHORIZED,
+            ApiError::WrongCredentials | ApiError::InvalidToken => StatusCode::UNAUTHORIZED,
         };
         let body = Json(ErrorResponse {
             error: self.to_string(),

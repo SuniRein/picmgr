@@ -1,4 +1,4 @@
-use super::error::{ApiError, ApiResult};
+use crate::api::error::{ApiError, ApiResult};
 use crate::auth::password::hash_password;
 use crate::db::user::{self, NewUserInput};
 use axum::{Json, debug_handler, extract::State, http::StatusCode, response::IntoResponse};

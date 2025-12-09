@@ -23,6 +23,9 @@ pub enum ApiError {
     #[error("Email Already Exists")]
     EmailConflict,
 
+    #[error("Wrong Credentials")]
+    WrongCredentials,
+
     #[error("Database Error")]
     Db(#[from] sqlx::Error),
 
@@ -36,11 +39,6 @@ impl From<argon2::password_hash::Error> for ApiError {
     }
 }
 
-#[derive(Serialize)]
-struct ErrorResponse {
-    error: String,
-}
-
 impl IntoResponse for ApiError {
     fn into_response(self) -> Response {
         let status_code = match self {
@@ -50,10 +48,39 @@ impl IntoResponse for ApiError {
                 StatusCode::UNPROCESSABLE_ENTITY
             }
             ApiError::UsernameConflict | ApiError::EmailConflict => StatusCode::CONFLICT,
+            ApiError::WrongCredentials => StatusCode::UNAUTHORIZED,
         };
         let body = Json(ErrorResponse {
             error: self.to_string(),
         });
         (status_code, body).into_response()
     }
+}
+
+#[derive(Debug, thiserror::Error)]
+pub enum AuthError {
+    #[error("Invalid Token")]
+    InvalidToken,
+    #[error("Token Expired")]
+    ExpiredToken,
+    #[error("Administrative Privileges Required")]
+    AdminRequired,
+}
+
+impl IntoResponse for AuthError {
+    fn into_response(self) -> Response {
+        let status_code = match self {
+            AuthError::InvalidToken | AuthError::ExpiredToken => StatusCode::UNAUTHORIZED,
+            AuthError::AdminRequired => StatusCode::FORBIDDEN,
+        };
+        let body = Json(ErrorResponse {
+            error: self.to_string(),
+        });
+        (status_code, body).into_response()
+    }
+}
+
+#[derive(Serialize)]
+struct ErrorResponse {
+    error: String,
 }

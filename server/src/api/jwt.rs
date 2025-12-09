@@ -14,7 +14,7 @@ where
     type Rejection = AuthError;
 
     async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
-        let claims = parse_authorization_header(parts)?;
+        let claims = parse_access_token(parts)?;
         Ok(UserClaims(claims))
     }
 }
@@ -35,7 +35,7 @@ where
     type Rejection = AuthError;
 
     async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
-        let claims = parse_authorization_header(parts)?;
+        let claims = parse_access_token(parts)?;
         if !claims.is_admin {
             return Err(AuthError::AdminRequired);
         }
@@ -43,7 +43,7 @@ where
     }
 }
 
-fn parse_authorization_header(parts: &mut Parts) -> Result<Claims, AuthError> {
+fn parse_access_token(parts: &mut Parts) -> Result<Claims, AuthError> {
     let auth_header = parts
         .headers
         .get(axum::http::header::AUTHORIZATION)
@@ -55,6 +55,10 @@ fn parse_authorization_header(parts: &mut Parts) -> Result<Claims, AuthError> {
         TokenError::ExpiredToken => AuthError::ExpiredToken,
         TokenError::InvalidToken => AuthError::InvalidToken,
     })?;
+
+    if token_data.claims.token_use != "access" {
+        return Err(AuthError::InvalidToken);
+    }
 
     Ok(token_data.claims)
 }
@@ -74,11 +78,13 @@ impl Token {
             sub: user_id,
             exp: (chrono::Utc::now() + ACCESS_TOKEN_EXPIRY).timestamp() as usize,
             is_admin: false,
+            token_use: "access".to_string(),
         };
         let refresh_claims = Claims {
             sub: user_id,
             exp: (chrono::Utc::now() + REFRESH_TOKEN_EXPIRY).timestamp() as usize,
             is_admin: false,
+            token_use: "refresh".to_string(),
         };
 
         let access_token = encode_token(&access_claims)?;
@@ -95,11 +101,13 @@ impl Token {
             sub: 0,
             exp: (chrono::Utc::now() + ACCESS_TOKEN_EXPIRY).timestamp() as usize,
             is_admin: true,
+            token_use: "access".to_string(),
         };
         let refresh_claims = Claims {
             sub: 0,
             exp: (chrono::Utc::now() + REFRESH_TOKEN_EXPIRY).timestamp() as usize,
             is_admin: true,
+            token_use: "refresh".to_string(),
         };
 
         let access_token = encode_token(&access_claims)?;

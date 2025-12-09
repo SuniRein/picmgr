@@ -25,6 +25,7 @@ pub struct Claims {
     pub sub: i32,
     pub exp: usize,
     pub is_admin: bool,
+    pub token_use: String,
 }
 
 pub fn decode_token(token: &str) -> Result<TokenData<Claims>, TokenError> {

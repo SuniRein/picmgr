@@ -25,6 +25,22 @@ pub struct Image {
     pub updated_at: NaiveDateTime,
 }
 
+#[instrument(skip(pool))]
+pub async fn get_all_images(pool: &PgPool) -> sqlx::Result<Vec<Image>> {
+    sqlx::query_as!(Image, "SELECT * FROM image")
+        .fetch_all(pool)
+        .await
+        .inspect_err(|e| error!("Failed to fetch images from database: {e}"))
+}
+
+#[instrument(skip(pool))]
+pub async fn get_images_by_owner(pool: &PgPool, owner_id: i32) -> sqlx::Result<Vec<Image>> {
+    sqlx::query_as!(Image, "SELECT * FROM image WHERE owner_id = $1", owner_id)
+        .fetch_all(pool)
+        .await
+        .inspect_err(|e| error!("Failed to fetch images: {e}"))
+}
+
 #[derive(Debug)]
 pub struct NewImageInput<'a> {
     pub owner_id: Option<i32>,

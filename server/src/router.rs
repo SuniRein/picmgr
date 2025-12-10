@@ -15,6 +15,7 @@ pub fn create_router(pool: PgPool) -> Router {
         .route("/users/{id}", get(users::get_user))
         .route("/users", get(users::get_all_users))
         .route("/images/upload/raw", post(images::upload_raw_image))
+        .route("/images/{id}", get(images::get_image))
         .route("/images", get(images::get_images));
 
     Router::new().nest("/api", api).with_state(pool)

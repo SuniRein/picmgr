@@ -17,8 +17,8 @@ where
     async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
         let claims = parse_token(parts, "access")?;
         match claims.is_admin {
-            true => Ok(AccessClaims::Admin),
-            false => Ok(AccessClaims::User(claims.sub)),
+            true => Ok(Self::Admin),
+            false => Ok(Self::User(claims.sub)),
         }
     }
 }
@@ -26,8 +26,8 @@ where
 impl Debug for AccessClaims {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match self {
-            AccessClaims::User(id) => write!(f, r#"{{ role: "user", user_id: {id} }}"#),
-            AccessClaims::Admin => write!(f, r#"{{ role: "admin" }}"#),
+            Self::User(id) => write!(f, r#"{{ role: "user", user_id: {id} }}"#),
+            Self::Admin => write!(f, r#"{{ role: "admin" }}"#),
         }
     }
 }

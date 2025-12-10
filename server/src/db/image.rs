@@ -30,7 +30,7 @@ pub async fn get_all_images(pool: &PgPool) -> sqlx::Result<Vec<Image>> {
     sqlx::query_as!(Image, "SELECT * FROM image")
         .fetch_all(pool)
         .await
-        .inspect_err(|e| error!("Failed to fetch images from database: {e}"))
+        .inspect_err(|e| error!(error=?e, "fetch image records failed"))
 }
 
 #[instrument(skip(pool))]
@@ -38,7 +38,7 @@ pub async fn get_image_by_id(pool: &PgPool, id: i32) -> sqlx::Result<Option<Imag
     sqlx::query_as!(Image, "SELECT * FROM image WHERE id = $1", id)
         .fetch_optional(pool)
         .await
-        .inspect_err(|e| error!("Failed to fetch image: {e}"))
+        .inspect_err(|e| error!(error=?e, "fetch image record failed"))
 }
 
 #[instrument(skip(pool))]
@@ -46,7 +46,7 @@ pub async fn get_images_by_owner(pool: &PgPool, owner_id: i32) -> sqlx::Result<V
     sqlx::query_as!(Image, "SELECT * FROM image WHERE owner_id = $1", owner_id)
         .fetch_all(pool)
         .await
-        .inspect_err(|e| error!("Failed to fetch images: {e}"))
+        .inspect_err(|e| error!(error=?e, "fetch image records failed"))
 }
 
 #[derive(Debug, FromRow)]
@@ -64,7 +64,7 @@ pub async fn get_image_permission(pool: &PgPool, id: i32) -> sqlx::Result<Option
     )
     .fetch_optional(pool)
     .await
-    .inspect_err(|e| error!("Failed to fetch image permission: {e}"))
+    .inspect_err(|e| error!(error=?e, "fetch image permission failed"))
 }
 
 #[derive(Debug)]
@@ -114,5 +114,5 @@ pub async fn create_image(pool: &PgPool, info: NewImageInput<'_>) -> sqlx::Resul
     )
     .fetch_one(pool)
     .await
-    .inspect_err(|e| error!("Failed to create image record in database: {e}"))
+    .inspect_err(|e| error!(error=?e, "create image record failed"))
 }

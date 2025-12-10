@@ -13,7 +13,7 @@ async fn main() -> anyhow::Result<()> {
 
     let addr = env::var("SERVER_ADDR").unwrap_or_else(|_| "127.0.0.1:9000".to_string());
     let listener = TcpListener::bind(addr).await?;
-    info!("Server running on {}", listener.local_addr().unwrap());
+    info!(addr = %listener.local_addr().unwrap(), "server started");
 
     axum::serve(listener, app).await?;
 

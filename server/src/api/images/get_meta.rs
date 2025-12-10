@@ -11,7 +11,7 @@ use axum::{
     extract::{Path, State},
 };
 use sqlx::PgPool;
-use tracing::{info, instrument, warn};
+use tracing::{debug, info, instrument, warn};
 
 #[debug_handler]
 #[instrument(skip(pool))]
@@ -23,7 +23,7 @@ pub async fn get_image_metas(
         AccessClaims::Admin => get_all_image_metas(&pool).await?,
         AccessClaims::User(user_id) => get_user_image_metas(&pool, user_id).await?,
     };
-    info!("Fetched {} images", metas.len());
+    info!(count = metas.len(), "images fetched");
 
     Ok(Json(metas))
 }
@@ -48,21 +48,21 @@ pub async fn get_image_meta(
     let permission = image::get_image_permission(&pool, image_id)
         .await?
         .ok_or_else(|| {
-            warn!("Image not found");
+            info!("image not found");
             ApiError::NotFound
         })?;
 
     if !claims.can_access_image(&permission) {
-        warn!("Permission denied");
+        info!("permission denied");
         return Err(ApiError::PermissionDenied);
     }
 
     let image = image::get_image_by_id(&pool, image_id)
         .await?
         .ok_or_else(|| {
-            warn!("Image not found");
+            warn!("image not found after permission check");
             ApiError::NotFound
         })?;
-    info!("Fetched image successfully");
+    info!("image fetched successfully");
     Ok(Json(ImageMeta::from(image)))
 }

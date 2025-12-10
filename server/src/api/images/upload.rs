@@ -12,7 +12,7 @@ use axum::{
 use axum_extra::TypedHeader;
 use headers::ContentType;
 use sqlx::PgPool;
-use tracing::{info, instrument, warn};
+use tracing::{debug, info, instrument, warn};
 
 #[debug_handler]
 #[instrument(skip(pool, body, claims, maybe_ct), fields(user_id = claims.user_id()))]
@@ -24,13 +24,14 @@ pub async fn upload_raw_image(
 ) -> ApiResult<impl IntoResponse> {
     match maybe_ct {
         Some(ct) => {
-            if ct.0.to_string().starts_with("image/") {
-                info!("Received valid image upload with Content-Type: {}", ct.0);
+            let mime = ct.0.to_string();
+            if mime.starts_with("image/") {
+                debug!(%mime, "content type accepted");
             } else {
-                warn!("Invalid Content-Type for image upload: {}", ct.0);
+                warn!(%mime, "content type rejected");
             }
         }
-        None => warn!("No Content-Type header provided"),
+        None => warn!("no content type provided"),
     }
 
     let image_info = ImageInfo::parse(&body)?;
@@ -57,7 +58,7 @@ pub async fn upload_raw_image(
     };
     let image = create_image(&pool, image_input).await?;
 
-    info!("Image uploaded successfully with ID: {}", image.id);
+    info!(image_id = image.id, "image record created in database");
 
     // TODO: if create_image fails, consider deleting the stored image to avoid orphaned files
 

@@ -22,14 +22,14 @@ impl ImageInfo {
             ImageFormat::Tiff => "image/tiff",
             ImageFormat::WebP => "image/webp",
             _ => {
-                error!("Unsupported image format: {:?}", format);
+                error!(?format, "image format unsupported");
                 return Err(ImageParseError::UnsupportedFormat);
             }
         }
         .to_string();
 
         let img = image::load_from_memory_with_format(bytes, format)
-            .inspect_err(|e| error!("Failed to parse image: {:?}", e))?;
+            .inspect_err(|e| error!(e=?e, "image parse failed"))?;
         let (width, height) = img.dimensions();
 
         Ok(ImageInfo {

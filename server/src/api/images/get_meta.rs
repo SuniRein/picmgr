@@ -2,7 +2,7 @@ use crate::{
     api::{
         claims::{AccessClaims, AnyClaims},
         error::{ApiError, ApiResult},
-        images::response::ImageResponse,
+        images::response::ImageMeta,
     },
     db::image,
 };
@@ -15,36 +15,36 @@ use tracing::{info, instrument, warn};
 
 #[debug_handler]
 #[instrument(skip(pool))]
-pub async fn get_images(
+pub async fn get_image_metas(
     State(pool): State<PgPool>,
     claims: AccessClaims,
-) -> ApiResult<Json<Vec<ImageResponse>>> {
-    let images = match claims {
-        AccessClaims::Admin => get_all_images(&pool).await?,
-        AccessClaims::User(user_id) => get_user_images(&pool, user_id).await?,
+) -> ApiResult<Json<Vec<ImageMeta>>> {
+    let metas = match claims {
+        AccessClaims::Admin => get_all_image_metas(&pool).await?,
+        AccessClaims::User(user_id) => get_user_image_metas(&pool, user_id).await?,
     };
-    info!("Fetched {} images", images.len());
+    info!("Fetched {} images", metas.len());
 
-    Ok(Json(images))
+    Ok(Json(metas))
 }
 
-async fn get_all_images(pool: &PgPool) -> ApiResult<Vec<ImageResponse>> {
+async fn get_all_image_metas(pool: &PgPool) -> ApiResult<Vec<ImageMeta>> {
     let images = image::get_all_images(pool).await?;
-    Ok(images.into_iter().map(ImageResponse::from).collect())
+    Ok(images.into_iter().map(ImageMeta::from).collect())
 }
 
-async fn get_user_images(pool: &PgPool, user_id: i32) -> ApiResult<Vec<ImageResponse>> {
+async fn get_user_image_metas(pool: &PgPool, user_id: i32) -> ApiResult<Vec<ImageMeta>> {
     let images = image::get_images_by_owner(pool, user_id).await?;
-    Ok(images.into_iter().map(ImageResponse::from).collect())
+    Ok(images.into_iter().map(ImageMeta::from).collect())
 }
 
 #[debug_handler]
 #[instrument(skip(pool))]
-pub async fn get_image(
+pub async fn get_image_meta(
     State(pool): State<PgPool>,
     claims: AnyClaims,
     Path(image_id): Path<i32>,
-) -> ApiResult<Json<ImageResponse>> {
+) -> ApiResult<Json<ImageMeta>> {
     let image = image::get_image_by_id(&pool, image_id).await?;
     match image {
         Some(img) => {
@@ -53,7 +53,7 @@ pub async fn get_image(
                 || (matches!(claims, AnyClaims::User(user_id) if Some(user_id) == img.owner_id))
             {
                 info!("Fetched image successfully");
-                Ok(Json(ImageResponse::from(img)))
+                Ok(Json(ImageMeta::from(img)))
             } else {
                 warn!("Permission denied");
                 Err(ApiError::PermissionDenied)

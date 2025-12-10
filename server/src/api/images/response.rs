@@ -4,7 +4,7 @@ use serde::Serialize;
 use crate::db::image::Image;
 
 #[derive(Debug, Serialize)]
-pub struct ImageResponse {
+pub struct ImageMeta {
     id: i32,
     owner_id: Option<i32>,
     category_id: Option<i32>,
@@ -21,9 +21,9 @@ pub struct ImageResponse {
     updated_at: NaiveDateTime,
 }
 
-impl From<Image> for ImageResponse {
+impl From<Image> for ImageMeta {
     fn from(image: Image) -> Self {
-        ImageResponse {
+        ImageMeta {
             id: image.id,
             owner_id: image.owner_id,
             category_id: image.category_id,

@@ -53,7 +53,7 @@ pub async fn upload_raw_image(
         medium_thumbnail_key: None,
         large_thumbnail_key: None,
 
-        is_public: true,
+        is_public: false,
     };
     let image = create_image(&pool, image_input).await?;
 

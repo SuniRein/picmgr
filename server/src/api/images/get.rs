@@ -1,35 +1,21 @@
 use crate::{
-    api::{
-        error::ApiResult,
-        images::response::ImageResponse,
-        jwt::{AdminClaims, UserClaims},
-    },
+    api::{claims::AccessClaims, error::ApiResult, images::response::ImageResponse},
     db::image,
 };
 use axum::{Json, debug_handler, extract::State};
-use axum_extra::either::Either;
 use sqlx::PgPool;
-use tracing::{Span, field::Empty, info, instrument};
+use tracing::{info, instrument};
 
 #[debug_handler]
-#[instrument(skip_all, fields(role = Empty, user_id = Empty))]
+#[instrument(skip(pool))]
 pub async fn get_images(
     State(pool): State<PgPool>,
-    claims: Either<AdminClaims, UserClaims>,
+    claims: AccessClaims,
 ) -> ApiResult<Json<Vec<ImageResponse>>> {
     let images = match claims {
-        Either::E1(_admin) => {
-            Span::current().record("role", "admin");
-            get_all_images(&pool).await?
-        }
-        Either::E2(user) => {
-            Span::current()
-                .record("role", "user")
-                .record("user_id", user.user_id());
-            get_user_images(&pool, user.user_id()).await?
-        }
+        AccessClaims::Admin => get_all_images(&pool).await?,
+        AccessClaims::User(user_id) => get_user_images(&pool, user_id).await?,
     };
-
     info!("Fetched {} images", images.len());
 
     Ok(Json(images))

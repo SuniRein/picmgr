@@ -1,6 +1,6 @@
 use crate::api::{
+    claims::{RefreshClaims, Token},
     error::ApiResult,
-    jwt::{RefreshClaims, Token},
 };
 use axum::{Json, debug_handler, response::IntoResponse};
 use serde_json::json;

@@ -1,6 +1,6 @@
 use crate::api::{
+    claims::Token,
     error::{ApiError, ApiResult},
-    jwt::Token,
 };
 use crate::auth::{admin::verify_admin, password::verify_password};
 use crate::db::user;

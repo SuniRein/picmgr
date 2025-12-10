@@ -1,5 +1,5 @@
+mod claims;
 mod error;
-mod jwt;
 
 pub mod auth;
 pub mod images;

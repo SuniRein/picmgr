@@ -1,6 +1,6 @@
 use super::error::{ApiError, ApiResult};
 use crate::{
-    api::jwt::AdminClaims,
+    api::claims::AdminClaims,
     db::user::{self, User},
 };
 use axum::{

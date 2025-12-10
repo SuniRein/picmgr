@@ -1,6 +1,6 @@
 use super::error::{ApiError, ApiResult};
 use crate::{
-    api::jwt::UserClaims,
+    api::claims::UserClaims,
     db::user::{self, User},
 };
 use axum::{Json, debug_handler, extract::State};

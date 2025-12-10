@@ -1,7 +1,7 @@
 use crate::{
     api::{
+        claims::UserClaims,
         error::{ApiError, ApiResult},
-        jwt::UserClaims,
     },
     db::image::{NewImageInput, create_image},
     image::{parse::ImageInfo, storage::store_image},

@@ -45,23 +45,24 @@ pub async fn get_image_meta(
     claims: AnyClaims,
     Path(image_id): Path<i32>,
 ) -> ApiResult<Json<ImageMeta>> {
-    let image = image::get_image_by_id(&pool, image_id).await?;
-    match image {
-        Some(img) => {
-            if img.is_public
-                || matches!(claims, AnyClaims::Admin)
-                || (matches!(claims, AnyClaims::User(user_id) if Some(user_id) == img.owner_id))
-            {
-                info!("Fetched image successfully");
-                Ok(Json(ImageMeta::from(img)))
-            } else {
-                warn!("Permission denied");
-                Err(ApiError::PermissionDenied)
-            }
-        }
-        None => {
+    let permission = image::get_image_permission(&pool, image_id)
+        .await?
+        .ok_or_else(|| {
             warn!("Image not found");
-            Err(ApiError::NotFound)
-        }
+            ApiError::NotFound
+        })?;
+
+    if !claims.can_access_image(&permission) {
+        warn!("Permission denied");
+        return Err(ApiError::PermissionDenied);
     }
+
+    let image = image::get_image_by_id(&pool, image_id)
+        .await?
+        .ok_or_else(|| {
+            warn!("Image not found");
+            ApiError::NotFound
+        })?;
+    info!("Fetched image successfully");
+    Ok(Json(ImageMeta::from(image)))
 }

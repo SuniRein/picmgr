@@ -1,3 +1,5 @@
+use crate::db::image::ImagePermission;
+
 use super::utils::parse_token;
 use axum::{extract::FromRequestParts, http::request::Parts};
 use std::fmt::{self, Debug, Formatter};
@@ -6,6 +8,16 @@ pub enum AnyClaims {
     Admin,
     User(i32),
     Guest,
+}
+
+impl AnyClaims {
+    pub fn can_access_image(&self, permission: &ImagePermission) -> bool {
+        match self {
+            Self::Admin => true,
+            Self::User(user_id) => permission.is_public || Some(*user_id) == permission.owner_id,
+            Self::Guest => permission.is_public,
+        }
+    }
 }
 
 impl<S> FromRequestParts<S> for AnyClaims

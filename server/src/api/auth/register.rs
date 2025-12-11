@@ -1,19 +1,37 @@
-use crate::api::error::{ApiError, ApiResult};
-use crate::auth::password::hash_password;
-use crate::db::user::{self, NewUserInput};
+use super::super::{
+    doc::AUTH_TAG,
+    error::{ApiError, ApiResult},
+};
+use crate::{
+    auth::password::hash_password,
+    db::user::{self, NewUserInput},
+};
 use axum::{Json, debug_handler, extract::State, http::StatusCode, response::IntoResponse};
 use serde::Deserialize;
 use sqlx::PgPool;
 use tracing::{info, instrument};
 use validator::ValidateEmail;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, utoipa::ToSchema)]
 pub struct RegisterPayload {
     pub username: String,
     pub email: String,
     pub password: String,
 }
 
+/// User registration endpoint
+///
+/// Registers a new user with the provided username, email, and password.
+#[utoipa::path(
+    post,
+    tag = AUTH_TAG,
+    path = "/auth/register",
+    responses(
+        (status = CREATED, description = "success response"),
+        (status = UNPROCESSABLE_ENTITY, description = "validation error"),
+        (status = CONFLICT, description = "username or email already exists"),
+    ),
+)]
 #[debug_handler]
 #[instrument(skip(pool, payload), fields(username = %payload.username, email = %payload.email))]
 pub async fn register(

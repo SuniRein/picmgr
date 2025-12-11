@@ -2,7 +2,7 @@ use crate::auth::jwt::{Claims, encode_token};
 use chrono::{DateTime, Duration, Utc};
 use serde::Serialize;
 
-#[derive(Serialize)]
+#[derive(Serialize, utoipa::ToSchema)]
 pub struct Token {
     access_token: AccessToken,
     refresh_token: RefreshToken,
@@ -32,10 +32,10 @@ impl Token {
     }
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, utoipa::ToSchema)]
 pub struct AccessToken(pub String);
 
-#[derive(Serialize)]
+#[derive(Serialize, utoipa::ToSchema)]
 pub struct RefreshToken(pub String);
 
 const ACCESS_TOKEN_EXPIRY: Duration = Duration::minutes(15);

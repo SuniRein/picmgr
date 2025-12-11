@@ -11,5 +11,5 @@ pub use access::AccessClaims;
 pub use admin::AdminClaims;
 pub use any::AnyClaims;
 pub use refresh::RefreshClaims;
-pub use token::Token;
+pub use token::{AccessToken, Token};
 pub use user::UserClaims;

@@ -1,20 +1,35 @@
-use crate::api::{
+use super::super::{
     claims::Token,
+    doc::AUTH_TAG,
     error::{ApiError, ApiResult},
 };
-use crate::auth::{admin::verify_admin, password::verify_password};
-use crate::db::user;
+use crate::{
+    auth::{admin::verify_admin, password::verify_password},
+    db::user,
+};
 use axum::{Json, debug_handler, extract::State, response::IntoResponse};
 use serde::Deserialize;
 use sqlx::PgPool;
 use tracing::{info, instrument};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, utoipa::ToSchema)]
 pub struct LoginPayload {
     username: String,
     password: String,
 }
 
+/// User login endpoint
+///
+/// Authenticates a user and returns JWT tokens upon successful login.
+#[utoipa::path(
+    post,
+    tag = AUTH_TAG,
+    path = "/auth/login",
+    responses(
+        (status = OK, description = "success response", body = Token),
+        (status = UNAUTHORIZED, description = "wrong credentials"),
+    ),
+)]
 #[debug_handler]
 #[instrument(skip(pool, payload), fields(%payload.username))]
 pub async fn login(
@@ -38,6 +53,18 @@ pub async fn login(
     Ok(Json(token))
 }
 
+/// Admin login endpoint
+///
+/// Authenticates an admin and returns JWT tokens upon successful login.
+#[utoipa::path(
+    post,
+    tag = AUTH_TAG,
+    path = "/auth/login/admin",
+    responses(
+        (status = OK, description = "success response", body = Token),
+        (status = UNAUTHORIZED, description = "wrong credentials"),
+    ),
+)]
 #[debug_handler]
 #[instrument(skip(payload), fields(%payload.username))]
 pub async fn login_as_admin(Json(payload): Json<LoginPayload>) -> ApiResult<impl IntoResponse> {

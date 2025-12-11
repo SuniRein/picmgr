@@ -15,7 +15,7 @@ use sqlx::PgPool;
 use tracing::{debug, info, instrument, warn};
 
 #[debug_handler]
-#[instrument(skip(pool, body, claims, maybe_ct), fields(user_id = claims.user_id()))]
+#[instrument(skip(pool, body, maybe_ct))]
 pub async fn upload_raw_image(
     State(pool): State<PgPool>,
     claims: UserClaims,

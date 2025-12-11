@@ -7,6 +7,7 @@ use crate::db::user;
 use axum::{Json, debug_handler, extract::State, response::IntoResponse};
 use serde::Deserialize;
 use sqlx::PgPool;
+use tracing::{info, instrument};
 
 #[derive(Debug, Deserialize)]
 pub struct LoginPayload {
@@ -15,25 +16,37 @@ pub struct LoginPayload {
 }
 
 #[debug_handler]
+#[instrument(skip(pool, payload), fields(%payload.username))]
 pub async fn login(
     State(pool): State<PgPool>,
     Json(payload): Json<LoginPayload>,
 ) -> ApiResult<impl IntoResponse> {
     let user = user::get_user_by_username(&pool, &payload.username)
         .await?
-        .ok_or(ApiError::WrongCredentials)?;
+        .ok_or({
+            info!("user not found");
+            ApiError::WrongCredentials
+        })?;
 
     if !verify_password(&payload.password, &user.password_hash)? {
+        info!("password mismatch");
         return Err(ApiError::WrongCredentials);
     }
 
-    Ok(Json(Token::generate_user_token(user.id)))
+    let token = Token::generate_user_token(user.id);
+    info!("user logged in successfully");
+    Ok(Json(token))
 }
 
 #[debug_handler]
+#[instrument(skip(payload), fields(%payload.username))]
 pub async fn login_as_admin(Json(payload): Json<LoginPayload>) -> ApiResult<impl IntoResponse> {
     if !verify_admin(&payload.username, &payload.password) {
+        info!("wrong admin credentials");
         return Err(ApiError::WrongCredentials);
     }
-    Ok(Json(Token::generate_admin_token()))
+
+    let token = Token::generate_admin_token();
+    info!("admin logged in successfully");
+    Ok(Json(token))
 }

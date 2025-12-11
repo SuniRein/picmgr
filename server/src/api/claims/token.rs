@@ -2,6 +2,7 @@ use super::refresh::RefreshClaims;
 use crate::auth::jwt::{Claims, encode_token};
 use chrono::Duration;
 use serde::{Deserialize, Serialize};
+use tracing::{debug, instrument};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Token {
@@ -13,6 +14,7 @@ const ACCESS_TOKEN_EXPIRY: Duration = Duration::minutes(15);
 const REFRESH_TOKEN_EXPIRY: Duration = Duration::days(7);
 
 impl Token {
+    #[instrument]
     pub fn generate_user_token(user_id: i32) -> Self {
         let access_claims = Claims {
             sub: user_id,
@@ -29,6 +31,11 @@ impl Token {
 
         let access_token = encode_token(&access_claims);
         let refresh_token = encode_token(&refresh_claims);
+        debug!(
+            access_expiry = access_claims.exp,
+            refresh_expiry = refresh_claims.exp,
+            "user token generated"
+        );
 
         Self {
             access_token,
@@ -36,6 +43,7 @@ impl Token {
         }
     }
 
+    #[instrument]
     pub fn generate_admin_token() -> Self {
         let access_claims = Claims {
             sub: 0,
@@ -52,6 +60,11 @@ impl Token {
 
         let access_token = encode_token(&access_claims);
         let refresh_token = encode_token(&refresh_claims);
+        debug!(
+            access_expiry = access_claims.exp,
+            refresh_expiry = refresh_claims.exp,
+            "admin token generated"
+        );
 
         Self {
             access_token,

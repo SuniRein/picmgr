@@ -33,6 +33,9 @@ pub enum ApiError {
     #[error("Permission Denied")]
     PermissionDenied,
 
+    #[error("Internal Server Error")]
+    ResponseBuildError,
+
     #[error("Database Error")]
     Db(#[from] sqlx::Error),
 
@@ -63,6 +66,7 @@ impl IntoResponse for ApiError {
             ApiError::UsernameConflict | ApiError::EmailConflict => StatusCode::CONFLICT,
             ApiError::WrongCredentials | ApiError::InvalidToken => StatusCode::UNAUTHORIZED,
             ApiError::PermissionDenied => StatusCode::FORBIDDEN,
+            ApiError::ResponseBuildError => StatusCode::INTERNAL_SERVER_ERROR,
             ApiError::ImageParseError(ImageParseError::UnsupportedFormat) => {
                 StatusCode::UNSUPPORTED_MEDIA_TYPE
             }

@@ -91,12 +91,14 @@ pub async fn get_image_meta(
         return Err(ApiError::PermissionDenied);
     }
 
-    let image = image::get_image_by_id(&pool, image_id)
+    image::get_image_by_id(&pool, image_id)
         .await?
+        .map(|image| {
+            info!("image fetched successfully");
+            Json(ImageMeta::from(image))
+        })
         .ok_or_else(|| {
             warn!("image not found after permission check");
             ApiError::NotFound
-        })?;
-    info!("image fetched successfully");
-    Ok(Json(ImageMeta::from(image)))
+        })
 }

@@ -33,3 +33,17 @@ pub async fn store_image(data: &[u8]) -> io::Result<String> {
 
     Ok(hash)
 }
+
+#[instrument(skip(hash))]
+pub async fn retrieve_image(hash: &str) -> io::Result<Vec<u8>> {
+    let dir1 = &hash[0..2];
+    let dir2 = &hash[2..4];
+    let full_path = IMAGE_STORAGE_PATH.join(dir1).join(dir2).join(hash);
+
+    let data = async_fs::read(&full_path)
+        .await
+        .inspect_err(|e| error!(path=?full_path, error=?e, "read image file failed"))?;
+    debug!(%hash, path=?full_path, "image retrieved successfully");
+
+    Ok(data)
+}

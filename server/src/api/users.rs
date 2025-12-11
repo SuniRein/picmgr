@@ -1,8 +1,9 @@
-use super::error::{ApiError, ApiResult};
-use crate::{
-    api::claims::AdminClaims,
-    db::user::{self, User},
+use super::{
+    claims::AdminClaims,
+    doc::USERS_TAG,
+    error::{ApiError, ApiResult},
 };
+use crate::db::user::{self, User};
 use axum::{
     Json, debug_handler,
     extract::{Path, State},
@@ -10,6 +11,21 @@ use axum::{
 use sqlx::PgPool;
 use tracing::{info, instrument};
 
+/// Get user information by user ID
+///
+/// Returns the user details for the specified user ID.
+#[utoipa::path(
+    get,
+    tag = USERS_TAG,
+    path = "/users/{id}",
+    security(("adminAuth" = [])),
+    responses(
+        (status = OK, description = "success response", body = User),
+        (status = NOT_FOUND, description = "user not found"),
+        (status = UNAUTHORIZED, description = "invalid or missing token"),
+        (status = FORBIDDEN, description = "admin privileges required"),
+    ),
+)]
 #[debug_handler]
 #[instrument(skip(pool))]
 pub async fn get_user(
@@ -30,6 +46,20 @@ pub async fn get_user(
     }
 }
 
+/// Get information of all users
+///
+/// Return a list of all user details.
+#[utoipa::path(
+    get,
+    tag = USERS_TAG,
+    path = "/users",
+    security(("adminAuth" = [])),
+    responses(
+        (status = OK, description = "success response", body = [User]),
+        (status = UNAUTHORIZED, description = "invalid or missing token"),
+        (status = FORBIDDEN, description = "admin privileges required"),
+    ),
+)]
 #[debug_handler]
 #[instrument(skip(pool))]
 pub async fn get_all_users(

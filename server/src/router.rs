@@ -10,12 +10,12 @@ use utoipa_swagger_ui::SwaggerUi;
 pub fn create_router(pool: PgPool) -> Router {
     let api_router = OpenApiRouter::new()
         .routes(routes!(user::get_current_user))
+        .routes(routes!(users::get_user))
+        .routes(routes!(users::get_all_users))
         .route("/auth/register", post(auth::register))
         .route("/auth/login", post(auth::login))
         .route("/auth/login/admin", post(auth::login_as_admin))
         .route("/auth/refresh", post(auth::refresh_token))
-        .route("/users/{id}", get(users::get_user))
-        .route("/users", get(users::get_all_users))
         .route("/images/upload/raw", post(images::upload_raw_image))
         .route("/images/{id}", get(images::get_image_meta))
         .route("/images", get(images::get_image_metas));

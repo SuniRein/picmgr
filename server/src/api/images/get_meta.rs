@@ -1,8 +1,11 @@
-use super::super::{
-    claims::{AccessClaims, AnyClaims},
-    doc::IMAGES_TAG,
-    error::{ApiError, ApiResult},
-    images::response::ImageMeta,
+use super::{
+    super::{
+        claims::{AccessClaims, AnyClaims},
+        doc::IMAGES_TAG,
+        error::ApiResult,
+        images::response::ImageMeta,
+    },
+    utils::get_image_info,
 };
 use crate::db::image;
 use axum::{
@@ -10,7 +13,7 @@ use axum::{
     extract::{Path, State},
 };
 use sqlx::PgPool;
-use tracing::{info, instrument, warn};
+use tracing::{info, instrument};
 
 /// Get metadata for all images
 ///
@@ -79,26 +82,8 @@ pub async fn get_image_meta(
     claims: AnyClaims,
     Path(image_id): Path<i32>,
 ) -> ApiResult<Json<ImageMeta>> {
-    let permission = image::get_image_permission(&pool, image_id)
-        .await?
-        .ok_or_else(|| {
-            info!("image not found");
-            ApiError::NotFound
-        })?;
-
-    if !claims.can_access_image(&permission) {
-        info!("permission denied");
-        return Err(ApiError::PermissionDenied);
-    }
-
-    image::get_image_by_id(&pool, image_id)
-        .await?
-        .map(|image| {
-            info!("image fetched successfully");
-            Json(ImageMeta::from(image))
-        })
-        .ok_or_else(|| {
-            warn!("image not found after permission check");
-            ApiError::NotFound
-        })
+    get_image_info(&pool, claims, image_id).await.map(|image| {
+        info!("image fetched successfully");
+        Json(ImageMeta::from(image))
+    })
 }

@@ -1,9 +1,12 @@
-use super::super::{
-    claims::AnyClaims,
-    doc::IMAGES_TAG,
-    error::{ApiError, ApiResult},
+use super::{
+    super::{
+        claims::AnyClaims,
+        doc::IMAGES_TAG,
+        error::{ApiError, ApiResult},
+    },
+    utils::get_image_info,
 };
-use crate::{db::image, image::storage::retrieve_image};
+use crate::image::storage::retrieve_image;
 use axum::{
     body::Body,
     debug_handler,
@@ -12,7 +15,7 @@ use axum::{
     response::IntoResponse,
 };
 use sqlx::PgPool;
-use tracing::{error, info, instrument, warn};
+use tracing::{error, info, instrument};
 
 /// Get raw image data by ID
 ///
@@ -39,24 +42,7 @@ pub async fn get_image(
     claims: AnyClaims,
     Path(image_id): Path<i32>,
 ) -> ApiResult<impl IntoResponse> {
-    let permission = image::get_image_permission(&pool, image_id)
-        .await?
-        .ok_or_else(|| {
-            info!("image not found");
-            ApiError::NotFound
-        })?;
-
-    if !claims.can_access_image(&permission) {
-        info!("permission denied");
-        return Err(ApiError::PermissionDenied);
-    }
-
-    let info = image::get_image_storage_info(&pool, image_id)
-        .await?
-        .ok_or_else(|| {
-            warn!("image not found after permission check");
-            ApiError::NotFound
-        })?;
+    let info = get_image_info(&pool, claims, image_id).await?;
 
     let data = retrieve_image(&info.storage_key)
         .await

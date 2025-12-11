@@ -1,11 +1,10 @@
-use crate::{
-    api::{
-        claims::{AccessClaims, AnyClaims},
-        error::{ApiError, ApiResult},
-        images::response::ImageMeta,
-    },
-    db::image,
+use super::super::{
+    claims::{AccessClaims, AnyClaims},
+    doc::IMAGES_TAG,
+    error::{ApiError, ApiResult},
+    images::response::ImageMeta,
 };
+use crate::db::image;
 use axum::{
     Json, debug_handler,
     extract::{Path, State},
@@ -13,6 +12,23 @@ use axum::{
 use sqlx::PgPool;
 use tracing::{info, instrument, warn};
 
+/// Get metadata for all images
+///
+/// Retrieves metadata for all images if the requester has admin access.
+/// For regular users, retrieves metadata only for images they own.
+#[utoipa::path(
+    get,
+    tag = IMAGES_TAG,
+    path = "/images",
+    security(
+        ("userAuth" = []),
+        ("adminAuth" = [])
+    ),
+    responses(
+        (status = OK, description = "success response", body = [ImageMeta]),
+        (status = FORBIDDEN, description = "permission denied"),
+    ),
+)]
 #[debug_handler]
 #[instrument(skip(pool))]
 pub async fn get_image_metas(
@@ -38,6 +54,24 @@ async fn get_user_image_metas(pool: &PgPool, user_id: i32) -> ApiResult<Vec<Imag
     Ok(images.into_iter().map(ImageMeta::from).collect())
 }
 
+/// Get image metadata by ID
+///
+/// Retrieves metadata for a specific image if the requester has the necessary permissions.
+#[utoipa::path(
+    get,
+    tag = IMAGES_TAG,
+    path = "/images/{id}",
+    security(
+        (),
+        ("userAuth" = []),
+        ("adminAuth" = [])
+    ),
+    responses(
+        (status = OK, description = "success response", body = ImageMeta),
+        (status = FORBIDDEN, description = "permission denied"),
+        (status = NOT_FOUND, description = "image not found"),
+    ),
+)]
 #[debug_handler]
 #[instrument(skip(pool))]
 pub async fn get_image_meta(

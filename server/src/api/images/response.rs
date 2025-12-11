@@ -3,7 +3,7 @@ use serde::Serialize;
 
 use crate::db::image::Image;
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, utoipa::ToSchema)]
 pub struct ImageMeta {
     id: i32,
     owner_id: Option<i32>,

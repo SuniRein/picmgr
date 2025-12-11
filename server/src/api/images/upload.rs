@@ -1,8 +1,9 @@
+use super::super::{
+    claims::UserClaims,
+    doc::IMAGES_TAG,
+    error::{ApiError, ApiResult},
+};
 use crate::{
-    api::{
-        claims::UserClaims,
-        error::{ApiError, ApiResult},
-    },
     db::image::{NewImageInput, create_image},
     image::{parse::ImageInfo, storage::store_image},
 };
@@ -14,6 +15,27 @@ use headers::ContentType;
 use sqlx::PgPool;
 use tracing::{debug, info, instrument, warn};
 
+/// Upload a raw image
+///
+/// Uploads a raw image file to the server, whose owner is set to the authenticated user.
+#[utoipa::path(
+    post,
+    tag = IMAGES_TAG,
+    path = "/images/upload/raw",
+    security(("userAuth" = [])),
+    request_body(
+        content(
+            ("image/png"), ("image/jpeg"), ("image/gif"), ("image/bmp"),
+            ("image/x-icon"), ("image/tiff"), ("image/webp"),
+        )
+    ),
+    responses(
+        (status = CREATED, description = "image uploaded successfully"),
+        (status = BAD_REQUEST, description = "image parsed error"),
+        (status = UNAUTHORIZED, description = "invalid or missing token"),
+        (status = UNSUPPORTED_MEDIA_TYPE, description = "unsupported image format"),
+    ),
+)]
 #[debug_handler]
 #[instrument(skip(pool, body, maybe_ct))]
 pub async fn upload_raw_image(

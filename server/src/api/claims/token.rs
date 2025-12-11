@@ -1,84 +1,66 @@
-use super::refresh::RefreshClaims;
 use crate::auth::jwt::{Claims, encode_token};
-use chrono::Duration;
-use serde::{Deserialize, Serialize};
-use tracing::{debug, instrument};
+use chrono::{DateTime, Duration, Utc};
+use serde::Serialize;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Serialize)]
 pub struct Token {
-    access_token: String,
-    refresh_token: String,
+    access_token: AccessToken,
+    refresh_token: RefreshToken,
 }
+
+impl Token {
+    pub fn generate_user_token(user_id: i32) -> Self {
+        let now = Utc::now();
+        let access_token = AccessToken::new(now, user_id, false);
+        let refresh_token = RefreshToken::new(now, user_id, false);
+
+        Self {
+            access_token,
+            refresh_token,
+        }
+    }
+
+    pub fn generate_admin_token() -> Self {
+        let now = Utc::now();
+        let access_token = AccessToken::new(now, 0, true);
+        let refresh_token = RefreshToken::new(now, 0, true);
+
+        Self {
+            access_token,
+            refresh_token,
+        }
+    }
+}
+
+#[derive(Serialize)]
+pub struct AccessToken(pub String);
+
+#[derive(Serialize)]
+pub struct RefreshToken(pub String);
 
 const ACCESS_TOKEN_EXPIRY: Duration = Duration::minutes(15);
 const REFRESH_TOKEN_EXPIRY: Duration = Duration::days(7);
 
-impl Token {
-    #[instrument]
-    pub fn generate_user_token(user_id: i32) -> Self {
-        let access_claims = Claims {
-            sub: user_id,
-            exp: (chrono::Utc::now() + ACCESS_TOKEN_EXPIRY).timestamp() as usize,
-            is_admin: false,
+impl AccessToken {
+    pub(super) fn new(now: DateTime<Utc>, sub: i32, is_admin: bool) -> Self {
+        let claims = Claims {
+            sub,
+            exp: (now + ACCESS_TOKEN_EXPIRY).timestamp() as usize,
+            is_admin,
             token_use: "access".to_string(),
         };
-        let refresh_claims = Claims {
-            sub: user_id,
-            exp: (chrono::Utc::now() + REFRESH_TOKEN_EXPIRY).timestamp() as usize,
-            is_admin: false,
+        Self(encode_token(&claims))
+    }
+}
+
+impl RefreshToken {
+    fn new(now: DateTime<Utc>, sub: i32, is_admin: bool) -> Self {
+        let claims = Claims {
+            sub,
+            exp: (now + REFRESH_TOKEN_EXPIRY).timestamp() as usize,
+            is_admin,
             token_use: "refresh".to_string(),
         };
-
-        let access_token = encode_token(&access_claims);
-        let refresh_token = encode_token(&refresh_claims);
-        debug!(
-            access_expiry = access_claims.exp,
-            refresh_expiry = refresh_claims.exp,
-            "user token generated"
-        );
-
-        Self {
-            access_token,
-            refresh_token,
-        }
-    }
-
-    #[instrument]
-    pub fn generate_admin_token() -> Self {
-        let access_claims = Claims {
-            sub: 0,
-            exp: (chrono::Utc::now() + ACCESS_TOKEN_EXPIRY).timestamp() as usize,
-            is_admin: true,
-            token_use: "access".to_string(),
-        };
-        let refresh_claims = Claims {
-            sub: 0,
-            exp: (chrono::Utc::now() + REFRESH_TOKEN_EXPIRY).timestamp() as usize,
-            is_admin: true,
-            token_use: "refresh".to_string(),
-        };
-
-        let access_token = encode_token(&access_claims);
-        let refresh_token = encode_token(&refresh_claims);
-        debug!(
-            access_expiry = access_claims.exp,
-            refresh_expiry = refresh_claims.exp,
-            "admin token generated"
-        );
-
-        Self {
-            access_token,
-            refresh_token,
-        }
-    }
-
-    pub fn refresh(RefreshClaims(claims): &RefreshClaims) -> String {
-        let new_access_claims = Claims {
-            sub: claims.sub,
-            exp: (chrono::Utc::now() + ACCESS_TOKEN_EXPIRY).timestamp() as usize,
-            is_admin: claims.is_admin,
-            token_use: "access".to_string(),
-        };
-        encode_token(&new_access_claims)
+        Self(encode_token(&claims))
     }
 }

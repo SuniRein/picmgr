@@ -1,10 +1,9 @@
-use super::utils::parse_token;
+use super::{token::AccessToken, utils::parse_token};
 use crate::{api::error::AuthError, auth::jwt::Claims};
 use axum::{extract::FromRequestParts, http::request::Parts};
-use serde::{Deserialize, Serialize};
+use chrono::Utc;
 use std::fmt::{self, Debug, Formatter};
 
-#[derive(Serialize, Deserialize)]
 pub struct RefreshClaims(pub(super) Claims);
 
 impl<S> FromRequestParts<S> for RefreshClaims
@@ -16,6 +15,12 @@ where
     async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
         let claims = parse_token(parts, "refresh")?;
         Ok(RefreshClaims(claims))
+    }
+}
+
+impl RefreshClaims {
+    pub fn refresh(&self) -> AccessToken {
+        AccessToken::new(Utc::now(), self.0.sub, self.0.is_admin)
     }
 }
 

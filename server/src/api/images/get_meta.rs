@@ -29,6 +29,7 @@ use tracing::{info, instrument};
     ),
     responses(
         (status = OK, description = "success response", body = [ImageMeta]),
+        (status = UNAUTHORIZED, description = "invalid or missing token"),
         (status = FORBIDDEN, description = "permission denied"),
     ),
 )]

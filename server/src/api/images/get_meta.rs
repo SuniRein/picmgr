@@ -11,7 +11,7 @@ use axum::{
     extract::{Path, State},
 };
 use sqlx::PgPool;
-use tracing::{debug, info, instrument, warn};
+use tracing::{info, instrument, warn};
 
 #[debug_handler]
 #[instrument(skip(pool))]

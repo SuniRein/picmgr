@@ -1,11 +1,9 @@
 use super::utils::parse_token;
-use crate::{api::error::AuthError, auth::jwt::Claims};
+use crate::api::error::AuthError;
 use axum::{extract::FromRequestParts, http::request::Parts};
-use serde::{Deserialize, Serialize};
 use std::fmt::{self, Debug, Formatter};
 
-#[derive(Serialize, Deserialize)]
-pub struct AdminClaims(pub(super) Claims);
+pub struct AdminClaims;
 
 impl<S> FromRequestParts<S> for AdminClaims
 where
@@ -18,7 +16,7 @@ where
         if !claims.is_admin {
             return Err(AuthError::AdminRequired);
         }
-        Ok(AdminClaims(claims))
+        Ok(AdminClaims)
     }
 }
 

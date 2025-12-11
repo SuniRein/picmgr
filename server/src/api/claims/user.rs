@@ -1,11 +1,9 @@
 use super::utils::parse_token;
-use crate::{api::error::AuthError, auth::jwt::Claims};
+use crate::api::error::AuthError;
 use axum::{extract::FromRequestParts, http::request::Parts};
-use serde::{Deserialize, Serialize};
 use std::fmt::{self, Debug, Formatter};
 
-#[derive(Serialize, Deserialize)]
-pub struct UserClaims(pub(super) Claims);
+pub struct UserClaims(i32);
 
 impl<S> FromRequestParts<S> for UserClaims
 where
@@ -18,13 +16,13 @@ where
         if claims.is_admin {
             return Err(AuthError::InvalidToken);
         }
-        Ok(UserClaims(claims))
+        Ok(UserClaims(claims.sub))
     }
 }
 
 impl UserClaims {
     pub fn user_id(&self) -> i32 {
-        self.0.sub
+        self.0
     }
 }
 

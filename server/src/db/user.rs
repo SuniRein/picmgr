@@ -3,7 +3,7 @@ use serde::Serialize;
 use sqlx::PgPool;
 use tracing::{error, instrument};
 
-#[derive(Debug, sqlx::Type, Serialize)]
+#[derive(Debug, sqlx::Type, Serialize, utoipa::ToSchema)]
 #[sqlx(type_name = "user_status", rename_all = "snake_case")]
 #[serde(rename_all = "snake_case")]
 pub enum UserStatus {
@@ -11,7 +11,7 @@ pub enum UserStatus {
     Banned,
 }
 
-#[derive(Debug, sqlx::FromRow, Serialize)]
+#[derive(Debug, sqlx::FromRow, Serialize, utoipa::ToSchema)]
 pub struct User {
     pub id: i32,
     pub username: String,

@@ -22,7 +22,7 @@ use tracing::{info, instrument, warn};
     ),
 )]
 #[debug_handler]
-#[instrument(skip(pool, claims))]
+#[instrument(skip(pool))]
 pub async fn get_current_user(
     State(pool): State<PgPool>,
     claims: UserClaims,

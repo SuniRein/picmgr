@@ -38,7 +38,7 @@ pub async fn login(
 ) -> ApiResult<impl IntoResponse> {
     let user = user::get_user_by_username(&pool, &payload.username)
         .await?
-        .ok_or({
+        .ok_or_else(|| {
             info!("user not found");
             ApiError::WrongCredentials
         })?;

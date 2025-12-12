@@ -1,4 +1,4 @@
-use crate::image::parse::ImageParseError;
+use crate::{api::pagination::PageSizeOutOfRange, image::parse::ImageParseError};
 use axum::{
     Json,
     http::StatusCode,
@@ -36,6 +36,9 @@ pub enum ApiError {
     #[error("Internal Server Error")]
     ResponseBuildError,
 
+    #[error(transparent)]
+    PageSizeOutOfRange(#[from] PageSizeOutOfRange),
+
     #[error("Database Error")]
     Db(#[from] sqlx::Error),
 
@@ -67,6 +70,7 @@ impl IntoResponse for ApiError {
             ApiError::WrongCredentials | ApiError::InvalidToken => StatusCode::UNAUTHORIZED,
             ApiError::PermissionDenied => StatusCode::FORBIDDEN,
             ApiError::ResponseBuildError => StatusCode::INTERNAL_SERVER_ERROR,
+            ApiError::PageSizeOutOfRange(_) => StatusCode::BAD_REQUEST,
             ApiError::ImageParseError(ImageParseError::UnsupportedFormat) => {
                 StatusCode::UNSUPPORTED_MEDIA_TYPE
             }

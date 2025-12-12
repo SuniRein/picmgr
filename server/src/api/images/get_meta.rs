@@ -4,13 +4,14 @@ use super::{
         doc::IMAGES_TAG,
         error::ApiResult,
         images::response::ImageMeta,
+        pagination::{PaginatedResponse, PaginationQuery},
     },
     utils::get_image_info,
 };
-use crate::db::image;
+use crate::{api::pagination::PaginationChecked, db::image};
 use axum::{
     Json, debug_handler,
-    extract::{Path, State},
+    extract::{Path, Query, State},
 };
 use sqlx::PgPool;
 use tracing::{info, instrument};
@@ -27,8 +28,10 @@ use tracing::{info, instrument};
         ("userAuth" = []),
         ("adminAuth" = [])
     ),
+    params(PaginationQuery),
     responses(
-        (status = OK, description = "success response", body = [ImageMeta]),
+        (status = OK, description = "success response", body = PaginatedResponse<ImageMeta>),
+        (status = BAD_REQUEST, description = "invalid pagination parameters"),
         (status = UNAUTHORIZED, description = "invalid or missing token"),
         (status = FORBIDDEN, description = "permission denied"),
     ),
@@ -38,23 +41,32 @@ use tracing::{info, instrument};
 pub async fn get_image_metas(
     State(pool): State<PgPool>,
     claims: AccessClaims,
-) -> ApiResult<Json<Vec<ImageMeta>>> {
+    Query(pagination): Query<PaginationQuery>,
+) -> ApiResult<Json<PaginatedResponse<ImageMeta>>> {
+    let pagination = pagination.check()?;
     let metas = match claims {
-        AccessClaims::Admin => get_all_image_metas(&pool).await?,
-        AccessClaims::User(user_id) => get_user_image_metas(&pool, user_id).await?,
+        AccessClaims::Admin => get_all_image_metas(&pool, pagination).await?,
+        AccessClaims::User(user_id) => get_user_image_metas(&pool, user_id, pagination).await?,
     };
     info!(count = metas.len(), "images fetched");
 
-    Ok(Json(metas))
+    Ok(Json(PaginatedResponse::new(metas, pagination)))
 }
 
-async fn get_all_image_metas(pool: &PgPool) -> ApiResult<Vec<ImageMeta>> {
-    let images = image::get_all_images(pool).await?;
+async fn get_all_image_metas(
+    pool: &PgPool,
+    pagination: PaginationChecked,
+) -> ApiResult<Vec<ImageMeta>> {
+    let images = image::get_all_images(pool, pagination.into()).await?;
     Ok(images.into_iter().map(ImageMeta::from).collect())
 }
 
-async fn get_user_image_metas(pool: &PgPool, user_id: i32) -> ApiResult<Vec<ImageMeta>> {
-    let images = image::get_images_by_owner(pool, user_id).await?;
+async fn get_user_image_metas(
+    pool: &PgPool,
+    user_id: i32,
+    pagination: PaginationChecked,
+) -> ApiResult<Vec<ImageMeta>> {
+    let images = image::get_images_by_owner(pool, user_id, pagination.into()).await?;
     Ok(images.into_iter().map(ImageMeta::from).collect())
 }
 

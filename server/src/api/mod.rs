@@ -1,6 +1,7 @@
 mod claims;
 mod doc;
 mod error;
+mod pagination;
 
 pub mod auth;
 pub mod images;

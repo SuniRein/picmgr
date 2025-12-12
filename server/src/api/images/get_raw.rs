@@ -6,7 +6,7 @@ use super::{
     },
     utils::get_image_info,
 };
-use crate::image::storage::retrieve_image;
+use crate::{db::image, image::storage::retrieve_image};
 use axum::{
     body::Body,
     debug_handler,
@@ -42,7 +42,7 @@ pub async fn get_image(
     claims: AnyClaims,
     Path(image_id): Path<i32>,
 ) -> ApiResult<impl IntoResponse> {
-    let info = get_image_info(&pool, claims, image_id).await?;
+    let info = get_image_info(image::get_image_storage_info, &pool, claims, image_id).await?;
 
     let data = retrieve_image(&info.storage_key)
         .await

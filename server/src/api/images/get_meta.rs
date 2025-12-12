@@ -95,8 +95,10 @@ pub async fn get_image_meta(
     claims: AnyClaims,
     Path(image_id): Path<i32>,
 ) -> ApiResult<Json<ImageMeta>> {
-    get_image_info(&pool, claims, image_id).await.map(|image| {
-        info!("image fetched successfully");
-        Json(ImageMeta::from(image))
-    })
+    get_image_info(image::get_image_by_id, &pool, claims, image_id)
+        .await
+        .map(|image| {
+            info!("image fetched successfully");
+            Json(ImageMeta::from(image))
+        })
 }

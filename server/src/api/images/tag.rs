@@ -23,6 +23,9 @@ pub struct SetImageTagsRequest {
 ///
 /// Allows the owner of the image or an admin to set tags for the specified image.
 /// All existing tags will be replaced with the new set of tags provided in the request.
+///
+/// Tags are normalized by trimming whitespace and deduplicating.
+/// Empty tags are not allowed.
 #[utoipa::path(
     put,
     tag = IMAGES_TAG,
@@ -36,6 +39,7 @@ pub struct SetImageTagsRequest {
         (status = NOT_FOUND, description = "image not found"),
         (status = UNAUTHORIZED, description = "invalid or missing token"),
         (status = FORBIDDEN, description = "permission denied"),
+        (status = UNPROCESSABLE_ENTITY, description = "invalid tag list: empty tag"),
     ),
 )]
 #[debug_handler]
@@ -61,8 +65,20 @@ pub async fn set_image_tags(
         return Err(ApiError::PermissionDenied);
     }
 
-    image::set_image_tags(&pool, id, &req.tags).await?;
-    info!(tags = ?req.tags, "tags set successfully");
+    // Normalize and validate tags: trim, dedupe; reject empties
+    let mut normalized: Vec<String> = Vec::with_capacity(req.tags.len());
+    for t in &req.tags {
+        let s = t.trim();
+        if s.is_empty() {
+            return Err(ApiError::EmptyField("tag".to_string()));
+        }
+        normalized.push(s.to_string());
+    }
+    normalized.sort_unstable();
+    normalized.dedup();
+
+    image::set_image_tags(&pool, id, &normalized).await?;
+    info!(tags = ?normalized, "tags set successfully");
 
     Ok(StatusCode::NO_CONTENT)
 }

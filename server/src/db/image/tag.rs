@@ -1,6 +1,26 @@
 use sqlx::PgPool;
 use tracing::{error, instrument};
 
+#[instrument(skip(pool))]
+pub async fn get_image_tags(pool: &PgPool, id: i32) -> sqlx::Result<Vec<String>> {
+    Ok(sqlx::query!(
+        "
+         SELECT t.name
+         FROM tag t
+         JOIN image_tag it ON t.id = it.tag_id
+         WHERE it.image_id = $1
+         ORDER BY t.name
+        ",
+        id
+    )
+    .fetch_all(pool)
+    .await
+    .inspect_err(|e| error!(error=?e, "fetch image tags failed"))?
+    .into_iter()
+    .map(|r| r.name)
+    .collect())
+}
+
 #[instrument(skip(pool, tags))]
 pub async fn set_image_tags(pool: &PgPool, id: i32, tags: &[String]) -> sqlx::Result<()> {
     let mut tx = pool.begin().await?;

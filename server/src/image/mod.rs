@@ -1,3 +1,6 @@
 mod hash;
-pub mod parse;
-pub mod storage;
+mod parse;
+mod storage;
+
+pub use parse::{ImageInfo, ImageParseError};
+pub use storage::{retrieve_image, store_image};

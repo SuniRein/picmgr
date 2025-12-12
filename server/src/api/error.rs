@@ -1,4 +1,4 @@
-use crate::{api::pagination::PageSizeOutOfRange, image::parse::ImageParseError};
+use crate::{api::pagination::PageSizeOutOfRange, image::ImageParseError};
 use axum::{
     Json,
     http::StatusCode,

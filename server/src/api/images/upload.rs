@@ -5,7 +5,7 @@ use super::super::{
 };
 use crate::{
     db::image::{NewImageInput, create_image},
-    image::{parse::ImageInfo, storage::store_image},
+    image::{ImageInfo, store_image},
 };
 use axum::{
     Json, body::Bytes, debug_handler, extract::State, http::StatusCode, response::IntoResponse,

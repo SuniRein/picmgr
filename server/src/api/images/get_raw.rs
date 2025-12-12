@@ -6,7 +6,7 @@ use super::{
     },
     utils::get_image_info,
 };
-use crate::{db::image, image::storage::retrieve_image};
+use crate::{db::image, image::retrieve_image};
 use axum::{
     body::Body,
     debug_handler,

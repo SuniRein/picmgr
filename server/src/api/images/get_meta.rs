@@ -33,7 +33,6 @@ use tracing::{info, instrument};
         (status = OK, description = "success response", body = PaginatedResponse<ImageMeta>),
         (status = BAD_REQUEST, description = "invalid pagination parameters"),
         (status = UNAUTHORIZED, description = "invalid or missing token"),
-        (status = FORBIDDEN, description = "permission denied"),
     ),
 )]
 #[debug_handler]

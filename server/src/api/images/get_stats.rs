@@ -27,10 +27,12 @@ pub async fn get_image_count(
     State(pool): State<PgPool>,
     claims: AccessClaims,
 ) -> ApiResult<Json<CountResponse>> {
-    let count = match claims {
-        AccessClaims::Admin => image::get_total_image_count(&pool).await?,
-        AccessClaims::User(user_id) => image::get_user_image_count(&pool, user_id).await?,
-    };
-    info!(count, "image count fetched successfully");
-    Ok(Json(CountResponse { count }))
+    Ok(match claims {
+        AccessClaims::Admin => image::get_total_image_count(&pool).await,
+        AccessClaims::User(user_id) => image::get_user_image_count(&pool, user_id).await,
+    }
+    .map(|count| {
+        info!(count, "image count fetched successfully");
+        Json(CountResponse { count })
+    })?)
 }

@@ -1,9 +1,5 @@
 use super::{
-    super::{
-        claims::AnyClaims,
-        doc::IMAGES_TAG,
-        error::{ApiError, ApiResult},
-    },
+    super::{claims::AnyClaims, doc::IMAGES_TAG, error::ApiResult},
     utils::get_image_info,
 };
 use crate::{db::image, image::retrieve_image};
@@ -43,17 +39,10 @@ pub async fn get_image(
     Path(image_id): Path<i32>,
 ) -> ApiResult<impl IntoResponse> {
     let info = get_image_info(image::get_image_storage_info, &pool, claims, image_id).await?;
-
-    let data = retrieve_image(&info.storage_key)
-        .await
-        .map_err(ApiError::ImageStorageError)?;
-
-    Response::builder()
+    let data = retrieve_image(&info.storage_key).await?;
+    Ok(Response::builder()
         .header(header::CONTENT_TYPE, info.mime_type)
         .body(Body::from(data))
         .inspect(|_| info!("image fetched successfully"))
-        .map_err(|e| {
-            error!(error=?e, "response build failed");
-            ApiError::InternalServerError
-        })
+        .inspect_err(|e| error!(error=?e, "response build failed"))?)
 }

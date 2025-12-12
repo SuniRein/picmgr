@@ -33,53 +33,57 @@ pub enum ApiError {
     #[error("Permission Denied")]
     PermissionDenied,
 
-    #[error("Internal Server Error")]
-    InternalServerError,
-
     #[error(transparent)]
     PageSizeOutOfRange(#[from] PageSizeOutOfRange),
-
-    #[error("Database Error")]
-    Db(#[from] sqlx::Error),
-
-    #[error("Argon2 Error")]
-    Argon2,
 
     #[error(transparent)]
     ImageParseError(#[from] ImageParseError),
 
-    #[error("Image Storage Error")]
-    ImageStorageError(std::io::Error),
+    #[error("Internal Server Error")]
+    #[from(sqlx::Error)]
+    InternalServerError,
 }
 
-impl From<argon2::password_hash::Error> for ApiError {
-    fn from(_: argon2::password_hash::Error) -> Self {
-        ApiError::Argon2
-    }
+macro_rules! to_internal_server_error {
+    ($($err_ty:ty,)*) => {
+        $(
+            impl From<$err_ty> for ApiError {
+                fn from(_: $err_ty) -> Self {
+                    ApiError::InternalServerError
+                }
+            }
+        )*
+    };
 }
+
+to_internal_server_error!(
+    sqlx::Error,
+    argon2::password_hash::Error,
+    std::io::Error,
+    axum::http::Error,
+    image::ImageError,
+);
 
 impl IntoResponse for ApiError {
     fn into_response(self) -> Response {
+        let body = Json(ErrorResponse {
+            error: self.to_string(),
+        });
         let status_code = match self {
             ApiError::NotFound => StatusCode::NOT_FOUND,
-            ApiError::Db(_) | ApiError::Argon2 => StatusCode::INTERNAL_SERVER_ERROR,
             ApiError::EmptyField(_) | ApiError::InvalidEmailFormat => {
                 StatusCode::UNPROCESSABLE_ENTITY
             }
             ApiError::UsernameConflict | ApiError::EmailConflict => StatusCode::CONFLICT,
             ApiError::WrongCredentials | ApiError::InvalidToken => StatusCode::UNAUTHORIZED,
             ApiError::PermissionDenied => StatusCode::FORBIDDEN,
-            ApiError::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
             ApiError::PageSizeOutOfRange(_) => StatusCode::BAD_REQUEST,
-            ApiError::ImageParseError(ImageParseError::UnsupportedFormat) => {
-                StatusCode::UNSUPPORTED_MEDIA_TYPE
-            }
-            ApiError::ImageParseError(_) => StatusCode::BAD_REQUEST,
-            ApiError::ImageStorageError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            ApiError::ImageParseError(e) => match e {
+                ImageParseError::UnsupportedFormat => StatusCode::UNSUPPORTED_MEDIA_TYPE,
+                ImageParseError::ParseError => StatusCode::BAD_REQUEST,
+            },
+            ApiError::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
         };
-        let body = Json(ErrorResponse {
-            error: self.to_string(),
-        });
         (status_code, body).into_response()
     }
 }

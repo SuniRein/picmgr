@@ -45,13 +45,14 @@ pub async fn get_image_metas(
     Query(pagination): Query<PaginationQuery>,
 ) -> ApiResult<Json<PaginatedResponse<ImageMeta>>> {
     let pagination = pagination.check()?;
-    let metas = match claims {
-        AccessClaims::Admin => get_all_image_metas(&pool, pagination).await?,
-        AccessClaims::User(user_id) => get_user_image_metas(&pool, user_id, pagination).await?,
-    };
-    info!(count = metas.len(), "images fetched");
-
-    Ok(Json(PaginatedResponse::new(metas, pagination)))
+    match claims {
+        AccessClaims::Admin => get_all_image_metas(&pool, pagination).await,
+        AccessClaims::User(user_id) => get_user_image_metas(&pool, user_id, pagination).await,
+    }
+    .map(|metas| {
+        info!(count = metas.len(), "images fetched");
+        Json(PaginatedResponse::new(metas, pagination))
+    })
 }
 
 async fn get_all_image_metas(

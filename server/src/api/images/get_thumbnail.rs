@@ -1,9 +1,5 @@
 use super::{
-    super::{
-        claims::AnyClaims,
-        doc::IMAGES_TAG,
-        error::{ApiError, ApiResult},
-    },
+    super::{claims::AnyClaims, doc::IMAGES_TAG, error::ApiResult},
     utils::get_image_info,
 };
 use crate::{
@@ -47,14 +43,11 @@ pub async fn get_thumbnail(
     let info = get_image_info(image::get_image_storage_info, &pool, claims, image_id).await?;
     let thumbenail = read_or_create_thumbnail(&pool, image_id, &info, size).await?;
 
-    Response::builder()
+    Ok(Response::builder()
         .header(header::CONTENT_TYPE, "image/webp")
         .body(Body::from(thumbenail))
         .inspect(|_| info!("thumbnail fetched successfully"))
-        .map_err(|e| {
-            error!(error=?e, "response build failed");
-            ApiError::InternalServerError
-        })
+        .inspect_err(|e| error!(error=?e, "response build failed"))?)
 }
 
 async fn read_or_create_thumbnail(
@@ -72,21 +65,14 @@ async fn read_or_create_thumbnail(
     if !thumbnail_exist {
         debug!("thumbnail not found, generating...");
 
-        let img = retrieve_image(&storage.storage_key)
-            .await
-            .map_err(|_| ApiError::InternalServerError)?;
-        let thumbnail =
-            generate_thumbnail(&img, size).map_err(|_| ApiError::InternalServerError)?;
-        store_thumbnail(&thumbnail, &storage.storage_key, size)
-            .await
-            .map_err(|_| ApiError::InternalServerError)?;
+        let img = retrieve_image(&storage.storage_key).await?;
+        let thumbnail = generate_thumbnail(&img, size)?;
+        store_thumbnail(&thumbnail, &storage.storage_key, size).await?;
 
         image::set_thumbnail_exists(pool, id, size).await?;
 
         return Ok(thumbnail);
     }
 
-    retrieve_thumbnail(&storage.storage_key, size)
-        .await
-        .map_err(|_| ApiError::InternalServerError)
+    Ok(retrieve_thumbnail(&storage.storage_key, size).await?)
 }

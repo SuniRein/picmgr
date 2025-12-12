@@ -1,8 +1,4 @@
-use super::super::{
-    claims::UserClaims,
-    doc::IMAGES_TAG,
-    error::{ApiError, ApiResult},
-};
+use super::super::{claims::UserClaims, doc::IMAGES_TAG, error::ApiResult};
 use crate::{
     db::image::{NewImageInput, create_image},
     image::{ImageInfo, store_image},
@@ -57,9 +53,7 @@ pub async fn upload_raw_image(
     }
 
     let image_info = ImageInfo::parse(&body)?;
-    let storage_key = store_image(&body)
-        .await
-        .map_err(ApiError::ImageStorageError)?;
+    let storage_key = store_image(&body).await?;
 
     let image_input = NewImageInput {
         owner_id: Some(claims.user_id()),

@@ -71,7 +71,10 @@ pub async fn get_all_users(
     Query(pagination): Query<PaginationQuery>,
 ) -> ApiResult<Json<PaginatedResponse<User>>> {
     let pagination = pagination.check()?;
-    let users = user::get_all_users(&pool, pagination.into()).await?;
-    info!(count = users.len(), "users fetched");
-    Ok(Json(PaginatedResponse::new(users, pagination)))
+    Ok(user::get_all_users(&pool, pagination.into())
+        .await
+        .map(|users| {
+            info!(count = users.len(), "users fetched");
+            Json(PaginatedResponse::new(users, pagination))
+        })?)
 }

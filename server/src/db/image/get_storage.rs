@@ -5,6 +5,9 @@ use tracing::{error, instrument};
 pub struct ImageStorageInfo {
     pub storage_key: String,
     pub mime_type: String,
+    pub has_small_thumbnail: bool,
+    pub has_medium_thumbnail: bool,
+    pub has_large_thumbnail: bool,
 }
 
 #[instrument(skip(pool))]
@@ -14,7 +17,11 @@ pub async fn get_image_storage_info(
 ) -> sqlx::Result<Option<ImageStorageInfo>> {
     sqlx::query_as!(
         ImageStorageInfo,
-        "SELECT storage_key, mime_type FROM image WHERE id = $1",
+        "SELECT
+          storage_key, mime_type,
+          has_small_thumbnail, has_medium_thumbnail, has_large_thumbnail
+         FROM image
+         WHERE id = $1",
         id
     )
     .fetch_optional(pool)

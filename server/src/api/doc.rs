@@ -1,3 +1,4 @@
+use crate::image::ThumbnailSize;
 use utoipa::{
     OpenApi,
     openapi::{
@@ -19,6 +20,11 @@ pub const IMAGES_TAG: &str = "images";
         (name = AUTH_TAG, description = "Authentication API endpoints"),
         (name = IMAGES_TAG, description = "Image management API endpoints"),
     ),
+    components(
+        schemas(
+            ThumbnailSize // it's strange that ThumbnailSize is not automatically included
+        )
+    )
 )]
 struct ApiDoc;
 

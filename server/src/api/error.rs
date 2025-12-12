@@ -34,7 +34,7 @@ pub enum ApiError {
     PermissionDenied,
 
     #[error("Internal Server Error")]
-    ResponseBuildError,
+    InternalServerError,
 
     #[error(transparent)]
     PageSizeOutOfRange(#[from] PageSizeOutOfRange),
@@ -69,7 +69,7 @@ impl IntoResponse for ApiError {
             ApiError::UsernameConflict | ApiError::EmailConflict => StatusCode::CONFLICT,
             ApiError::WrongCredentials | ApiError::InvalidToken => StatusCode::UNAUTHORIZED,
             ApiError::PermissionDenied => StatusCode::FORBIDDEN,
-            ApiError::ResponseBuildError => StatusCode::INTERNAL_SERVER_ERROR,
+            ApiError::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
             ApiError::PageSizeOutOfRange(_) => StatusCode::BAD_REQUEST,
             ApiError::ImageParseError(ImageParseError::UnsupportedFormat) => {
                 StatusCode::UNSUPPORTED_MEDIA_TYPE

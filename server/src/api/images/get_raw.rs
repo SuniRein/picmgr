@@ -54,6 +54,6 @@ pub async fn get_image(
         .inspect(|_| info!("image fetched successfully"))
         .map_err(|e| {
             error!(error=?e, "response build failed");
-            ApiError::ResponseBuildError
+            ApiError::InternalServerError
         })
 }

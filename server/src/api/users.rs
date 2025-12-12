@@ -2,11 +2,12 @@ use super::{
     claims::AdminClaims,
     doc::USERS_TAG,
     error::{ApiError, ApiResult},
+    pagination::{PaginatedResponse, PaginationQuery},
 };
 use crate::db::user::{self, User};
 use axum::{
     Json, debug_handler,
-    extract::{Path, State},
+    extract::{Path, Query, State},
 };
 use sqlx::PgPool;
 use tracing::{info, instrument};
@@ -54,8 +55,10 @@ pub async fn get_user(
     tag = USERS_TAG,
     path = "/users",
     security(("adminAuth" = [])),
+    params(PaginationQuery),
     responses(
-        (status = OK, description = "success response", body = [User]),
+        (status = OK, description = "success response", body = PaginatedResponse<User>),
+        (status = BAD_REQUEST, description = "invalid pagination parameters"),
         (status = UNAUTHORIZED, description = "invalid or missing token"),
         (status = FORBIDDEN, description = "admin privileges required"),
     ),
@@ -65,8 +68,10 @@ pub async fn get_user(
 pub async fn get_all_users(
     State(pool): State<PgPool>,
     _claims: AdminClaims,
-) -> ApiResult<Json<Vec<User>>> {
-    let users = user::get_all_users(&pool).await?;
+    Query(pagination): Query<PaginationQuery>,
+) -> ApiResult<Json<PaginatedResponse<User>>> {
+    let pagination = pagination.check()?;
+    let users = user::get_all_users(&pool, pagination.into()).await?;
     info!(count = users.len(), "users fetched");
-    Ok(Json(users))
+    Ok(Json(PaginatedResponse::new(users, pagination)))
 }

@@ -3,6 +3,8 @@ use serde::Serialize;
 use sqlx::PgPool;
 use tracing::{error, instrument};
 
+use crate::db::DbPagination;
+
 #[derive(Debug, sqlx::Type, Serialize, utoipa::ToSchema)]
 #[sqlx(type_name = "user_status", rename_all = "snake_case")]
 #[serde(rename_all = "snake_case")]
@@ -72,13 +74,17 @@ pub async fn get_user_by_email(pool: &PgPool, email: &str) -> sqlx::Result<Optio
 }
 
 #[instrument(skip(pool))]
-pub async fn get_all_users(pool: &PgPool) -> sqlx::Result<Vec<User>> {
+pub async fn get_all_users(pool: &PgPool, pagination: DbPagination) -> sqlx::Result<Vec<User>> {
     sqlx::query_as!(
         User,
         r#"
          SELECT id, username, email, password_hash, avatar_url, status as "status: _", created_at
          FROM app_user
-        "#
+         ORDER BY id
+         LIMIT $1 OFFSET $2
+        "#,
+        pagination.limit,
+        pagination.offset
     )
     .fetch_all(pool)
     .await

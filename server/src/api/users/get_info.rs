@@ -1,4 +1,4 @@
-use super::{
+use super::super::{
     claims::AdminClaims,
     doc::USERS_TAG,
     error::{ApiError, ApiResult},

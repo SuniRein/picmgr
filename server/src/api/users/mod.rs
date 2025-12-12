@@ -1,6 +1,4 @@
-mod login;
-mod refresh;
-mod register;
+mod get_info;
 
 mod router;
 pub use router::create_router;

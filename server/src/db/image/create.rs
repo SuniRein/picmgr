@@ -1,4 +1,3 @@
-use super::get_meta::Image;
 use sqlx::PgPool;
 use tracing::{error, instrument};
 
@@ -14,25 +13,24 @@ pub struct NewImageInput<'a> {
     pub mime_type: &'a str,
     pub exif: Option<&'a serde_json::Value>,
 
-    pub small_thumbnail_key: Option<&'a str>,
-    pub medium_thumbnail_key: Option<&'a str>,
-    pub large_thumbnail_key: Option<&'a str>,
+    pub has_small_thumbnail: bool,
+    pub has_medium_thumbnail: bool,
+    pub has_large_thumbnail: bool,
 
     pub is_public: bool,
 }
 
 #[instrument(skip(pool, info), fields(owner_id = info.owner_id, category_id = info.category_id, storage_key = info.storage_key))]
-pub async fn create_image(pool: &PgPool, info: NewImageInput<'_>) -> sqlx::Result<Image> {
-    sqlx::query_as!(
-        Image,
+pub async fn create_image(pool: &PgPool, info: NewImageInput<'_>) -> sqlx::Result<i32> {
+    sqlx::query_scalar!(
         r#"
         INSERT INTO image (
             owner_id, category_id,
             storage_key, size_bytes, width, height, mime_type, exif,
-            small_thumbnail_key, medium_thumbnail_key, large_thumbnail_key,
+            has_small_thumbnail, has_medium_thumbnail, has_large_thumbnail,
             is_public
         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-        RETURNING *
+        RETURNING id
         "#,
         info.owner_id,
         info.category_id,
@@ -42,9 +40,9 @@ pub async fn create_image(pool: &PgPool, info: NewImageInput<'_>) -> sqlx::Resul
         info.height,
         info.mime_type,
         info.exif,
-        info.small_thumbnail_key,
-        info.medium_thumbnail_key,
-        info.large_thumbnail_key,
+        info.has_small_thumbnail,
+        info.has_medium_thumbnail,
+        info.has_large_thumbnail,
         info.is_public
     )
     .fetch_one(pool)

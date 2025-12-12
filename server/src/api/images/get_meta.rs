@@ -3,12 +3,14 @@ use super::{
         claims::{AccessClaims, AnyClaims},
         doc::IMAGES_TAG,
         error::ApiResult,
-        images::response::ImageMeta,
         pagination::{PaginatedResponse, PaginationQuery},
     },
     utils::get_image_info,
 };
-use crate::{api::pagination::PaginationChecked, db::image};
+use crate::{
+    api::pagination::PaginationChecked,
+    db::image::{self, ImageMeta},
+};
 use axum::{
     Json, debug_handler,
     extract::{Path, Query, State},
@@ -56,8 +58,8 @@ async fn get_all_image_metas(
     pool: &PgPool,
     pagination: PaginationChecked,
 ) -> ApiResult<Vec<ImageMeta>> {
-    let images = image::get_all_images(pool, pagination.into()).await?;
-    Ok(images.into_iter().map(ImageMeta::from).collect())
+    let images = image::get_all_image_metas(pool, pagination.into()).await?;
+    Ok(images.into_iter().collect())
 }
 
 async fn get_user_image_metas(
@@ -65,8 +67,8 @@ async fn get_user_image_metas(
     user_id: i32,
     pagination: PaginationChecked,
 ) -> ApiResult<Vec<ImageMeta>> {
-    let images = image::get_images_by_owner(pool, user_id, pagination.into()).await?;
-    Ok(images.into_iter().map(ImageMeta::from).collect())
+    let images = image::get_image_metas_by_owner(pool, user_id, pagination.into()).await?;
+    Ok(images.into_iter().collect())
 }
 
 /// Get image metadata by ID
@@ -94,10 +96,10 @@ pub async fn get_image_meta(
     claims: AnyClaims,
     Path(image_id): Path<i32>,
 ) -> ApiResult<Json<ImageMeta>> {
-    get_image_info(image::get_image_by_id, &pool, claims, image_id)
+    get_image_info(image::get_image_meta_by_id, &pool, claims, image_id)
         .await
         .map(|image| {
             info!("image fetched successfully");
-            Json(ImageMeta::from(image))
+            Json(image)
         })
 }

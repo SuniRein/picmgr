@@ -72,15 +72,14 @@ pub async fn upload_raw_image(
         mime_type: &image_info.mime_type,
         exif: image_info.exif.as_ref(),
 
-        small_thumbnail_key: None,
-        medium_thumbnail_key: None,
-        large_thumbnail_key: None,
+        has_small_thumbnail: false,
+        has_medium_thumbnail: false,
+        has_large_thumbnail: false,
 
         is_public: false,
     };
-    let image = create_image(&pool, image_input).await?;
-
-    info!(image_id = image.id, "image record created in database");
+    let image_id = create_image(&pool, image_input).await?;
+    info!(image_id, "image record created in database");
 
     // TODO: if create_image fails, consider deleting the stored image to avoid orphaned files
 

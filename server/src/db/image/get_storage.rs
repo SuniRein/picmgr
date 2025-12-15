@@ -18,10 +18,11 @@ pub async fn get_image_storage_info(
     sqlx::query_as!(
         ImageStorageInfo,
         "SELECT
-          storage_key, mime_type,
-          has_small_thumbnail, has_medium_thumbnail, has_large_thumbnail
-         FROM image
-         WHERE id = $1",
+          s.storage_key, s.mime_type,
+          s.has_small_thumbnail, s.has_medium_thumbnail, s.has_large_thumbnail
+         FROM image i
+         JOIN image_storage s ON i.storage_id = s.id
+         WHERE i.id = $1",
         id
     )
     .fetch_optional(pool)

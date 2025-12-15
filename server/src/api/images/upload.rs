@@ -1,7 +1,7 @@
 use super::super::{claims::UserClaims, doc::IMAGES_TAG, error::ApiResult};
 use crate::{
     db::image::{NewImageInput, create_image},
-    image::{ImageInfo, store_image},
+    image::{ImageInfo, get_image_key, store_image},
 };
 use axum::{
     Json, body::Bytes, debug_handler, extract::State, http::StatusCode, response::IntoResponse,
@@ -53,7 +53,7 @@ pub async fn upload_raw_image(
     }
 
     let image_info = ImageInfo::parse(&body)?;
-    let storage_key = store_image(&body).await?;
+    let storage_key = get_image_key(&body).await;
 
     let image_input = NewImageInput {
         owner_id: Some(claims.user_id()),
@@ -64,16 +64,24 @@ pub async fn upload_raw_image(
         width: image_info.width as i32,
         height: image_info.height as i32,
         mime_type: &image_info.mime_type,
-        exif: image_info.exif.as_ref(),
-
-        has_small_thumbnail: false,
-        has_medium_thumbnail: false,
-        has_large_thumbnail: false,
+        exif: image_info.exif.unwrap_or(serde_json::json!({})),
 
         is_public: false,
     };
-    let image_id = create_image(&pool, image_input).await?;
-    info!(image_id, "image record created in database");
+    let result = create_image(&pool, image_input).await?;
+    debug!(
+        image_id = result.image_id,
+        "image record created in database"
+    );
+
+    if result.new_storage {
+        store_image(&body, &storage_key).await?;
+        debug!("image stored in backend storage");
+    } else {
+        debug!("image storage already exists, skipping storage step");
+    }
+
+    info!(image_id = result.image_id, "image upload completed");
 
     // TODO: if create_image fails, consider deleting the stored image to avoid orphaned files
 

@@ -34,9 +34,11 @@ pub async fn get_all_image_metas(
         r#"
          WITH img AS (
            SELECT
-             id, owner_id, category_id, size_bytes, width, height, mime_type, exif,
-             is_public, created_at, updated_at
+             i.id, i.owner_id, i.category_id,
+             s.size_bytes, s.width, s.height, s.mime_type, s.exif,
+             i.is_public, i.created_at, i.updated_at
            FROM image i
+           JOIN image_storage s ON i.storage_id = s.id
            ORDER BY id
            LIMIT $1 OFFSET $2
          )
@@ -63,18 +65,20 @@ pub async fn get_image_meta_by_id(pool: &PgPool, id: i32) -> sqlx::Result<Option
     sqlx::query_as!(
         ImageMeta,
         r#"
-         SELECT
-          id, owner_id, category_id, size_bytes, width, height, mime_type, exif,
-          is_public, created_at, updated_at,
+        SELECT
+          i.id, i.owner_id, i.category_id,
+          s.size_bytes, s.width, s.height, s.mime_type, s.exif,
+          i.is_public, i.created_at, i.updated_at,
           COALESCE(tl.tags, '{}'::text[]) AS "tags!"
          FROM image i
+         JOIN image_storage s ON i.storage_id = s.id
          LEFT JOIN LATERAL (
            SELECT array_agg(t.name ORDER BY t.name) AS tags
            FROM image_tag it
            JOIN tag t ON it.tag_id = t.id
            WHERE it.image_id = i.id
          ) tl on TRUE
-         WHERE id = $1
+         WHERE i.id = $1
         "#,
         id
     )
@@ -94,11 +98,13 @@ pub async fn get_image_metas_by_owner(
         r#"
          WITH img AS (
            SELECT
-             id, owner_id, category_id, size_bytes, width, height, mime_type, exif,
-             is_public, created_at, updated_at
+             i.id, i.owner_id, i.category_id,
+             s.size_bytes, s.width, s.height, s.mime_type, s.exif,
+             i.is_public, i.created_at, i.updated_at
            FROM image i
-           WHERE owner_id = $1
-           ORDER BY id
+           JOIN image_storage s ON i.storage_id = s.id
+           WHERE i.owner_id = $1
+           ORDER BY i.id
            LIMIT $2 OFFSET $3
          )
          SELECT img.*, COALESCE(tl.tags, '{}'::text[]) AS "tags!"

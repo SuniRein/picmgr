@@ -11,10 +11,13 @@ static IMAGE_STORAGE_PATH: LazyLock<PathBuf> = LazyLock::new(|| {
 });
 
 #[instrument(skip(data))]
-pub async fn store_image(data: &[u8]) -> io::Result<String> {
-    let hash = hash_image(data);
-    store_with_key(&hash, data).await?;
-    Ok(hash)
+pub async fn get_image_key(data: &[u8]) -> String {
+    hash_image(data)
+}
+
+#[instrument(skip(data))]
+pub async fn store_image(data: &[u8], key: &str) -> io::Result<()> {
+    store_with_key(key, data).await
 }
 
 pub(super) async fn store_with_key(key: &str, data: &[u8]) -> io::Result<()> {

@@ -11,41 +11,70 @@ pub struct NewImageInput<'a> {
     pub width: i32,
     pub height: i32,
     pub mime_type: &'a str,
-    pub exif: Option<&'a serde_json::Value>,
-
-    pub has_small_thumbnail: bool,
-    pub has_medium_thumbnail: bool,
-    pub has_large_thumbnail: bool,
+    pub exif: serde_json::Value,
 
     pub is_public: bool,
 }
 
+#[derive(Debug)]
+pub struct CreateImageResult {
+    pub image_id: i32,
+    pub new_storage: bool,
+}
+
 #[instrument(skip(pool, info), fields(owner_id = info.owner_id, category_id = info.category_id, storage_key = info.storage_key))]
-pub async fn create_image(pool: &PgPool, info: NewImageInput<'_>) -> sqlx::Result<i32> {
-    sqlx::query_scalar!(
+pub async fn create_image(
+    pool: &PgPool,
+    info: NewImageInput<'_>,
+) -> sqlx::Result<CreateImageResult> {
+    let mut tx = pool.begin().await?;
+
+    let storage_row = sqlx::query!(
         r#"
-        INSERT INTO image (
-            owner_id, category_id,
-            storage_key, size_bytes, width, height, mime_type, exif,
-            has_small_thumbnail, has_medium_thumbnail, has_large_thumbnail,
-            is_public
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-        RETURNING id
+        INSERT INTO image_storage (
+            storage_key, size_bytes, width, height, mime_type, exif
+        )
+        VALUES ($1, $2, $3, $4, $5, $6)
+        ON CONFLICT (storage_key) DO UPDATE
+        SET storage_key = image_storage.storage_key
+        RETURNING
+            id,
+            (xmax = 0) AS "inserted!"
         "#,
-        info.owner_id,
-        info.category_id,
         info.storage_key,
         info.size_bytes,
         info.width,
         info.height,
         info.mime_type,
         info.exif,
-        info.has_small_thumbnail,
-        info.has_medium_thumbnail,
-        info.has_large_thumbnail,
+    )
+    .fetch_one(&mut *tx)
+    .await
+    .inspect_err(|e| error!(error=?e, "upsert image storage failed"))?;
+
+    let storage_id = storage_row.id;
+    let new_storage = storage_row.inserted;
+
+    let image_id = sqlx::query_scalar!(
+        r#"
+        INSERT INTO image (
+            storage_id, owner_id, category_id, is_public
+        ) VALUES ($1, $2, $3, $4)
+        RETURNING id
+        "#,
+        storage_id,
+        info.owner_id,
+        info.category_id,
         info.is_public
     )
-    .fetch_one(pool)
+    .fetch_one(&mut *tx)
     .await
-    .inspect_err(|e| error!(error=?e, "create image record failed"))
+    .inspect_err(|e| error!(error=?e, "create image record failed"))?;
+
+    tx.commit().await?;
+
+    Ok(CreateImageResult {
+        image_id,
+        new_storage,
+    })
 }

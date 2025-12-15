@@ -63,7 +63,7 @@ pub async fn get_image_tags(
     }
 
     Ok(image::get_image_tags(&pool, id).await.map(|tags| {
-        info!("fetched image tags successfully");
+        info!("image tags fetched");
         Json(TagList { tags })
     })?)
 }
@@ -132,7 +132,7 @@ pub async fn set_image_tags(
     normalized.dedup();
 
     image::set_image_tags(&pool, id, &normalized).await?;
-    info!(tags = ?normalized, "tags set successfully");
+    info!(tags = ?normalized, "tags set");
 
     Ok(StatusCode::NO_CONTENT)
 }

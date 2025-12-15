@@ -85,5 +85,5 @@ pub async fn upload_raw_image(
 
     // TODO: if create_image fails, consider deleting the stored image to avoid orphaned files
 
-    Ok((StatusCode::CREATED, Json("Image uploaded successfully")))
+    Ok((StatusCode::CREATED, Json("Image uploaded")))
 }

@@ -46,7 +46,7 @@ pub async fn get_thumbnail(
     Ok(Response::builder()
         .header(header::CONTENT_TYPE, "image/webp")
         .body(Body::from(thumbenail))
-        .inspect(|_| info!("thumbnail fetched successfully"))
+        .inspect(|_| info!("thumbnail fetched"))
         .inspect_err(|e| error!(error=?e, "response build failed"))?)
 }
 

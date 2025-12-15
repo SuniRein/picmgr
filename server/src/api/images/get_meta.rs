@@ -100,7 +100,7 @@ pub async fn get_image_meta(
     get_image_info(image::get_image_meta_by_id, &pool, claims, image_id)
         .await
         .map(|image| {
-            info!("image fetched successfully");
+            info!("image meta fetched");
             Json(image)
         })
 }

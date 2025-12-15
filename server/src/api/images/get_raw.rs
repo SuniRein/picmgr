@@ -43,6 +43,6 @@ pub async fn get_image(
     Ok(Response::builder()
         .header(header::CONTENT_TYPE, info.mime_type)
         .body(Body::from(data))
-        .inspect(|_| info!("image fetched successfully"))
+        .inspect(|_| info!("image fetched"))
         .inspect_err(|e| error!(error=?e, "response build failed"))?)
 }

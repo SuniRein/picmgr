@@ -53,9 +53,9 @@ pub async fn register(
         password_hash: &password_hash,
     };
     user::create_user(&pool, &new_user).await?;
-    info!("user registered successfully");
+    info!("user registered");
 
-    Ok((StatusCode::CREATED, Json("User created successfully")))
+    Ok((StatusCode::CREATED, Json("User created")))
 }
 
 fn check_empty_fields(payload: &RegisterPayload) -> ApiResult<()> {

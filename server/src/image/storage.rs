@@ -33,7 +33,7 @@ pub(super) async fn store_with_key(key: &str, data: &[u8]) -> io::Result<()> {
         async_fs::write(&full_path, data)
             .await
             .inspect_err(|e| error!(path=?full_path, error=?e, "write image file failed"))?;
-        debug!(%key, "image stored successfully");
+        debug!(%key, "image stored");
     } else {
         debug!(%key, "image already exists, skipping storage");
     }

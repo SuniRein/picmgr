@@ -49,7 +49,7 @@ pub async fn login(
     }
 
     let token = Token::generate_user_token(user.id);
-    info!("user logged in successfully");
+    info!("user logged in");
     Ok(Json(token))
 }
 
@@ -74,6 +74,6 @@ pub async fn login_as_admin(Json(payload): Json<LoginPayload>) -> ApiResult<impl
     }
 
     let token = Token::generate_admin_token();
-    info!("admin logged in successfully");
+    info!("admin logged in");
     Ok(Json(token))
 }

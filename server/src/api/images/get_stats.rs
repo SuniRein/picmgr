@@ -32,7 +32,7 @@ pub async fn get_image_count(
         AccessClaims::User(user_id) => image::get_user_image_count(&pool, user_id).await,
     }
     .map(|count| {
-        info!(count, "image count fetched successfully");
+        info!(count, "image count fetched");
         Json(CountResponse { count })
     })?)
 }

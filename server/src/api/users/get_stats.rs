@@ -27,7 +27,7 @@ pub async fn get_user_count(
     claims: AdminClaims,
 ) -> ApiResult<Json<CountResponse>> {
     Ok(user::get_total_user_count(&pool).await.map(|count| {
-        info!(count, "user count fetched successfully");
+        info!(count, "user count fetched");
         Json(CountResponse { count })
     })?)
 }

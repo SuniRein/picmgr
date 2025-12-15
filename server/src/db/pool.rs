@@ -7,7 +7,7 @@ pub async fn init_pool(database_url: &str) -> sqlx::Result<PgPool> {
     info!("database connection pool established");
 
     sqlx::migrate!().run(&pool).await?;
-    info!("database migrations applied successfully");
+    info!("database migrations applied");
 
     Ok(pool)
 }

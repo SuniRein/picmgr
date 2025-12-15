@@ -8,8 +8,14 @@ use axum::{
 };
 use axum_extra::TypedHeader;
 use headers::ContentType;
+use serde::Serialize;
 use sqlx::PgPool;
 use tracing::{debug, info, instrument, warn};
+
+#[derive(Debug, Serialize, utoipa::ToSchema)]
+pub struct ImageUploadResponse {
+    pub id: i32,
+}
 
 /// Upload a raw image
 ///
@@ -26,7 +32,7 @@ use tracing::{debug, info, instrument, warn};
         )
     ),
     responses(
-        (status = CREATED, description = "image uploaded successfully"),
+        (status = CREATED, description = "image uploaded successfully", body = ImageUploadResponse),
         (status = BAD_REQUEST, description = "image parsed error"),
         (status = UNAUTHORIZED, description = "invalid or missing token"),
         (status = UNSUPPORTED_MEDIA_TYPE, description = "unsupported image format"),
@@ -85,5 +91,10 @@ pub async fn upload_raw_image(
 
     // TODO: if create_image fails, consider deleting the stored image to avoid orphaned files
 
-    Ok((StatusCode::CREATED, Json("Image uploaded")))
+    Ok((
+        StatusCode::CREATED,
+        Json(ImageUploadResponse {
+            id: result.image_id,
+        }),
+    ))
 }

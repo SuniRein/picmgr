@@ -8,9 +8,11 @@ anyhow = "1.0.100"
 argon2 = "0.5.3"
 axum = { version = "0.8.7", features = ["macros"] }
 axum-extra = { version = "0.12.2", features = ["typed-header"] }
+base64 = "0.22.1"
 blake3 = { version = "1.8.2", features = ["serde"] }
 chrono = { version = "0.4.42", features = ["serde"]}
 headers = "0.4.1"
+hmac-sha256 = "1.1.12"
 image = { version = "0.25.9", features = ["serde"] }
 jsonwebtoken = { version = "10.2.0", features = ["rust_crypto"] }
 serde = { version = "1.0.228", features = ["derive"] }

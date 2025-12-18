@@ -5,6 +5,7 @@ use super::{
         error::ApiResult,
         pagination::{PaginatedResponse, PaginationQuery},
     },
+    sign::SignedQuery,
     utils::get_image_info,
 };
 use crate::{
@@ -15,8 +16,25 @@ use axum::{
     Json, debug_handler,
     extract::{Path, Query, State},
 };
+use chrono::{DateTime, Utc};
+use serde::Serialize;
 use sqlx::PgPool;
 use tracing::{info, instrument};
+
+#[derive(Serialize, utoipa::ToSchema)]
+pub struct ImageMetaResponse {
+    meta: ImageMeta,
+    url: String,
+}
+
+impl ImageMetaResponse {
+    fn generate_from(meta: ImageMeta, now: DateTime<Utc>) -> Self {
+        let id = meta.id;
+        let query = SignedQuery::generate(id, now).to_query_string();
+        let url = format!("/images/{id}/raw/signed?{query}");
+        Self { meta, url }
+    }
+}
 
 /// Get metadata for all images
 ///
@@ -32,7 +50,7 @@ use tracing::{info, instrument};
     ),
     params(PaginationQuery),
     responses(
-        (status = OK, description = "success response", body = PaginatedResponse<ImageMeta>),
+        (status = OK, description = "success response", body = PaginatedResponse<ImageMetaResponse>),
         (status = BAD_REQUEST, description = "invalid pagination parameters"),
         (status = UNAUTHORIZED, description = "invalid or missing token"),
     ),
@@ -43,7 +61,7 @@ pub async fn get_image_metas(
     State(pool): State<PgPool>,
     claims: AccessClaims,
     Query(pagination): Query<PaginationQuery>,
-) -> ApiResult<Json<PaginatedResponse<ImageMeta>>> {
+) -> ApiResult<Json<PaginatedResponse<ImageMetaResponse>>> {
     let pagination = pagination.check()?;
     match claims {
         AccessClaims::Admin => get_all_image_metas(&pool, pagination).await,
@@ -51,7 +69,15 @@ pub async fn get_image_metas(
     }
     .map(|metas| {
         info!(count = metas.len(), "images fetched");
-        Json(PaginatedResponse::new(metas, pagination))
+
+        let now = Utc::now();
+        Json(PaginatedResponse::new(
+            metas
+                .into_iter()
+                .map(|meta| ImageMetaResponse::generate_from(meta, now))
+                .collect(),
+            pagination,
+        ))
     })
 }
 
@@ -85,7 +111,7 @@ async fn get_user_image_metas(
         ("adminAuth" = [])
     ),
     responses(
-        (status = OK, description = "success response", body = ImageMeta),
+        (status = OK, description = "success response", body = ImageMetaResponse),
         (status = FORBIDDEN, description = "permission denied"),
         (status = NOT_FOUND, description = "image not found"),
     ),
@@ -96,11 +122,11 @@ pub async fn get_image_meta(
     State(pool): State<PgPool>,
     claims: AnyClaims,
     Path(image_id): Path<i32>,
-) -> ApiResult<Json<ImageMeta>> {
+) -> ApiResult<Json<ImageMetaResponse>> {
     get_image_info(image::get_image_meta_by_id, &pool, claims, image_id)
         .await
-        .map(|image| {
+        .map(|meta| {
             info!("image meta fetched");
-            Json(image)
+            Json(ImageMetaResponse::generate_from(meta, Utc::now()))
         })
 }

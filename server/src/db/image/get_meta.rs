@@ -6,22 +6,22 @@ use tracing::{error, instrument};
 
 #[derive(Debug, FromRow, Serialize, utoipa::ToSchema)]
 pub struct ImageMeta {
-    id: i32,
-    owner_id: Option<i32>,
-    category_id: Option<i32>,
+    pub id: i32,
+    pub owner_id: Option<i32>,
+    pub category_id: Option<i32>,
 
-    size_bytes: i64,
-    width: i32,
-    height: i32,
-    mime_type: String,
-    exif: Option<serde_json::Value>,
+    pub size_bytes: i64,
+    pub width: i32,
+    pub height: i32,
+    pub mime_type: String,
+    pub exif: Option<serde_json::Value>,
 
-    is_public: bool,
+    pub is_public: bool,
 
-    tags: Vec<String>,
+    pub tags: Vec<String>,
 
-    created_at: NaiveDateTime,
-    updated_at: NaiveDateTime,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
 }
 
 #[instrument(skip(pool))]

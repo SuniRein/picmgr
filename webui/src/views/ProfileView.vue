@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { AlertCircle, Calendar, Mail, RotateCcw, User } from 'lucide-vue-next';
+import { InfoItem } from '@/components/profile';
 
 const user = useUserStore();
 

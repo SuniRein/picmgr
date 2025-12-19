@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { HardDrive, Heart, Image, Plus, Search, Settings, Trash2 } from 'lucide-vue-next';
+import { HardDrive, Heart, Image, LogOut, Plus, Search, Settings, Trash2 } from 'lucide-vue-next';
 
 const navItems = [
   { name: '全部图片', icon: Image, path: '/images' },
@@ -8,7 +8,13 @@ const navItems = [
   { name: '回收站', icon: Trash2, path: '/trash' },
 ];
 
+const router = useRouter();
 const user = useUserStore();
+
+function handleLogout() {
+  user.logout();
+  router.push('/login');
+}
 </script>
 
 <template>
@@ -75,7 +81,17 @@ const user = useUserStore();
               <Plus class="mr-2 h-4 w-4" /> 上传图片
             </Button>
 
-            <div class="h-8 w-8 rounded-full bg-slate-200" />
+            <DropdownMenu>
+              <DropdownMenuTrigger as-child>
+                <div class="h-8 w-8 rounded-full bg-slate-200" />
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem @click="handleLogout">
+                  <LogOut class="mr-2 h-4 w-4" /> 注销
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </template>
 
           <template v-else>

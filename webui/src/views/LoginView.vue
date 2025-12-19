@@ -1,10 +1,35 @@
 <script setup lang="ts">
 import { Lock, User } from 'lucide-vue-next';
 
+const user = useUserStore();
+
 const name = ref('');
 const password = ref('');
 const loading = ref(false);
 const errorMsg = ref('');
+
+const router = useRouter();
+
+async function handleLogin() {
+  errorMsg.value = '';
+  if (!name.value || !password.value) {
+    errorMsg.value = '请填写用户名和密码';
+    return;
+  }
+
+  loading.value = true;
+  try {
+    await user.login(name.value, password.value);
+    // Redirect to the main app page after successful login
+    router.push('/images');
+  }
+  catch {
+    errorMsg.value = '登录失败，请检查您的用户名和密码';
+  }
+  finally {
+    loading.value = false;
+  }
+}
 </script>
 
 <template>
@@ -61,7 +86,7 @@ const errorMsg = ref('');
       </CardContent>
 
       <CardFooter class="flex flex-col gap-3">
-        <Button class="w-full" :disabled="loading">
+        <Button class="w-full" :disabled="loading" @click="handleLogin">
           <span v-if="!loading">登录</span>
           <span v-else>登录中…</span>
         </Button>

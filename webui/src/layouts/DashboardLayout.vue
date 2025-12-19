@@ -8,7 +8,7 @@ const navItems = [
   { name: '回收站', icon: Trash2, path: '/trash' },
 ];
 
-const isLoggedIn = ref(false);
+const user = useUserStore();
 </script>
 
 <template>
@@ -70,7 +70,7 @@ const isLoggedIn = ref(false);
         </div>
 
         <div class="flex items-center gap-4">
-          <template v-if="isLoggedIn">
+          <template v-if="user.isLoggedIn">
             <Button>
               <Plus class="mr-2 h-4 w-4" /> 上传图片
             </Button>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { HardDrive, Heart, Image, LogOut, Plus, Search, Settings, Trash2 } from 'lucide-vue-next';
+import { HardDrive, Heart, Image, LogOut, Plus, Search, Settings, Trash2, User } from 'lucide-vue-next';
 
 const navItems = [
   { name: '全部图片', icon: Image, to: P.IMAGES },
@@ -87,6 +87,12 @@ function handleLogout() {
               </DropdownMenuTrigger>
 
               <DropdownMenuContent align="end">
+                <RouterLink :to="P.PROFILE">
+                  <DropdownMenuItem>
+                    <User class="mr-2 h-4 w-4" /> 个人信息
+                  </DropdownMenuItem>
+                </RouterLink>
+
                 <DropdownMenuItem @click="handleLogout">
                   <LogOut class="mr-2 h-4 w-4" /> 注销
                 </DropdownMenuItem>

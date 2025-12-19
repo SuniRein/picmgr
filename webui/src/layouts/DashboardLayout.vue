@@ -2,10 +2,10 @@
 import { HardDrive, Heart, Image, LogOut, Plus, Search, Settings, Trash2 } from 'lucide-vue-next';
 
 const navItems = [
-  { name: '全部图片', icon: Image, path: '/images' },
-  { name: '我的相册', icon: HardDrive, path: '/albums' },
-  { name: '收藏夹', icon: Heart, path: '/favorites' },
-  { name: '回收站', icon: Trash2, path: '/trash' },
+  { name: '全部图片', icon: Image, to: P.IMAGES },
+  { name: '我的相册', icon: HardDrive, to: '' },
+  { name: '收藏夹', icon: Heart, to: '' },
+  { name: '回收站', icon: Trash2, to: '' },
 ];
 
 const router = useRouter();
@@ -13,7 +13,7 @@ const user = useUserStore();
 
 function handleLogout() {
   user.logout();
-  router.push('/login');
+  router.push(P.LOGIN);
 }
 </script>
 
@@ -33,7 +33,7 @@ function handleLogout() {
 
       <div class="flex-1 px-4">
         <nav class="space-y-2">
-          <RouterLink v-for="item in navItems" :key="item.name" :to="item.path" custom>
+          <RouterLink v-for="item in navItems" :key="item.name" :to="item.to" custom>
             <template #default="{ navigate, isActive }">
               <Button
                 :variant="isActive ? 'secondary' : 'ghost'"
@@ -95,7 +95,7 @@ function handleLogout() {
           </template>
 
           <template v-else>
-            <RouterLink to="/login">
+            <RouterLink :to="P.LOGIN">
               <Button variant="outline">
                 登录
               </Button>

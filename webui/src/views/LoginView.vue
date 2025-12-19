@@ -21,7 +21,7 @@ async function handleLogin() {
   try {
     await user.login(name.value, password.value);
     // Redirect to the main app page after successful login
-    router.push('/images');
+    router.push(P.IMAGES);
   }
   catch {
     errorMsg.value = '登录失败，请检查您的用户名和密码';
@@ -29,6 +29,10 @@ async function handleLogin() {
   finally {
     loading.value = false;
   }
+}
+
+function handleGuest() {
+  router.push(P.IMAGES);
 }
 </script>
 
@@ -89,6 +93,9 @@ async function handleLogin() {
         <Button class="w-full" :disabled="loading" @click="handleLogin">
           <span v-if="!loading">登录</span>
           <span v-else>登录中…</span>
+        </Button>
+        <Button variant="secondary" class="w-full" :disabled="loading" @click="handleGuest">
+          访客模式
         </Button>
         <p class="text-center text-xs text-muted-foreground">
           没有账号？<a

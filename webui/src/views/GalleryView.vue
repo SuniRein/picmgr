@@ -1,25 +1,84 @@
 <script setup lang="ts">
-import { Download, FolderPlus, MoreHorizontal, Trash, Unlock } from 'lucide-vue-next';
+import type { AcceptableValue } from 'reka-ui';
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Download, FolderPlus, MoreHorizontal, Trash, Unlock } from 'lucide-vue-next';
 
-// 模拟图片数据
-const images = Array.from({ length: 12 }).map((_, i) => ({
-  id: i,
-  url: `https://picsum.photos/seed/${i + 100}/600/400`, // 使用 Picsum 占位图
-  title: `Image-${i + 1}.jpg`,
-  size: '2.4 MB',
-}));
+const currentPage = ref(1);
+const pageSize = ref(20);
+const jumpPage = ref('1');
+
+const totalImages = ref(112);
+const totalPages = computed(() => Math.ceil(totalImages.value / pageSize.value));
+
+const currentImageCount = computed(() => {
+  if (currentPage.value < totalPages.value)
+    return pageSize.value;
+  else
+    return totalImages.value - pageSize.value * (totalPages.value - 1);
+});
+
+const images = computed(() => {
+  const imageOffset = (currentPage.value - 1) * pageSize.value;
+  return Array.from({ length: currentImageCount.value }, (_, idx) => {
+    const i = imageOffset + idx;
+    return {
+      id: i,
+      url: `https://picsum.photos/seed/${i + 100}/600/400`,
+      title: `Image-${i + 1}.jpg`,
+    };
+  });
+});
+
+function goToPage(page: number) {
+  currentPage.value = page;
+  jumpPage.value = String(page);
+}
+
+function handleJump() {
+  const page = Number.parseInt(jumpPage.value, 10);
+  if (!Number.isNaN(page) && page >= 1 && page <= totalPages.value)
+    goToPage(page);
+  else
+    jumpPage.value = String(currentPage.value);
+}
+
+function onPageSizeChange(val: AcceptableValue) {
+  pageSize.value = val as number;
+  currentPage.value = 1;
+  jumpPage.value = '1';
+}
 </script>
 
 <template>
   <div class="space-y-6">
     <div class="flex items-center justify-between">
-      <h2 class="text-xl font-semibold">
-        最近上传
-      </h2>
+      <div>
+        <h2 class="text-xl font-semibold">
+          最近上传
+        </h2>
+        <p class="text-sm text-muted-foreground">
+          共 {{ totalImages }} 张图片
+        </p>
+      </div>
 
-      <p class="text-sm text-muted-foreground">
-        {{ images.length }} 张图片
-      </p>
+      <div class="flex items-center gap-3">
+        <span class="text-sm text-muted-foreground">每页显示</span>
+        <Select :model-value="pageSize" @update:model-value="onPageSizeChange">
+          <SelectTrigger class="w-20">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem :value="10">
+              10
+            </SelectItem>
+            <SelectItem :value="20">
+              20
+            </SelectItem>
+            <SelectItem :value="50">
+              50
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
     </div>
 
     <div
@@ -96,6 +155,52 @@ const images = Array.from({ length: 12 }).map((_, i) => ({
             </ContextMenuItem>
           </ContextMenuContent>
         </ContextMenu>
+      </div>
+    </div>
+
+    <div
+      class="
+        flex flex-col items-center justify-between gap-4 border-t pt-4
+        sm:flex-row
+      "
+    >
+      <div
+        class="
+          text-center text-sm text-muted-foreground
+          sm:text-left
+        "
+      >
+        第 {{ (currentPage - 1) * pageSize + 1 }}
+        到 {{ Math.min(currentPage * pageSize, totalImages) }}
+        张，共 {{ totalImages }} 张
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <div class="flex items-center space-x-1">
+          <Button variant="outline" size="icon" class="h-8 w-8" :disabled="currentPage === 1" @click="goToPage(1)">
+            <ChevronsLeft class="h-4 w-4" />
+          </Button>
+          <Button variant="outline" size="icon" class="h-8 w-8" :disabled="currentPage === 1" @click="goToPage(currentPage - 1)">
+            <ChevronLeft class="h-4 w-4" />
+          </Button>
+
+          <div class="flex items-center gap-2 px-2">
+            <Input
+              v-model="jumpPage"
+              class="h-8 w-12 text-center"
+              @keyup.enter="handleJump"
+              @blur="handleJump"
+            />
+            <span class="text-sm text-muted-foreground">/ {{ totalPages }} 页</span>
+          </div>
+
+          <Button variant="outline" size="icon" class="h-8 w-8" :disabled="currentPage === totalPages" @click="goToPage(currentPage + 1)">
+            <ChevronRight class="h-4 w-4" />
+          </Button>
+          <Button variant="outline" size="icon" class="h-8 w-8" :disabled="currentPage === totalPages" @click="goToPage(totalPages)">
+            <ChevronsRight class="h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </div>
   </div>

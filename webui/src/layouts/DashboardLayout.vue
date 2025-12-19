@@ -7,6 +7,8 @@ const navItems = [
   { name: '收藏夹', icon: Heart, path: '/favorites' },
   { name: '回收站', icon: Trash2, path: '/trash' },
 ];
+
+const isLoggedIn = ref(false);
 </script>
 
 <template>
@@ -68,16 +70,26 @@ const navItems = [
         </div>
 
         <div class="flex items-center gap-4">
-          <Button>
-            <Plus class="mr-2 h-4 w-4" /> 上传图片
-          </Button>
+          <template v-if="isLoggedIn">
+            <Button>
+              <Plus class="mr-2 h-4 w-4" /> 上传图片
+            </Button>
 
-          <div class="h-8 w-8 rounded-full bg-slate-200" />
+            <div class="h-8 w-8 rounded-full bg-slate-200" />
+          </template>
+
+          <template v-else>
+            <RouterLink to="/login">
+              <Button variant="outline">
+                登录
+              </Button>
+            </RouterLink>
+          </template>
         </div>
       </header>
 
       <ScrollArea class="min-h-0 flex-1 p-6">
-        <slot />
+        <RouterView />
       </ScrollArea>
     </main>
   </div>

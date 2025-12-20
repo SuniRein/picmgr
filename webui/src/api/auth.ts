@@ -13,3 +13,7 @@ export interface LoginResponse {
 export async function login(credentials: LoginCredentials) {
   return await api.post<LoginResponse>('/auth/login', credentials);
 }
+
+export async function refreshToken(refreshToken: string) {
+  return await api.post<{ access_token: string }>('/auth/refresh', null, { headers: { Authorization: `Bearer ${refreshToken}` } });
+}

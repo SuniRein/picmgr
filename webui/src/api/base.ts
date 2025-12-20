@@ -6,10 +6,16 @@ export const api = axios.create({
 });
 
 // Attach Authorization header if access token exists
-api.interceptors.request.use((config) => {
-  const accessToken = localStorage.getItem('access_token');
-  if (!config.headers.Authorization && accessToken) {
-    config.headers.Authorization = `Bearer ${accessToken}`;
+api.interceptors.request.use(async (config) => {
+  if (!config.headers.Authorization) {
+    const accessToken = await getAccessToken();
+    if (accessToken)
+      config.headers.Authorization = `Bearer ${accessToken}`;
   }
   return config;
 });
+
+async function getAccessToken() {
+  const { getValidAccessToken } = useUserStore();
+  return await getValidAccessToken();
+}

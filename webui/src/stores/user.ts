@@ -8,6 +8,8 @@ export interface UserProfile {
   createdAt: string;
 }
 
+const TOKEN_EXPIRY_TOLERANCE = 30 * 1000; // 30 seconds
+
 export const useUserStore = defineStore('user', () => {
   const accessToken = useLocalStorage('access_token', '');
   const refreshToken = useLocalStorage('refresh_token', '');
@@ -48,12 +50,52 @@ export const useUserStore = defineStore('user', () => {
     profile.value = null;
   }
 
+  const accessTokenExpTime = computed(() => {
+    if (!accessToken.value)
+      return 0;
+    try {
+      const payload = JSON.parse(atob(accessToken.value.split('.')[1]!));
+      return payload.exp * 1000;
+    }
+    catch (e) {
+      console.error('access token parse error:', e);
+      return 0;
+    }
+  });
+
+  let refreshPromise: Promise<string | null> | null = null;
+  async function getValidAccessToken() {
+    if (!accessToken.value || !refreshToken.value)
+      return null;
+    if (Date.now() < accessTokenExpTime.value - TOKEN_EXPIRY_TOLERANCE)
+      return accessToken.value;
+
+    if (!refreshPromise) {
+      refreshPromise = (async () => {
+        try {
+          const response = await api.refreshToken(refreshToken.value);
+          const { access_token } = response.data;
+          accessToken.value = access_token;
+          return access_token;
+        }
+        catch (e) {
+          console.error('refresh token failed:', e);
+          return null;
+        }
+        finally {
+          refreshPromise = null;
+        }
+      })();
+    }
+    return refreshPromise;
+  }
+
   return {
-    accessToken,
     isLoggedIn,
     profile,
     login,
     logout,
     fetchProfile,
+    getValidAccessToken,
   };
 });

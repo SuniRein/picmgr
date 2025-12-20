@@ -1,8 +1,14 @@
-import { login } from './auth';
+import { login, refreshToken } from './auth';
 import { getImageData, getImagesCount } from './images';
 import { getMe } from './user';
 
-export default { login, getMe, getImageData, getImagesCount };
+export default {
+  login,
+  refreshToken,
+  getMe,
+  getImageData,
+  getImagesCount,
+};
 
 export type * from './auth';
 export type * from './images';

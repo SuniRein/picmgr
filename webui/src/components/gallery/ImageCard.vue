@@ -2,15 +2,11 @@
 import { Download, FolderPlus, MoreHorizontal, Trash, Unlock } from 'lucide-vue-next';
 
 interface ImageItem {
-  id: number;
   url: string;
   title: string;
-  size?: string;
 }
 
-defineProps<{
-  image: ImageItem;
-}>();
+defineProps<ImageItem>();
 
 const emit = defineEmits(['download', 'public', 'move', 'delete']);
 </script>
@@ -28,7 +24,7 @@ const emit = defineEmits(['download', 'public', 'move', 'delete']);
         <CardContent class="p-0">
           <AspectRatio :ratio="4 / 3">
             <img
-              :src="image.url"
+              :src="url"
               alt="Photo"
               class="
                 h-full w-full object-cover transition-all
@@ -40,7 +36,7 @@ const emit = defineEmits(['download', 'public', 'move', 'delete']);
         </CardContent>
 
         <CardFooter class="flex items-center justify-between p-2 text-sm">
-          <span class="truncate text-xs font-medium">{{ image.title }}</span>
+          <span class="truncate text-xs font-medium">{{ title }}</span>
 
           <DropdownMenu>
             <DropdownMenuTrigger as-child>
@@ -57,16 +53,16 @@ const emit = defineEmits(['download', 'public', 'move', 'delete']);
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end">
-              <DropdownMenuItem @click="emit('download', image.id)">
+              <DropdownMenuItem @click="emit('download')">
                 下载
               </DropdownMenuItem>
-              <DropdownMenuItem @click="emit('public', image.id)">
+              <DropdownMenuItem @click="emit('public')">
                 设为公开
               </DropdownMenuItem>
-              <DropdownMenuItem @click="emit('move', image.id)">
+              <DropdownMenuItem @click="emit('move')">
                 移入相册
               </DropdownMenuItem>
-              <DropdownMenuItem class="text-red-600" @click="emit('delete', image.id)">
+              <DropdownMenuItem class="text-red-600" @click="emit('delete')">
                 删除
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -76,13 +72,13 @@ const emit = defineEmits(['download', 'public', 'move', 'delete']);
     </ContextMenuTrigger>
 
     <ContextMenuContent class="select-none">
-      <ContextMenuItem @click="emit('download', image.id)">
+      <ContextMenuItem @click="emit('download')">
         <Download class="mr-2 h-4 w-4" /> 下载
       </ContextMenuItem>
-      <ContextMenuItem @click="emit('public', image.id)">
+      <ContextMenuItem @click="emit('public')">
         <Unlock class="mr-2 h-4 w-4" /> 设为公开
       </ContextMenuItem>
-      <ContextMenuItem @click="emit('move', image.id)">
+      <ContextMenuItem @click="emit('move')">
         <FolderPlus class="mr-2 h-4 w-4" /> 移入相册
       </ContextMenuItem>
       <ContextMenuItem
@@ -90,7 +86,7 @@ const emit = defineEmits(['download', 'public', 'move', 'delete']);
           text-red-600
           focus:text-red-600
         "
-        @click="emit('delete', image.id)"
+        @click="emit('delete')"
       >
         <Trash class="mr-2 h-4 w-4" /> 删除
       </ContextMenuItem>

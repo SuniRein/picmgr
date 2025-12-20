@@ -1,28 +1,17 @@
 <script setup lang="ts">
 import { ImageCard, PageSizeSelector, PaginationControls } from '@/components/gallery';
 
-const totalImages = ref(112);
-const currentPage = ref(1);
-const pageSize = ref(20);
-
-const images = computed(() => {
-  const imageOffset = (currentPage.value - 1) * pageSize.value;
-  const count = Math.min(pageSize.value, totalImages.value - imageOffset);
-
-  return Array.from({ length: count }, (_, idx) => {
-    const i = imageOffset + idx;
-    return {
-      id: i,
-      url: `https://picsum.photos/seed/${i + 100}/600/400`,
-      title: `Image-${i + 1}.jpg`,
-    };
-  });
-});
+const images = useImagesStore();
 
 function onPageSizeChange(val: number) {
-  pageSize.value = val;
-  currentPage.value = 1;
+  images.pageSize = val;
+  images.currentPage = 1;
 }
+
+onMounted(async () => {
+  await images.loadTotalCount();
+  await images.fetchImages();
+});
 </script>
 
 <template>
@@ -33,11 +22,11 @@ function onPageSizeChange(val: number) {
           最近上传
         </h2>
         <p class="text-sm text-muted-foreground">
-          共 {{ totalImages }} 张图片
+          共 {{ images.total }} 张图片
         </p>
       </div>
 
-      <PageSizeSelector :page-size @update:page-size="onPageSizeChange" />
+      <PageSizeSelector :page-size="images.pageSize" @update:page-size="onPageSizeChange" />
     </div>
 
     <div
@@ -49,16 +38,17 @@ function onPageSizeChange(val: number) {
       "
     >
       <ImageCard
-        v-for="img in images"
-        :key="img.id"
-        :image="img"
+        v-for="img in images.items"
+        :key="img.meta.id"
+        :title="`Image ${img.meta.id}`"
+        :url="img.url"
       />
     </div>
 
     <PaginationControls
-      v-model:current-page="currentPage"
-      :page-size
-      :total-images
+      v-model:current-page="images.currentPage"
+      :page-size="images.pageSize"
+      :total-images="images.total"
     />
   </div>
 </template>

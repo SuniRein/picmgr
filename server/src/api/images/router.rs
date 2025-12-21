@@ -9,6 +9,7 @@ pub fn create_router() -> OpenApiRouter<PgPool> {
         .routes(routes!(super::get_raw::get_image))
         .routes(routes!(super::get_raw::get_image_signed))
         .routes(routes!(super::get_thumbnail::get_thumbnail))
+        .routes(routes!(super::get_thumbnail::get_thumbnail_signed))
         .routes(routes!(super::upload::upload_raw_image))
         .routes(routes!(
             super::tag::get_image_tags,

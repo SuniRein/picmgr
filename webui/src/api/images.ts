@@ -3,7 +3,7 @@ import { api } from './base';
 
 export interface ImageData {
   meta: ImageMeta;
-  url: string;
+  signature: ImageSignature;
 }
 
 export interface ImageMeta {
@@ -24,16 +24,21 @@ export interface ImageMeta {
   updated_at: string;
 }
 
+export interface ImageSignature {
+  exp: number;
+  sig: string;
+}
+
 export async function getImageData(params: PaginationParams, signal?: AbortSignal) {
   const response = await api.get<PaginationResponse<ImageData>>('/images', { params, signal });
-  const baseUrl = api.defaults.baseURL;
-  response.data.data = response.data.data.map(item => ({
-    ...item,
-    url: `${baseUrl}${item.url}`,
-  }));
   return response;
 }
 
 export async function getImagesCount() {
   return await api.get<{ count: number }>('/images/count');
+}
+
+export function getImageUrl(id: number, signature: ImageSignature) {
+  const { exp, sig } = signature;
+  return `/api/images/${id}/raw/signed?exp=${exp}&sig=${sig}`;
 }

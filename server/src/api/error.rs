@@ -1,4 +1,7 @@
-use crate::{api::pagination::PageSizeOutOfRange, image::ImageParseError};
+use crate::{
+    api::{images::sign::VerifyError, pagination::PageSizeOutOfRange},
+    image::ImageParseError,
+};
 use axum::{
     Json,
     http::StatusCode,
@@ -33,6 +36,9 @@ pub enum ApiError {
     #[error("Permission Denied")]
     PermissionDenied,
 
+    #[error("Signature Error")]
+    ImageSignatureError(#[from] VerifyError),
+
     #[error(transparent)]
     PageSizeOutOfRange(#[from] PageSizeOutOfRange),
 
@@ -44,24 +50,24 @@ pub enum ApiError {
     InternalServerError,
 }
 
-macro_rules! to_internal_server_error {
-    ($($err_ty:ty,)*) => {
+macro_rules! to_api_error {
+    ($($err_ty:ty => $err:ident,)*) => {
         $(
             impl From<$err_ty> for ApiError {
                 fn from(_: $err_ty) -> Self {
-                    ApiError::InternalServerError
+                    ApiError::$err
                 }
             }
         )*
     };
 }
 
-to_internal_server_error!(
-    sqlx::Error,
-    argon2::password_hash::Error,
-    std::io::Error,
-    axum::http::Error,
-    image::ImageError,
+to_api_error!(
+    sqlx::Error => InternalServerError,
+    argon2::password_hash::Error => InternalServerError,
+    std::io::Error => InternalServerError,
+    axum::http::Error => InternalServerError,
+    image::ImageError => InternalServerError,
 );
 
 impl IntoResponse for ApiError {
@@ -77,6 +83,10 @@ impl IntoResponse for ApiError {
             ApiError::UsernameConflict | ApiError::EmailConflict => StatusCode::CONFLICT,
             ApiError::WrongCredentials | ApiError::InvalidToken => StatusCode::UNAUTHORIZED,
             ApiError::PermissionDenied => StatusCode::FORBIDDEN,
+            ApiError::ImageSignatureError(e) => match e {
+                VerifyError::InvalidSignature => StatusCode::UNAUTHORIZED,
+                VerifyError::Expired => StatusCode::FORBIDDEN,
+            },
             ApiError::PageSizeOutOfRange(_) => StatusCode::BAD_REQUEST,
             ApiError::ImageParseError(e) => match e {
                 ImageParseError::UnsupportedFormat => StatusCode::UNSUPPORTED_MEDIA_TYPE,

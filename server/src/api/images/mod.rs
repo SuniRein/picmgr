@@ -1,4 +1,4 @@
-mod sign;
+pub(super) mod sign;
 mod utils;
 
 mod get_meta;

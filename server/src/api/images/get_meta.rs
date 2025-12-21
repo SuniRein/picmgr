@@ -24,15 +24,14 @@ use tracing::{info, instrument};
 #[derive(Serialize, utoipa::ToSchema)]
 pub struct ImageMetaResponse {
     meta: ImageMeta,
-    url: String,
+    signature: SignedQuery,
 }
 
 impl ImageMetaResponse {
     fn generate_from(meta: ImageMeta, now: DateTime<Utc>) -> Self {
         let id = meta.id;
-        let query = SignedQuery::generate(id, now).to_query_string();
-        let url = format!("/images/{id}/raw/signed?{query}");
-        Self { meta, url }
+        let signature = SignedQuery::generate(id, now);
+        Self { meta, signature }
     }
 }
 

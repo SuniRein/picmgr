@@ -1,5 +1,5 @@
 import { login, refreshToken } from './auth';
-import { getImageData, getImagesCount } from './images';
+import { getImageData, getImagesCount, getImageUrl } from './images';
 import { getMe } from './user';
 
 export default {
@@ -8,6 +8,7 @@ export default {
   getMe,
   getImageData,
   getImagesCount,
+  getImageUrl,
 };
 
 export type * from './auth';

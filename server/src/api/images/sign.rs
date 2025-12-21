@@ -1,8 +1,8 @@
 use crate::auth::sign::{sign_data, verify_signature};
 use chrono::{DateTime, Duration, Utc};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize, utoipa::IntoParams)]
+#[derive(Debug, Serialize, Deserialize, utoipa::ToSchema, utoipa::IntoParams)]
 pub struct SignedQuery {
     exp: i64,
     sig: String,
@@ -29,14 +29,12 @@ impl SignedQuery {
             false => Err(VerifyError::InvalidSignature),
         }
     }
-
-    pub fn to_query_string(&self) -> String {
-        format!("exp={}&sig={}", self.exp, self.sig)
-    }
 }
 
-#[derive(Debug)]
+#[derive(Debug, thiserror::Error)]
 pub enum VerifyError {
+    #[error("Signature Expired")]
     Expired,
+    #[error("Invalid Signature")]
     InvalidSignature,
 }

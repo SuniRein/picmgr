@@ -1,3 +1,4 @@
+use crate::image::ThumbnailSize;
 use sqlx::{FromRow, PgPool};
 use tracing::{error, instrument};
 
@@ -8,6 +9,16 @@ pub struct ImageStorageInfo {
     pub has_small_thumbnail: bool,
     pub has_medium_thumbnail: bool,
     pub has_large_thumbnail: bool,
+}
+
+impl ImageStorageInfo {
+    pub fn has_thumbnail(&self, size: ThumbnailSize) -> bool {
+        match size {
+            ThumbnailSize::Small => self.has_small_thumbnail,
+            ThumbnailSize::Medium => self.has_medium_thumbnail,
+            ThumbnailSize::Large => self.has_large_thumbnail,
+        }
+    }
 }
 
 #[instrument(skip(pool))]

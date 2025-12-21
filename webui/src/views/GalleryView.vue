@@ -41,7 +41,7 @@ onMounted(async () => {
         v-for="img in images.items"
         :key="img.meta.id"
         :title="`Image ${img.meta.id}`"
-        :url="img.url"
+        :url="images.getImageUrl(img.meta.id, img.signature)"
       />
     </div>
 

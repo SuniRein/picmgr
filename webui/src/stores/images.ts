@@ -41,6 +41,10 @@ export const useImagesStore = defineStore('images', () => {
     await fetchImages();
   });
 
+  function getImageUrl(id: number, signature: ImageData['signature']) {
+    return api.getImageUrl(id, signature);
+  }
+
   return {
     items: readonly(items),
     total: readonly(total),
@@ -51,5 +55,6 @@ export const useImagesStore = defineStore('images', () => {
 
     loadTotalCount,
     fetchImages,
+    getImageUrl,
   };
 });

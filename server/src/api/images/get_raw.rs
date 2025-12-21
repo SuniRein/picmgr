@@ -72,9 +72,8 @@ pub async fn get_image_signed(
     Query(signed): Query<SignedQuery>,
     Path(image_id): Path<i32>,
 ) -> ApiResult<impl IntoResponse> {
-    signed.verify(image_id, Utc::now()).map_err(|e| {
+    signed.verify(image_id, Utc::now()).inspect_err(|e| {
         info!(cause=?e, "signed query verification failed");
-        ApiError::PermissionDenied
     })?;
 
     let info = image::get_image_storage_info(&pool, image_id)

@@ -8,7 +8,13 @@ interface ImageItem {
 
 defineProps<ImageItem>();
 
-const emit = defineEmits(['download', 'public', 'move', 'delete']);
+const emit = defineEmits<{
+  open: [];
+  download: [];
+  public: [];
+  move: [];
+  delete: [];
+}>();
 </script>
 
 <template>
@@ -21,7 +27,7 @@ const emit = defineEmits(['download', 'public', 'move', 'delete']);
           hover:bg-muted/40
         "
       >
-        <CardContent class="p-0">
+        <CardContent class="p-0" @click="emit('open')">
           <AspectRatio :ratio="4 / 3">
             <img
               :src="url"

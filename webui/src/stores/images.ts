@@ -58,3 +58,5 @@ export const useImagesStore = defineStore('images', () => {
     getImageUrl,
   };
 });
+
+export type ImageDataView = ReturnType<typeof useImagesStore>['items'][number];

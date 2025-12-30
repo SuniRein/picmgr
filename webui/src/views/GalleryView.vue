@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ImageCard, PageSizeSelector, PaginationControls } from '@/components/gallery';
+import { ImageCard, ImageDetailDialog, PageSizeSelector, PaginationControls } from '@/components/gallery';
 
 const images = useImagesStore();
 
@@ -7,6 +7,8 @@ function onPageSizeChange(val: number) {
   images.pageSize = val;
   images.currentPage = 1;
 }
+
+const selectedImage = ref<ImageDataView | null>(null);
 
 onMounted(async () => {
   await images.loadTotalCount();
@@ -42,6 +44,7 @@ onMounted(async () => {
         :key="img.meta.id"
         :title="`Image ${img.meta.id}`"
         :url="images.getImageUrl(img.meta.id, img.signature)"
+        @open="selectedImage = img"
       />
     </div>
 
@@ -49,6 +52,12 @@ onMounted(async () => {
       v-model:current-page="images.currentPage"
       :page-size="images.pageSize"
       :total-images="images.total"
+    />
+
+    <ImageDetailDialog
+      :image="selectedImage"
+      :url="selectedImage ? images.getImageUrl(selectedImage.meta.id, selectedImage.signature) : ''"
+      @close="selectedImage = null"
     />
   </div>
 </template>

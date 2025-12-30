@@ -1,4 +1,6 @@
-use image::{GenericImageView, ImageError, ImageFormat};
+use exif::Reader as ExifReader;
+use image::{ImageDecoder, ImageError, ImageFormat, ImageReader};
+use std::io::Cursor;
 use tracing::{error, instrument};
 
 #[derive(Debug)]
@@ -28,15 +30,44 @@ impl ImageInfo {
         }
         .to_string();
 
-        let img = image::load_from_memory_with_format(bytes, format)
-            .inspect_err(|e| error!(e=?e, "image parse failed"))?;
-        let (width, height) = img.dimensions();
+        let mut img_decoder = ImageReader::with_format(Cursor::new(bytes), format)
+            .into_decoder()
+            .inspect_err(|e| error!(?e, "image parse failed"))?;
+        let (width, height) = img_decoder.dimensions();
+
+        let exif_raw = img_decoder
+            .exif_metadata()
+            .inspect_err(|e| error!(?e, "read EXIF metadata failed"))
+            .ok()
+            .flatten();
+        let exif_reader = ExifReader::new();
+        let exif = match exif_raw {
+            Some(data) => match exif_reader.read_raw(data) {
+                Ok(exif) => {
+                    let mut exif_map = serde_json::Map::new();
+                    for field in exif.fields() {
+                        exif_map.insert(
+                            field.tag.to_string(),
+                            serde_json::Value::String(
+                                field.display_value().with_unit(&exif).to_string(),
+                            ),
+                        );
+                    }
+                    Some(serde_json::Value::Object(exif_map))
+                }
+                Err(e) => {
+                    error!(?e, "parse EXIF data failed");
+                    None
+                }
+            },
+            None => None,
+        };
 
         Ok(ImageInfo {
             width,
             height,
             mime_type,
-            exif: None, // TODO: extract EXIF data if needed
+            exif,
         })
     }
 }

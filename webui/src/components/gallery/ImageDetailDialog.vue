@@ -62,7 +62,7 @@ const formatDate = (dateStr: string) => new Date(dateStr).toLocaleString();
               </DialogTitle>
             </DialogHeader>
 
-            <ScrollArea class="flex-1">
+            <ScrollArea class="flex-1 overflow-auto">
               <div class="space-y-8 p-6">
                 <section>
                   <h4
@@ -149,32 +149,57 @@ const formatDate = (dateStr: string) => new Date(dateStr).toLocaleString();
                 </section>
 
                 <section v-if="image.meta.exif && Object.keys(image.meta.exif).length">
-                  <div class="mb-3 flex items-center gap-2">
+                  <div class="mb-4 flex items-center gap-3">
                     <h4
                       class="
                         text-[11px] font-bold tracking-widest
-                        text-muted-foreground/70 uppercase
+                        text-muted-foreground/60 uppercase
                       "
                     >
-                      Metadata (EXIF)
+                      Metadata
                     </h4>
+                    <div class="h-0.5 flex-1 bg-border/60" />
                   </div>
-                  <div
-                    class="
-                      rounded-md border bg-zinc-50 p-3 font-mono text-[11px]
-                      leading-relaxed
-                      dark:bg-zinc-900/50
-                    "
-                  >
+
+                  <div class="grid grid-cols-2 gap-x-4 gap-y-3">
                     <div
-                      v-for="(value, key) in image.meta.exif" :key="key" class="
-                        flex justify-between border-b border-zinc-100 py-1
-                        last:border-0
-                        dark:border-zinc-800
-                      "
+                      v-for="(value, key) in image.meta.exif"
+                      :key="key"
+                      class="flex flex-col gap-0.5"
+                      :class="[
+                        String(value).length > 20 ? 'col-span-2' : 'col-span-1',
+                      ]"
                     >
-                      <span class="text-muted-foreground">{{ key }}</span>
-                      <span class="text-foreground italic">{{ value }}</span>
+                      <span
+                        class="text-[10px] font-medium text-muted-foreground/80"
+                      >
+                        {{ key.replace(/([A-Z])/g, ' $1').trim() }}
+                      </span>
+
+                      <div
+                        class="
+                          group relative overflow-hidden rounded-md
+                          bg-secondary/30 px-2 py-1.5 transition-colors
+                          hover:bg-secondary/50
+                        "
+                      >
+                        <p
+                          class="
+                            font-mono text-[12px] leading-snug break-all
+                            text-foreground/90
+                          "
+                        >
+                          {{ value }}
+                        </p>
+
+                        <div
+                          class="
+                            absolute top-0 left-0 h-full w-0.5 bg-primary/20
+                            opacity-0 transition-opacity
+                            group-hover:opacity-100
+                          "
+                        />
+                      </div>
                     </div>
                   </div>
                 </section>

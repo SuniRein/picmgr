@@ -15,7 +15,7 @@ export interface ImageMeta {
   width: number;
   height: number;
   mime_type: string;
-  exif?: object;
+  exif?: Record<string, any>;
 
   is_public: boolean;
   tags: string[];

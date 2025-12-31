@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { HardDrive, Heart, Image, LogOut, Plus, Search, Settings, Trash2, User } from 'lucide-vue-next';
+import { ImageUploadModal } from '@/components/upload';
 
 const navItems = [
   { name: '全部图片', icon: Image, to: P.IMAGES },
@@ -15,6 +16,8 @@ function handleLogout() {
   user.logout();
   router.push(P.LOGIN);
 }
+
+const isUploadModalOpen = ref(false);
 </script>
 
 <template>
@@ -77,9 +80,11 @@ function handleLogout() {
 
         <div class="flex items-center gap-4">
           <template v-if="user.isLoggedIn">
-            <Button>
+            <Button @click="isUploadModalOpen = true">
               <Plus class="mr-2 h-4 w-4" /> 上传图片
             </Button>
+
+            <ImageUploadModal v-model:open="isUploadModalOpen" />
 
             <DropdownMenu>
               <DropdownMenuTrigger as-child>

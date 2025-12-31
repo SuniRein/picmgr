@@ -1,3 +1,5 @@
+import api from '@/api';
+
 export interface UploadTask {
   file: File;
   preview: string;
@@ -42,10 +44,7 @@ export const useUploadStore = defineStore('upload', () => {
   async function uploadFile(task: UploadTask) {
     task.status = 'uploading';
     try {
-      for (let i = 0; i <= 100; i += 10) {
-        task.progress = i;
-        await new Promise(r => setTimeout(r, 200));
-      }
+      await api.uploadImageRaw(task.file, percent => task.progress = percent);
       task.status = 'success';
     }
     catch (e) {

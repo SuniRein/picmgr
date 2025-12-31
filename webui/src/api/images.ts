@@ -42,3 +42,17 @@ export function getImageUrl(id: number, signature: ImageSignature) {
   const { exp, sig } = signature;
   return `/api/images/${id}/raw/signed?exp=${exp}&sig=${sig}`;
 }
+
+export async function uploadImageRaw(file: File, onProgress?: (percent: number) => void) {
+  await api.post('/images/upload/raw', file, {
+    headers: {
+      'Content-Type': file.type,
+    },
+    onUploadProgress: (progressEvent) => {
+      if (onProgress) {
+        const percentCompleted = Math.round(progressEvent.progress ?? 0 * 100);
+        onProgress(percentCompleted);
+      }
+    },
+  });
+}

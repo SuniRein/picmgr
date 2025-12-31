@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { RefreshCw } from 'lucide-vue-next';
 import { ImageCard, ImageDetailDialog, PageSizeSelector, PaginationControls } from '@/components/gallery';
 
 const images = useImagesStore();
@@ -10,9 +11,15 @@ function onPageSizeChange(val: number) {
 
 const selectedImage = ref<ImageDataView | null>(null);
 
+async function refresh() {
+  await Promise.all([
+    images.loadTotalCount(),
+    images.fetchImages(),
+  ]);
+}
+
 onMounted(async () => {
-  await images.loadTotalCount();
-  await images.fetchImages();
+  await refresh();
 });
 </script>
 
@@ -28,7 +35,19 @@ onMounted(async () => {
         </p>
       </div>
 
-      <PageSizeSelector :page-size="images.pageSize" @update:page-size="onPageSizeChange" />
+      <div class="flex items-center gap-2">
+        <Button
+          variant="ghost"
+          size="icon"
+          class="h-8 w-8 rounded-full p-0"
+          :disabled="images.isLoading"
+          @click="refresh"
+        >
+          <RefreshCw :class="{ 'animate-spin': images.isLoading }" />
+        </Button>
+
+        <PageSizeSelector :page-size="images.pageSize" @update:page-size="onPageSizeChange" />
+      </div>
     </div>
 
     <div

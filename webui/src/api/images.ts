@@ -9,7 +9,6 @@ export interface ImageData {
 export interface ImageMeta {
   id: number;
   owner_id?: number;
-  category_id?: number;
 
   size_bytes: number;
   width: number;

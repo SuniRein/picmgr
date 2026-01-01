@@ -81,7 +81,7 @@ const isUploadModalOpen = ref(false);
         <div class="flex items-center gap-4">
           <template v-if="user.isLoggedIn">
             <Button @click="isUploadModalOpen = true">
-              <Plus class="mr-2 h-4 w-4" /> 上传图片
+              <Plus class="h-4 w-4" /> 上传图片
             </Button>
 
             <ImageUploadModal v-model:open="isUploadModalOpen" />

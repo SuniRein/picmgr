@@ -2,14 +2,14 @@
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-vue-next';
 
 const props = defineProps<{
-  totalImages: number;
+  totalItems: number;
   pageSize: number;
 }>();
 
 const currentPage = defineModel<number>('currentPage', { required: true });
 
 const totalPages = computed(() => {
-  const pages = Math.ceil(props.totalImages / props.pageSize);
+  const pages = Math.ceil(props.totalItems / props.pageSize);
   return pages > 0 ? pages : 1;
 });
 
@@ -45,8 +45,8 @@ function handleJump() {
       "
     >
       第 {{ (currentPage - 1) * pageSize + 1 }}
-      到 {{ Math.min(currentPage * pageSize, totalImages) }}
-      张，共 {{ totalImages }} 张
+      到 {{ Math.min(currentPage * pageSize, totalItems) }} 项
+      ，共 {{ totalItems }} 项
     </div>
 
     <div class="flex items-center space-x-2">

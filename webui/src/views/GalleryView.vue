@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { RefreshCw } from 'lucide-vue-next';
-import { ImageCard, ImageDetailDialog, PageSizeSelector, PaginationControls } from '@/components/gallery';
+import { ImageCard, ImageDetailDialog } from '@/components/gallery';
 
 const images = useImagesStore();
 
@@ -36,16 +35,7 @@ onMounted(async () => {
       </div>
 
       <div class="flex items-center gap-2">
-        <Button
-          variant="ghost"
-          size="icon"
-          class="h-8 w-8 rounded-full p-0"
-          :disabled="images.isLoading"
-          @click="refresh"
-        >
-          <RefreshCw :class="{ 'animate-spin': images.isLoading }" />
-        </Button>
-
+        <RefreshButton :loading="images.isLoading" @click="refresh" />
         <PageSizeSelector :page-size="images.pageSize" @update:page-size="onPageSizeChange" />
       </div>
     </div>
@@ -70,7 +60,7 @@ onMounted(async () => {
     <PaginationControls
       v-model:current-page="images.currentPage"
       :page-size="images.pageSize"
-      :total-images="images.total"
+      :total-items="images.total"
     />
 
     <ImageDetailDialog

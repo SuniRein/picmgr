@@ -28,7 +28,7 @@ pub struct ImageMetaResponse {
 }
 
 impl ImageMetaResponse {
-    fn generate_from(meta: ImageMeta, now: DateTime<Utc>) -> Self {
+    pub fn generate_from(meta: ImageMeta, now: DateTime<Utc>) -> Self {
         let id = meta.id;
         let signature = SignedQuery::generate(id, now);
         Self { meta, signature }

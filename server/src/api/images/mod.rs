@@ -10,3 +10,5 @@ mod upload;
 
 mod router;
 pub use router::create_router;
+
+pub use get_meta::ImageMetaResponse;

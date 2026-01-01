@@ -24,7 +24,7 @@ pub struct AddImagePayload {
 #[utoipa::path(
     post,
     tag = ALBUMS_TAG,
-    path = "/albums/{album_id}/images",
+    path = "/albums/{id}/images",
     security(("userAuth" = [])),
     responses(
         (status = OK, description = "image added to album successfully"),
@@ -39,11 +39,11 @@ pub struct AddImagePayload {
 pub async fn add_image_to_album(
     State(pool): State<PgPool>,
     claims: UserClaims,
-    Path(album_id): Path<i32>,
+    Path(id): Path<i32>,
     Json(payload): Json<AddImagePayload>,
 ) -> ApiResult<()> {
     let input = NewImageInput {
-        album_id,
+        album_id: id,
         owner_id: claims.user_id(),
         image_id: payload.image_id,
     };

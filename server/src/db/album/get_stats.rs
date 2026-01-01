@@ -11,3 +11,14 @@ pub async fn get_user_album_count(pool: &PgPool, user_id: i32) -> sqlx::Result<i
     .await
     .inspect_err(|e| error!(error=?e, "fetch user album count failed"))
 }
+
+#[instrument(skip(pool))]
+pub async fn get_image_count_in_album(pool: &PgPool, album_id: i32) -> sqlx::Result<i64> {
+    sqlx::query_scalar!(
+        r#"SELECT COUNT(*) as "count!" FROM image_album WHERE album_id = $1"#,
+        album_id
+    )
+    .fetch_one(pool)
+    .await
+    .inspect_err(|e| error!(error=?e, "fetch album image count failed"))
+}

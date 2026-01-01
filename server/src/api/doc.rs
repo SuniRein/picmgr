@@ -11,6 +11,7 @@ pub const USER_TAG: &str = "user";
 pub const USERS_TAG: &str = "users";
 pub const AUTH_TAG: &str = "auth";
 pub const IMAGES_TAG: &str = "images";
+pub const ALBUMS_TAG: &str = "albums";
 
 #[derive(OpenApi)]
 #[openapi(
@@ -19,6 +20,7 @@ pub const IMAGES_TAG: &str = "images";
         (name = USERS_TAG, description = "User management API endpoints"),
         (name = AUTH_TAG, description = "Authentication API endpoints"),
         (name = IMAGES_TAG, description = "Image management API endpoints"),
+        (name = ALBUMS_TAG, description = "Album management API endpoints"),
     ),
     components(
         schemas(

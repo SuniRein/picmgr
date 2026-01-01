@@ -3,6 +3,7 @@ mod error;
 mod pagination;
 mod stats;
 
+pub mod albums;
 pub mod auth;
 pub mod images;
 pub mod user;

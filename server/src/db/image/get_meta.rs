@@ -8,7 +8,6 @@ use tracing::{error, instrument};
 pub struct ImageMeta {
     pub id: i32,
     pub owner_id: Option<i32>,
-    pub category_id: Option<i32>,
 
     pub size_bytes: i64,
     pub width: i32,
@@ -34,7 +33,7 @@ pub async fn get_all_image_metas(
         r#"
          WITH img AS (
            SELECT
-             i.id, i.owner_id, i.category_id,
+             i.id, i.owner_id,
              s.size_bytes, s.width, s.height, s.mime_type, s.exif,
              i.is_public, i.created_at, i.updated_at
            FROM image i
@@ -66,7 +65,7 @@ pub async fn get_image_meta_by_id(pool: &PgPool, id: i32) -> sqlx::Result<Option
         ImageMeta,
         r#"
         SELECT
-          i.id, i.owner_id, i.category_id,
+          i.id, i.owner_id,
           s.size_bytes, s.width, s.height, s.mime_type, s.exif,
           i.is_public, i.created_at, i.updated_at,
           COALESCE(tl.tags, '{}'::text[]) AS "tags!"
@@ -98,7 +97,7 @@ pub async fn get_image_metas_by_owner(
         r#"
          WITH img AS (
            SELECT
-             i.id, i.owner_id, i.category_id,
+             i.id, i.owner_id,
              s.size_bytes, s.width, s.height, s.mime_type, s.exif,
              i.is_public, i.created_at, i.updated_at
            FROM image i

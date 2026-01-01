@@ -4,7 +4,6 @@ use tracing::{error, instrument};
 #[derive(Debug)]
 pub struct NewImageInput<'a> {
     pub owner_id: Option<i32>,
-    pub category_id: Option<i32>,
 
     pub storage_key: &'a str,
     pub size_bytes: i64,
@@ -22,7 +21,7 @@ pub struct CreateImageResult {
     pub new_storage: bool,
 }
 
-#[instrument(skip(pool, info), fields(owner_id = info.owner_id, category_id = info.category_id, storage_key = info.storage_key))]
+#[instrument(skip(pool, info), fields(owner_id = info.owner_id, storage_key = info.storage_key))]
 pub async fn create_image(
     pool: &PgPool,
     info: NewImageInput<'_>,
@@ -58,13 +57,12 @@ pub async fn create_image(
     let image_id = sqlx::query_scalar!(
         r#"
         INSERT INTO image (
-            storage_id, owner_id, category_id, is_public
-        ) VALUES ($1, $2, $3, $4)
+            storage_id, owner_id, is_public
+        ) VALUES ($1, $2, $3)
         RETURNING id
         "#,
         storage_id,
         info.owner_id,
-        info.category_id,
         info.is_public
     )
     .fetch_one(&mut *tx)

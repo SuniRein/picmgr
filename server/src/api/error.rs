@@ -26,6 +26,8 @@ pub enum ApiError {
     UsernameConflict,
     #[error("Email Already Exists")]
     EmailConflict,
+    #[error("Album Name Already Exists")]
+    AlbumNameConflict,
 
     #[error("Wrong Credentials")]
     WrongCredentials,
@@ -80,7 +82,9 @@ impl IntoResponse for ApiError {
             ApiError::EmptyField(_) | ApiError::InvalidEmailFormat => {
                 StatusCode::UNPROCESSABLE_ENTITY
             }
-            ApiError::UsernameConflict | ApiError::EmailConflict => StatusCode::CONFLICT,
+            ApiError::UsernameConflict | ApiError::EmailConflict | ApiError::AlbumNameConflict => {
+                StatusCode::CONFLICT
+            }
             ApiError::WrongCredentials | ApiError::InvalidToken => StatusCode::UNAUTHORIZED,
             ApiError::PermissionDenied => StatusCode::FORBIDDEN,
             ApiError::ImageSignatureError(e) => match e {

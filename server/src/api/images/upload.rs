@@ -63,7 +63,6 @@ pub async fn upload_raw_image(
 
     let image_input = NewImageInput {
         owner_id: Some(claims.user_id()),
-        category_id: None,
 
         storage_key: &storage_key,
         size_bytes: body.len() as i64,

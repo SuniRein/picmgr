@@ -7,4 +7,5 @@ pub fn create_router() -> OpenApiRouter<PgPool> {
         .routes(routes!(super::get_album::get_albums))
         .routes(routes!(super::get_album::get_album_by_id))
         .routes(routes!(super::get_stats::get_album_count))
+        .routes(routes!(super::add_image::add_image_to_album))
 }

@@ -1,3 +1,4 @@
+mod add_image;
 mod create_album;
 mod get_album;
 mod get_stats;

@@ -19,6 +19,7 @@ watch(currentPage, val => jumpPage.value = String(val));
 function goToPage(page: number) {
   const target = Math.max(1, Math.min(page, totalPages.value));
   currentPage.value = target;
+  jumpPage.value = String(target);
 }
 
 function handleJump() {

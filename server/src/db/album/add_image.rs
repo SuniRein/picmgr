@@ -20,7 +20,7 @@ pub enum AddImageResult {
 #[instrument(skip(pool))]
 pub async fn add_image(pool: &PgPool, input: NewImageInput) -> sqlx::Result<AddImageResult> {
     let result = sqlx::query_file_scalar!(
-        "queries/add_image.sql",
+        "queries/add_image_to_album.sql",
         input.album_id,
         input.owner_id,
         input.image_id

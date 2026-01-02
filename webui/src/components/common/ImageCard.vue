@@ -1,20 +1,12 @@
 <script setup lang="ts">
+import type { ActionItem } from '@/components/common/ActionList.vue';
 import { MoreHorizontal } from 'lucide-vue-next';
 
-interface ActionItem {
-  label: string;
-  icon: Component;
-  handler?: () => void;
-  variant?: 'destructive';
-}
-
-interface Props {
+defineProps<{
   url: string;
   title: string;
-  actions?: ActionItem[];
-}
-
-defineProps<Props>();
+  actions: ActionItem[];
+}>();
 
 const emit = defineEmits<{ open: [] }>();
 </script>
@@ -61,17 +53,7 @@ const emit = defineEmits<{ open: [] }>();
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                v-for="item in actions"
-                :key="item.label"
-                :class="item.variant === 'destructive' ? `
-                  text-destructive
-                  focus:text-destructive
-                ` : ''"
-                @click="item.handler"
-              >
-                <component :is="item.icon" /> {{ item.label }}
-              </DropdownMenuItem>
+              <ActionList type="dropdown" :actions />
             </DropdownMenuContent>
           </DropdownMenu>
         </CardFooter>
@@ -79,17 +61,7 @@ const emit = defineEmits<{ open: [] }>();
     </ContextMenuTrigger>
 
     <ContextMenuContent>
-      <ContextMenuItem
-        v-for="item in actions"
-        :key="item.label"
-        :class="item.variant === 'destructive' ? `
-          text-destructive
-          focus:text-destructive
-        ` : ''"
-        @click="item.handler"
-      >
-        <component :is="item.icon" /> {{ item.label }}
-      </ContextMenuItem>
+      <ActionList type="context" :actions />
     </ContextMenuContent>
   </ContextMenu>
 </template>

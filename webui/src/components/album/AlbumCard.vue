@@ -1,14 +1,20 @@
 <script setup lang="ts">
+import type { ActionItem } from '@/components/common/ActionList.vue';
 import type { AlbumMetaView } from '@/stores/albums';
 import { Calendar, Folder, Lock, MoreHorizontal, Pencil, Trash, Unlock } from 'lucide-vue-next';
 
-defineProps<{ album: AlbumMetaView }>();
+const { album } = defineProps<{ album: AlbumMetaView }>();
 
 const emit = defineEmits<{
   click: [id: number];
   edit: [id: number];
   delete: [id: number];
 }>();
+
+const actions: ActionItem[] = [
+  { label: '编辑详情', icon: Pencil, handler: () => emit('edit', album.id) },
+  { label: '删除相册', icon: Trash, handler: () => emit('delete', album.id), variant: 'destructive' },
+];
 </script>
 
 <template>
@@ -57,13 +63,7 @@ const emit = defineEmits<{
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem @click="emit('edit', album.id)">
-                  <Pencil class="mr-2 h-4 w-4" /> 编辑详情
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem class="text-destructive" @click="emit('delete', album.id)">
-                  <Trash class="mr-2 h-4 w-4" /> 删除相册
-                </DropdownMenuItem>
+                <ActionList type="dropdown" :actions />
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -88,12 +88,7 @@ const emit = defineEmits<{
     </ContextMenuTrigger>
 
     <ContextMenuContent>
-      <ContextMenuItem @click="emit('edit', album.id)">
-        编辑
-      </ContextMenuItem>
-      <ContextMenuItem class="text-destructive" @click="emit('delete', album.id)">
-        删除
-      </ContextMenuItem>
+      <ActionList type="context" :actions />
     </ContextMenuContent>
   </ContextMenu>
 </template>

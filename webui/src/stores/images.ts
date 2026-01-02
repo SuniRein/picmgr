@@ -92,4 +92,4 @@ export const useImagesStore = defineStore('images', () => {
   };
 });
 
-export type ImageDataView = ReturnType<typeof useImagesStore>['items'][number];
+export type ReadOnlyImageData = ReturnType<typeof useImagesStore>['items'][number];

@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import type { ActionItem } from '@/components/common/ActionList.vue';
-import type { AlbumMetaView } from '@/stores/albums';
 import { Calendar, Folder, Lock, MoreHorizontal, Pencil, Trash, Unlock } from 'lucide-vue-next';
 
-const { album } = defineProps<{ album: AlbumMetaView }>();
+const { album } = defineProps<{ album: ReadOnlyAlbumMeta }>();
 
 const emit = defineEmits<{
   click: [id: number];

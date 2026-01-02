@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import type { ImageDataView } from '@/stores/images';
 import { Calendar, ExternalLink, FileType, HardDrive, Info, Maximize, Shield } from 'lucide-vue-next';
 
 interface Props {
-  image: ImageDataView | null;
+  image: ReadOnlyImageData | null;
   url: string;
 }
 

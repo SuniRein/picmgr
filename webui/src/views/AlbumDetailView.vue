@@ -7,7 +7,7 @@ const router = useRouter();
 const images = useImagesStore();
 const currentAlbum = useCurrentAlbumStore();
 
-const selectedImage = ref<ImageDataView | null>(null);
+const selectedImage = ref<ReadOnlyImageData | null>(null);
 
 function onPageSizeChange(val: number) {
   images.pageSize = val;

@@ -8,7 +8,7 @@ function onPageSizeChange(val: number) {
   images.currentPage = 1;
 }
 
-const selectedImage = ref<ImageDataView | null>(null);
+const selectedImage = ref<ReadOnlyImageData | null>(null);
 
 async function load() {
   images.setContext();

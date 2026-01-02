@@ -49,4 +49,4 @@ export const useAlbumsStore = defineStore('albums', () => {
   };
 });
 
-export type AlbumMetaView = ReturnType<typeof useAlbumsStore>['items'][number];
+export type ReadOnlyAlbumMeta = ReturnType<typeof useAlbumsStore>['items'][number];

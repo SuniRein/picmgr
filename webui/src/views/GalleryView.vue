@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ImageCard, ImageDetailDialog } from '@/components/gallery';
+import { Download, FolderPlus, Trash, Unlock } from 'lucide-vue-next';
 
 const images = useImagesStore();
 
@@ -48,6 +48,12 @@ await load();
         :key="img.meta.id"
         :title="`Image ${img.meta.id}`"
         :url="images.getImageUrl(img.meta.id, img.signature)"
+        :actions="[
+          { label: '下载', icon: Download },
+          { label: '设为公开', icon: Unlock },
+          { label: '移入相册', icon: FolderPlus },
+          { label: '删除', icon: Trash, variant: 'destructive' },
+        ]"
         @open="selectedImage = img"
       />
     </div>

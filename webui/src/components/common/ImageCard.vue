@@ -1,20 +1,22 @@
 <script setup lang="ts">
-import { Download, FolderPlus, MoreHorizontal, Trash, Unlock } from 'lucide-vue-next';
+import { MoreHorizontal } from 'lucide-vue-next';
 
-interface ImageItem {
-  url: string;
-  title: string;
+interface ActionItem {
+  label: string;
+  icon: Component;
+  handler?: () => void;
+  variant?: 'destructive';
 }
 
-defineProps<ImageItem>();
+interface Props {
+  url: string;
+  title: string;
+  actions?: ActionItem[];
+}
 
-const emit = defineEmits<{
-  open: [];
-  download: [];
-  public: [];
-  move: [];
-  delete: [];
-}>();
+defineProps<Props>();
+
+const emit = defineEmits<{ open: [] }>();
 </script>
 
 <template>
@@ -59,17 +61,16 @@ const emit = defineEmits<{
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end">
-              <DropdownMenuItem @click="emit('download')">
-                下载
-              </DropdownMenuItem>
-              <DropdownMenuItem @click="emit('public')">
-                设为公开
-              </DropdownMenuItem>
-              <DropdownMenuItem @click="emit('move')">
-                移入相册
-              </DropdownMenuItem>
-              <DropdownMenuItem class="text-red-600" @click="emit('delete')">
-                删除
+              <DropdownMenuItem
+                v-for="item in actions"
+                :key="item.label"
+                :class="item.variant === 'destructive' ? `
+                  text-destructive
+                  focus:text-destructive
+                ` : ''"
+                @click="item.handler"
+              >
+                <component :is="item.icon" /> {{ item.label }}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -77,24 +78,17 @@ const emit = defineEmits<{
       </Card>
     </ContextMenuTrigger>
 
-    <ContextMenuContent class="select-none">
-      <ContextMenuItem @click="emit('download')">
-        <Download class="mr-2 h-4 w-4" /> 下载
-      </ContextMenuItem>
-      <ContextMenuItem @click="emit('public')">
-        <Unlock class="mr-2 h-4 w-4" /> 设为公开
-      </ContextMenuItem>
-      <ContextMenuItem @click="emit('move')">
-        <FolderPlus class="mr-2 h-4 w-4" /> 移入相册
-      </ContextMenuItem>
+    <ContextMenuContent>
       <ContextMenuItem
-        class="
-          text-red-600
-          focus:text-red-600
-        "
-        @click="emit('delete')"
+        v-for="item in actions"
+        :key="item.label"
+        :class="item.variant === 'destructive' ? `
+          text-destructive
+          focus:text-destructive
+        ` : ''"
+        @click="item.handler"
       >
-        <Trash class="mr-2 h-4 w-4" /> 删除
+        <component :is="item.icon" /> {{ item.label }}
       </ContextMenuItem>
     </ContextMenuContent>
   </ContextMenu>

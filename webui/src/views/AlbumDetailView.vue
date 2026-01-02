@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { ChevronLeft, ImagePlus, Pencil, Plus } from 'lucide-vue-next';
-import { ImageCard, ImageDetailDialog } from '@/components/gallery';
+import { ChevronLeft, Download, ImagePlus, Pencil, Plus, Trash } from 'lucide-vue-next';
 
 const route = useRoute();
 const router = useRouter();
@@ -90,6 +89,10 @@ await load();
         :key="img.meta.id"
         :title="`Image ${img.meta.id}`"
         :url="images.getImageUrl(img.meta.id, img.signature)"
+        :actions="[
+          { label: '下载', icon: Download },
+          { label: '移出相册', icon: Trash, variant: 'destructive' },
+        ]"
         @open="selectedImage = img"
       />
     </div>

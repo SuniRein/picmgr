@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Calendar, ExternalLink, FileType, HardDrive, Info, Maximize, Shield } from 'lucide-vue-next';
+import { Calendar, Check, ExternalLink, FileType, HardDrive, Info, Maximize, Pencil, Shield, Tag, X } from 'lucide-vue-next';
 
 interface Props {
   image: ReadOnlyImageData | null;
@@ -7,7 +7,10 @@ interface Props {
 }
 
 const props = defineProps<Props>();
-const emit = defineEmits<{ close: [] }>();
+const emit = defineEmits<{
+  close: [];
+  'update:tags': [newTags: string[]];
+}>();
 
 const isOpen = computed({
   get: () => props.image !== null,
@@ -19,6 +22,33 @@ const isOpen = computed({
 
 const formatSize = (bytes: number) => `${(bytes / 1024).toFixed(1)} KB`;
 const formatDate = (dateStr: string) => new Date(dateStr).toLocaleString();
+
+const isEditingTags = ref(false);
+const tagsInput = ref('');
+
+watch(() => props.image, () => isEditingTags.value = false);
+
+function startTagsEdit() {
+  if (props.image) {
+    isEditingTags.value = true;
+    tagsInput.value = props.image.meta.tags.join(', ') ?? '';
+  }
+};
+
+function saveTagsEdit() {
+  if (props.image) {
+    const newTags = tagsInput.value
+      .split(',')
+      .map(t => t.trim())
+      .filter(t => t.length > 0);
+    emit('update:tags', newTags);
+  }
+  isEditingTags.value = false;
+};
+
+function cancelTagsEdit() {
+  isEditingTags.value = false;
+};
 </script>
 
 <template>
@@ -125,25 +155,79 @@ const formatDate = (dateStr: string) => new Date(dateStr).toLocaleString();
                   </div>
                 </section>
 
-                <section v-if="image.meta.tags.length">
-                  <h4
-                    class="
-                      mb-3 text-[11px] font-bold tracking-widest
-                      text-muted-foreground/70 uppercase
-                    "
-                  >
-                    Tags
-                  </h4>
-                  <div class="flex flex-wrap gap-1.5">
-                    <Badge
-                      v-for="t in image.meta.tags" :key="t" variant="secondary"
+                <section>
+                  <div class="mb-3 flex items-center justify-between">
+                    <h4
                       class="
-                        bg-secondary/50 font-normal
-                        hover:bg-secondary
+                        flex items-center gap-2 text-[11px] font-bold
+                        tracking-widest text-muted-foreground/70 uppercase
                       "
                     >
-                      #{{ t }}
-                    </Badge>
+                      <Tag class="h-3 w-3" /> Tags
+                    </h4>
+
+                    <Button
+                      v-if="!isEditingTags"
+                      variant="ghost"
+                      size="icon"
+                      class="
+                        h-6 w-6 text-muted-foreground
+                        hover:text-primary
+                      "
+                      @click="startTagsEdit"
+                    >
+                      <Pencil class="h-3 w-3" />
+                    </Button>
+                    <div v-else class="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        class="h-6 w-6 text-destructive"
+                        @click="cancelTagsEdit"
+                      >
+                        <X class="h-3.5 w-3.5" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        class="h-6 w-6 text-green-600"
+                        @click="saveTagsEdit"
+                      >
+                        <Check class="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div v-if="!isEditingTags" class="flex flex-wrap gap-1.5">
+                    <template v-if="image.meta.tags.length">
+                      <Badge
+                        v-for="t in image.meta.tags"
+                        :key="t"
+                        variant="secondary"
+                        class="
+                          cursor-default bg-secondary/50 font-normal
+                          hover:bg-secondary
+                        "
+                      >
+                        #{{ t }}
+                      </Badge>
+                    </template>
+                    <span v-else class="text-xs text-muted-foreground italic">暂无标签</span>
+                  </div>
+
+                  <div v-else class="space-y-2">
+                    <Input
+                      v-model="tagsInput"
+                      placeholder="标签1, 标签2, 标签3"
+                      class="
+                        h-8 text-xs
+                        focus-visible:ring-1
+                      "
+                      @keyup.enter="saveTagsEdit"
+                    />
+                    <p class="text-[10px] text-muted-foreground">
+                      提示：使用逗号分割多个标签
+                    </p>
                   </div>
                 </section>
 

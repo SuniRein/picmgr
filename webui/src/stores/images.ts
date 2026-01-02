@@ -74,6 +74,18 @@ export const useImagesStore = defineStore('images', () => {
     return api.getImageUrl(id, signature);
   }
 
+  async function setTags(id: number, tags: string[]) {
+    const item = items.value.find(item => item.meta.id === id);
+    if (!item) {
+      console.warn(`Image with id ${id} not found in store when setting tags.`);
+      return;
+    }
+
+    await api.setImageTags(id, tags);
+    item.meta.tags = tags;
+    triggerRef(items);
+  }
+
   return {
     items: readonly(items),
     total: readonly(total),
@@ -89,6 +101,8 @@ export const useImagesStore = defineStore('images', () => {
     refresh,
 
     getImageUrl,
+
+    setTags,
   };
 });
 

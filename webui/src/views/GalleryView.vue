@@ -67,6 +67,7 @@ await load();
     <ImageDetailDialog
       :image="selectedImage"
       :url="selectedImage ? images.getImageUrl(selectedImage.meta.id, selectedImage.signature) : ''"
+      @update:tags="tags => images.setTags(selectedImage!.meta.id, tags)"
       @close="selectedImage = null"
     />
   </div>

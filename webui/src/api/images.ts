@@ -55,3 +55,7 @@ export async function uploadImageRaw(file: File, onProgress?: (percent: number) 
     },
   });
 }
+
+export async function setImageTags(id: number, tags: string[]) {
+  await api.put(`/images/${id}/tags`, { tags });
+}

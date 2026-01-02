@@ -1,6 +1,10 @@
 import type { ImageData } from '@/api';
 import api from '@/api';
 
+export interface ImageContext {
+  albumId?: number;
+}
+
 export const useImagesStore = defineStore('images', () => {
   const items = ref<ImageData[]>([]);
   const total = ref(0);
@@ -9,8 +13,21 @@ export const useImagesStore = defineStore('images', () => {
   const currentPage = ref(1);
   const pageSize = ref(20);
 
+  const activeAlbumId = ref<number | null>(null);
+
+  async function setContext(context: ImageContext = {}) {
+    activeAlbumId.value = context.albumId ?? null;
+  }
+
   async function loadTotalCount() {
-    const response = await api.getImagesCount();
+    let response;
+    if (activeAlbumId.value !== null) {
+      response = await api.getImageCountInAlbum(activeAlbumId.value);
+    }
+    else {
+      response = await api.getImagesCount();
+    }
+
     total.value = response.data.count;
   }
 
@@ -21,10 +38,19 @@ export const useImagesStore = defineStore('images', () => {
 
     isLoading.value = true;
     try {
-      const response = await api.getImageData(
-        { page: currentPage.value, size: pageSize.value },
-        abortController.signal,
-      );
+      const params = {
+        page: currentPage.value,
+        size: pageSize.value,
+      };
+
+      let response;
+      if (activeAlbumId.value !== null) {
+        response = await api.getImagesInAlbum(activeAlbumId.value, params, abortController.signal);
+      }
+      else {
+        response = await api.getImageData(params, abortController.signal);
+      }
+
       items.value = response.data.data;
     }
     catch (err: any) {
@@ -37,9 +63,14 @@ export const useImagesStore = defineStore('images', () => {
     }
   }
 
-  watch([currentPage, pageSize], async () => {
-    await fetchImages();
-  });
+  async function refresh() {
+    await Promise.all([
+      loadTotalCount(),
+      fetchImages(),
+    ]);
+  }
+
+  watch([currentPage, pageSize], fetchImages);
 
   function getImageUrl(id: number, signature: ImageData['signature']) {
     return api.getImageUrl(id, signature);
@@ -53,8 +84,12 @@ export const useImagesStore = defineStore('images', () => {
     currentPage,
     pageSize,
 
+    setContext,
+
     loadTotalCount,
     fetchImages,
+    refresh,
+
     getImageUrl,
   };
 });

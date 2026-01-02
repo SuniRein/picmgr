@@ -10,16 +10,11 @@ function onPageSizeChange(val: number) {
 
 const selectedImage = ref<ImageDataView | null>(null);
 
-async function refresh() {
-  await Promise.all([
-    images.loadTotalCount(),
-    images.fetchImages(),
-  ]);
+async function load() {
+  images.setContext();
+  await images.refresh();
 }
-
-onMounted(async () => {
-  await refresh();
-});
+await load();
 </script>
 
 <template>
@@ -35,7 +30,7 @@ onMounted(async () => {
       </div>
 
       <div class="flex items-center gap-2">
-        <RefreshButton :loading="images.isLoading" @click="refresh" />
+        <RefreshButton :loading="images.isLoading" @click="images.refresh" />
         <PageSizeSelector :page-size="images.pageSize" @update:page-size="onPageSizeChange" />
       </div>
     </div>

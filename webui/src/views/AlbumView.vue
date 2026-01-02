@@ -2,6 +2,7 @@
 import { FolderPlus, Plus } from 'lucide-vue-next';
 import { AlbumCard, CreateAlbumModal } from '@/components/album';
 
+const router = useRouter();
 const albums = useAlbumsStore();
 
 function onPageSizeChange(val: number) {
@@ -17,12 +18,7 @@ async function refresh() {
     albums.fetchAlbums(),
   ]);
 }
-
-onMounted(async () => {
-  await refresh();
-});
-
-function openAlbum(_id: number) { }
+await refresh();
 </script>
 
 <template>
@@ -59,7 +55,7 @@ function openAlbum(_id: number) { }
         v-for="album in albums.items"
         :key="album.id"
         :album="album"
-        @click="openAlbum"
+        @click="id => router.push(P.ALBUM_DETAIL(id))"
       />
     </div>
 

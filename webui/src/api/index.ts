@@ -1,4 +1,4 @@
-import { getAlbums, getAlbumsCount } from './albums';
+import { getAlbumDetails, getAlbums, getAlbumsCount, getImageCountInAlbum, getImagesInAlbum } from './albums';
 import { login, refreshToken } from './auth';
 import { getImageData, getImagesCount, getImageUrl, uploadImageRaw } from './images';
 import { getMe } from './user';
@@ -16,6 +16,9 @@ export default {
 
   getAlbums,
   getAlbumsCount,
+  getAlbumDetails,
+  getImagesInAlbum,
+  getImageCountInAlbum,
 };
 
 export type * from './albums';

@@ -37,9 +37,7 @@ export const useAlbumsStore = defineStore('albums', () => {
     }
   }
 
-  watch([currentPage, pageSize], async () => {
-    await fetchAlbums();
-  });
+  watch([currentPage, pageSize], fetchAlbums);
 
   return {
     items: readonly(items),

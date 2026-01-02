@@ -7,10 +7,12 @@ const DEFAULT_PAGE: NonZeroU32 = NonZeroU32::new(1).unwrap();
 const DEFAULT_PAGE_SIZE: NonZeroU32 = NonZeroU32::new(10).unwrap();
 const MAX_PAGE_SIZE: NonZeroU32 = NonZeroU32::new(100).unwrap();
 
-#[derive(Clone, Copy, Deserialize, utoipa::IntoParams)]
+#[derive(Clone, Copy, Deserialize, utoipa::IntoParams, utoipa::ToSchema)]
 pub struct PaginationQuery {
+    #[schema(value_type = Option<u32>)]
     #[param(value_type = Option<u32>, minimum = 1, default = 1)]
     page: Option<NonZeroU32>,
+    #[schema(value_type = Option<u32>)]
     #[param(value_type= Option<u32>, minimum = 1, maximum = 100, default = 10)]
     size: Option<NonZeroU32>,
 }

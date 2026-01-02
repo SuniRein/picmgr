@@ -5,6 +5,7 @@ mod get_meta;
 mod get_raw;
 mod get_stats;
 mod get_thumbnail;
+mod search;
 mod tag;
 mod upload;
 

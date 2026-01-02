@@ -3,6 +3,7 @@ mod get_meta;
 mod get_permission;
 mod get_stats;
 mod get_storage;
+mod search;
 mod set_thumbnail;
 mod tag;
 
@@ -11,5 +12,6 @@ pub use get_meta::*;
 pub use get_permission::*;
 pub use get_stats::*;
 pub use get_storage::*;
+pub use search::*;
 pub use set_thumbnail::*;
 pub use tag::*;

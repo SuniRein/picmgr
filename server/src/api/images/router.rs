@@ -15,6 +15,8 @@ pub fn create_router() -> OpenApiRouter<PgPool> {
         .routes(routes!(super::get_raw::get_image_signed))
         .routes(routes!(super::get_thumbnail::get_thumbnail))
         .routes(routes!(super::get_thumbnail::get_thumbnail_signed))
+        .routes(routes!(super::search::get_filtered_image_meta_count))
+        .routes(routes!(super::search::get_filtered_image_metas))
         .merge(upload_router)
         .routes(routes!(
             super::tag::get_image_tags,

@@ -20,7 +20,7 @@ export default defineConfig(() => {
       tailwindcss(),
       AutoImport({
         imports: ['vue', 'vue-router', 'pinia', '@vueuse/core', { '@/router': ['P'] }],
-        dirs: ['src/stores'],
+        dirs: ['src/stores', 'src/hooks'],
         dts: 'src/auto-imports.d.ts',
         vueTemplate: true,
       }),

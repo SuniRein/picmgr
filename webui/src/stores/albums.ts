@@ -6,8 +6,7 @@ export const useAlbumsStore = defineStore('albums', () => {
   const total = ref(0);
   const isLoading = ref(false);
 
-  const currentPage = ref(1);
-  const pageSize = ref(20);
+  const { currentPage, pageSize } = usePagination({ initialPageSize: 20, onPageChange: fetchAlbums }); ;
 
   async function loadTotalCount() {
     const response = await api.getAlbumsCount();
@@ -36,8 +35,6 @@ export const useAlbumsStore = defineStore('albums', () => {
       isLoading.value = false;
     }
   }
-
-  watch([currentPage, pageSize], fetchAlbums);
 
   return {
     items: readonly(items),

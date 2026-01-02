@@ -10,12 +10,12 @@ export const useImagesStore = defineStore('images', () => {
   const total = ref(0);
   const isLoading = ref(false);
 
-  const currentPage = ref(1);
-  const pageSize = ref(20);
+  const { currentPage, pageSize, resetPagination } = usePagination({ initialPageSize: 20, onPageChange: fetchImages });
 
   const activeAlbumId = ref<number | null>(null);
 
   async function setContext(context: ImageContext = {}) {
+    resetPagination();
     activeAlbumId.value = context.albumId ?? null;
   }
 
@@ -69,8 +69,6 @@ export const useImagesStore = defineStore('images', () => {
       fetchImages(),
     ]);
   }
-
-  watch([currentPage, pageSize], fetchImages);
 
   function getImageUrl(id: number, signature: ImageData['signature']) {
     return api.getImageUrl(id, signature);

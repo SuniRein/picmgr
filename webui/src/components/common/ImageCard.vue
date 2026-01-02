@@ -20,8 +20,9 @@ const emit = defineEmits<{ open: [] }>();
           transition-colors
           hover:bg-muted/40
         "
+        @click="emit('open')"
       >
-        <CardContent class="p-0" @click="emit('open')">
+        <CardContent class="p-0">
           <AspectRatio :ratio="4 / 3">
             <img
               :src="url"
@@ -47,6 +48,7 @@ const emit = defineEmits<{ open: [] }>();
                   h-6 w-6 opacity-0 transition-opacity
                   group-hover:opacity-100
                 "
+                @click.stop
               >
                 <MoreHorizontal class="h-4 w-4" />
               </Button>

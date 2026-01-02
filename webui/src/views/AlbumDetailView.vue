@@ -51,7 +51,6 @@ await load();
           </div>
           <p class="text-sm text-muted-foreground">
             {{ currentAlbum.meta?.description || '暂无描述' }}
-            • 共 {{ images.total }} 张图片
           </p>
         </div>
 
@@ -68,7 +67,10 @@ await load();
 
     <Separator />
 
-    <div class="flex items-center justify-end">
+    <div class="flex items-center justify-between">
+      <div class="text-sm text-muted-foreground">
+        共 <span class="font-medium text-foreground">{{ images.total }}</span> 张图片
+      </div>
       <div class="flex items-center gap-2">
         <RefreshButton :loading="images.isLoading" @click="images.refresh" />
         <PageSizeSelector :page-size="images.pageSize" @update:page-size="onPageSizeChange" />

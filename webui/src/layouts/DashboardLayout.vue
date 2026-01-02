@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { HardDrive, Heart, Image, LogOut, Plus, Search, Settings, Trash2, User } from 'lucide-vue-next';
-import { ImageUploadModal } from '@/components/upload';
+import { HardDrive, Heart, Image, LogOut, Trash2, User } from 'lucide-vue-next';
 
 const navItems = [
   { name: '全部图片', icon: Image, to: P.IMAGES },
@@ -17,7 +16,12 @@ function handleLogout() {
   router.push(P.LOGIN);
 }
 
-const isUploadModalOpen = ref(false);
+async function load() {
+  if (user.isLoggedIn) {
+    await user.fetchProfile();
+  }
+}
+await load();
 </script>
 
 <template>
@@ -52,69 +56,37 @@ const isUploadModalOpen = ref(false);
       </div>
 
       <div class="border-t p-4">
-        <Button variant="outline" class="w-full justify-start">
-          <Settings class="mr-2 h-4 w-4" />
-          设置
+        <DropdownMenu v-if="user.isLoggedIn">
+          <DropdownMenuTrigger as-child>
+            <Button variant="ghost" class="w-full justify-start px-2 py-6">
+              <div class="mr-3 h-8 w-8 rounded-full bg-slate-200" />
+              <div class="flex flex-col items-start overflow-hidden">
+                <span class="text-sm font-medium">{{ user.profile?.username }}</span>
+                <span class="w-full truncate text-xs text-muted-foreground">查看账号详情</span>
+              </div>
+            </Button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent align="end" class="w-56">
+            <RouterLink :to="P.PROFILE">
+              <DropdownMenuItem>
+                <User class="mr-2 h-4 w-4" /> 个人信息
+              </DropdownMenuItem>
+            </RouterLink>
+
+            <DropdownMenuItem @click="handleLogout">
+              <LogOut class="mr-2 h-4 w-4" /> 注销
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <Button v-else variant="outline" class="w-full" @click="router.push(P.LOGIN)">
+          登录
         </Button>
       </div>
     </aside>
 
     <main class="flex flex-1 flex-col overflow-hidden">
-      <header
-        class="
-          z-10 flex h-16 items-center justify-between border-b bg-background/95
-          px-6 backdrop-blur
-        "
-      >
-        <div class="flex w-full max-w-md items-center gap-2">
-          <div class="relative w-full">
-            <Search
-              class="
-                pointer-events-none absolute top-2.5 left-2.5 h-4 w-4
-                text-muted-foreground
-              "
-            />
-            <Input type="search" placeholder="搜索图片..." class="bg-muted/50 pl-8" />
-          </div>
-        </div>
-
-        <div class="flex items-center gap-4">
-          <template v-if="user.isLoggedIn">
-            <Button @click="isUploadModalOpen = true">
-              <Plus class="h-4 w-4" /> 上传图片
-            </Button>
-
-            <ImageUploadModal v-model:open="isUploadModalOpen" />
-
-            <DropdownMenu>
-              <DropdownMenuTrigger as-child>
-                <div class="h-8 w-8 rounded-full bg-slate-200" />
-              </DropdownMenuTrigger>
-
-              <DropdownMenuContent align="end">
-                <RouterLink :to="P.PROFILE">
-                  <DropdownMenuItem>
-                    <User class="mr-2 h-4 w-4" /> 个人信息
-                  </DropdownMenuItem>
-                </RouterLink>
-
-                <DropdownMenuItem @click="handleLogout">
-                  <LogOut class="mr-2 h-4 w-4" /> 注销
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </template>
-
-          <template v-else>
-            <RouterLink :to="P.LOGIN">
-              <Button variant="outline">
-                登录
-              </Button>
-            </RouterLink>
-          </template>
-        </div>
-      </header>
-
       <ScrollArea class="min-h-0 flex-1 p-6">
         <RouterView />
       </ScrollArea>

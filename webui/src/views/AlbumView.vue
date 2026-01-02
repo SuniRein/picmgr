@@ -23,22 +23,34 @@ await refresh();
 
 <template>
   <div class="space-y-6">
-    <div class="flex items-center justify-between">
-      <div>
-        <h2 class="text-xl font-semibold">
-          我的相册
-        </h2>
+    <div class="flex items-end justify-between">
+      <div class="space-y-1">
+        <div class="flex items-center gap-3">
+          <h2 class="text-2xl font-bold tracking-tight">
+            我的相册
+          </h2>
+        </div>
         <p class="text-sm text-muted-foreground">
-          共 {{ albums.total }} 个相册
+          管理和浏览您的所有相册
         </p>
       </div>
 
       <div class="flex items-center gap-2">
+        <Button size="sm" class="ml-2" @click="isCreateModalOpen = true">
+          <Plus /> 新建相册
+        </Button>
+      </div>
+    </div>
+
+    <Separator />
+
+    <div class="flex items-center justify-between">
+      <div class="text-sm text-muted-foreground">
+        共 <span class="font-medium text-foreground">{{ albums.total }}</span> 个相册
+      </div>
+      <div class="flex items-center gap-2">
         <RefreshButton :loading="albums.isLoading" @click="refresh" />
         <PageSizeSelector :page-size="albums.pageSize" @update:page-size="onPageSizeChange" />
-        <Button size="sm" class="ml-2" @click="isCreateModalOpen = true">
-          <Plus class="h-4 w-4" /> 新建相册
-        </Button>
       </div>
     </div>
 

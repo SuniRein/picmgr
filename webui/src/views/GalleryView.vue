@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Download, FolderPlus, Trash, Unlock } from 'lucide-vue-next';
+import { Download, FolderPlus, Plus, Trash, Unlock } from 'lucide-vue-next';
+import { ImageUploadModal } from '@/components/upload';
 
 const images = useImagesStore();
 
@@ -10,6 +11,8 @@ function onPageSizeChange(val: number) {
 
 const selectedImage = ref<ReadOnlyImageData | null>(null);
 
+const isUploadModalOpen = ref(false);
+
 async function load() {
   images.setContext();
   await images.refresh();
@@ -19,16 +22,31 @@ await load();
 
 <template>
   <div class="space-y-6">
-    <div class="flex items-center justify-between">
-      <div>
-        <h2 class="text-xl font-semibold">
-          最近上传
-        </h2>
+    <div class="flex items-end justify-between">
+      <div class="space-y-1">
+        <div class="flex items-center gap-3">
+          <h2 class="text-2xl font-bold tracking-tight">
+            我的图库
+          </h2>
+        </div>
         <p class="text-sm text-muted-foreground">
-          共 {{ images.total }} 张图片
+          管理和浏览您的所有图片资产
         </p>
       </div>
 
+      <div class="flex items-center gap-2">
+        <Button size="sm" class="ml-2" @click="isUploadModalOpen = true">
+          <Plus /> 上传图片
+        </Button>
+      </div>
+    </div>
+
+    <Separator />
+
+    <div class="flex items-center justify-between">
+      <div class="text-sm text-muted-foreground">
+        共 <span class="font-medium text-foreground">{{ images.total }}</span> 张图片
+      </div>
       <div class="flex items-center gap-2">
         <RefreshButton :loading="images.isLoading" @click="images.refresh" />
         <PageSizeSelector :page-size="images.pageSize" @update:page-size="onPageSizeChange" />
@@ -63,6 +81,8 @@ await load();
       :page-size="images.pageSize"
       :total-items="images.total"
     />
+
+    <ImageUploadModal v-model:open="isUploadModalOpen" />
 
     <ImageDetailDialog
       :image="selectedImage"

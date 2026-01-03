@@ -23,12 +23,15 @@ export interface ImageMeta {
   updated_at: string;
 }
 
-export async function getImageData(params: PaginationParams, signal?: AbortSignal) {
-  const response = await api.get<PaginationResponse<ImageData>>('/images', { params, signal });
-  return response;
+export async function getImage(id: number) {
+  return await api.get<ImageData>(`/images/${id}`);
 }
 
-export async function getImagesCount() {
+export async function getImages(params: PaginationParams, signal?: AbortSignal) {
+  return await api.get<PaginationResponse<ImageData>>('/images', { params, signal });
+}
+
+export async function getImageCount() {
   return await api.get<{ count: number }>('/images/count');
 }
 

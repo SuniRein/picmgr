@@ -3,8 +3,9 @@ import { login, refreshToken } from './auth';
 import {
   getFilteredImageCount,
   getFilteredImages,
-  getImageData,
-  getImagesCount,
+  getImage,
+  getImageCount,
+  getImages,
   getImageUrl,
   getThumbnailUrl,
   setImageTags,
@@ -18,8 +19,9 @@ export default {
 
   getMe,
 
-  getImageData,
-  getImagesCount,
+  getImage,
+  getImages,
+  getImageCount,
   getFilteredImages,
   getFilteredImageCount,
   getImageUrl,

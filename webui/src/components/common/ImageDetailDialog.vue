@@ -146,6 +146,15 @@ function cancelTagsEdit() {
                       <span
                         class="flex items-center gap-2 text-muted-foreground"
                       >
+                        <Calendar class="h-4 w-4" /> 更新时间
+                      </span>
+                      <span class="font-medium">{{ formatDate(image.meta.updated_at) }}</span>
+                    </div>
+
+                    <div class="flex items-center justify-between text-sm">
+                      <span
+                        class="flex items-center gap-2 text-muted-foreground"
+                      >
                         <Shield class="h-4 w-4" /> 权限
                       </span>
                       <Badge

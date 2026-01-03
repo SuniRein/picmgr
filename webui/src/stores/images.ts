@@ -45,7 +45,7 @@ export const useImagesStore = defineStore('images', () => {
       response = await api.getImageCountInAlbum(albumId.value);
     }
     else {
-      response = await api.getImagesCount();
+      response = await api.getImageCount();
     }
 
     total.value = response.data.count;
@@ -71,7 +71,7 @@ export const useImagesStore = defineStore('images', () => {
         response = await api.getImagesInAlbum(albumId.value, params, abortController.signal);
       }
       else {
-        response = await api.getImageData(params, abortController.signal);
+        response = await api.getImages(params, abortController.signal);
       }
 
       items.value = response.data.data;
@@ -109,7 +109,7 @@ export const useImagesStore = defineStore('images', () => {
     }
 
     await api.setImageTags(id, tags);
-    item.meta.tags = tags;
+    item.meta = (await api.getImage(id)).data.meta; // refresh metadata
     triggerRef(items);
   }
 

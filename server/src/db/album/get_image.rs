@@ -20,7 +20,8 @@ pub async fn get_images_in_album(
           FROM image_album ia
           JOIN image i ON ia.image_id = i.id
           JOIN image_storage s ON i.storage_id = s.id
-          WHERE ia.album_id = $1
+          WHERE i.trashed_at IS NULL
+            AND ia.album_id = $1
           ORDER BY ia.position DESC
           LIMIT $2 OFFSET $3
         )

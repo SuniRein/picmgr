@@ -7,6 +7,7 @@ mod get_stats;
 mod get_thumbnail;
 mod search;
 mod tag;
+mod trash;
 mod upload;
 
 mod router;

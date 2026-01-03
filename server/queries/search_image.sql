@@ -24,7 +24,7 @@ SELECT
   i.is_public, i.created_at, i.updated_at,
   coalesce(tl.tags, '{}'::text[]) AS "tags!"
 FROM image i
- JOIN image_storage s ON i.storage_id = s.id
+JOIN image_storage s ON i.storage_id = s.id
 LEFT JOIN LATERAL (
   SELECT array_agg(t.name ORDER BY t.name) AS tags
   FROM image_tag it
@@ -32,8 +32,9 @@ LEFT JOIN LATERAL (
   WHERE it.image_id = i.id
 ) tl ON TRUE
 WHERE
+  i.trashed_at IS NULL
   -- Filter by owner_id
-  ($13::int IS NULL OR i.owner_id = $13::int)
+  AND ($13::int IS NULL OR i.owner_id = $13::int)
   -- Filter by width
   AND ($3::int IS NULL OR s.width >= $3::int)
   AND ($4::int IS NULL OR s.width <= $4::int)

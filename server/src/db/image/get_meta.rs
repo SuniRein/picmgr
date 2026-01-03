@@ -38,6 +38,7 @@ pub async fn get_all_image_metas(
              i.is_public, i.created_at, i.updated_at
            FROM image i
            JOIN image_storage s ON i.storage_id = s.id
+           WHERE i.trashed_at IS NULL
            ORDER BY id
            LIMIT $1 OFFSET $2
          )
@@ -77,7 +78,8 @@ pub async fn get_image_meta_by_id(pool: &PgPool, id: i32) -> sqlx::Result<Option
            JOIN tag t ON it.tag_id = t.id
            WHERE it.image_id = i.id
          ) tl on TRUE
-         WHERE i.id = $1
+         WHERE i.trashed_at IS NULL
+           AND i.id = $1
         "#,
         id
     )
@@ -102,7 +104,8 @@ pub async fn get_image_metas_by_owner(
              i.is_public, i.created_at, i.updated_at
            FROM image i
            JOIN image_storage s ON i.storage_id = s.id
-           WHERE i.owner_id = $1
+           WHERE i.trashed_at IS NULL
+             AND i.owner_id = $1
            ORDER BY i.id
            LIMIT $2 OFFSET $3
          )

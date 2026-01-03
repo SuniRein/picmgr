@@ -6,6 +6,7 @@ mod get_storage;
 mod search;
 mod set_thumbnail;
 mod tag;
+mod trash;
 
 pub use create::*;
 pub use get_meta::*;
@@ -15,3 +16,4 @@ pub use get_storage::*;
 pub use search::*;
 pub use set_thumbnail::*;
 pub use tag::*;
+pub use trash::*;

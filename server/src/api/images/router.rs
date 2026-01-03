@@ -22,4 +22,8 @@ pub fn create_router() -> OpenApiRouter<PgPool> {
             super::tag::get_image_tags,
             super::tag::set_image_tags,
         ))
+        .routes(routes!(super::trash::get_trashed_image_metas))
+        .routes(routes!(super::trash::get_trashed_image_count))
+        .routes(routes!(super::trash::trash_image))
+        .routes(routes!(super::trash::restore_trashed_image))
 }

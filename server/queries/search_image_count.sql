@@ -6,8 +6,9 @@ SELECT
 FROM image i
 JOIN image_storage s ON i.storage_id = s.id
 WHERE
+  i.trashed_at IS NULL
   -- Filter by owner_id
-  ($13::int IS NULL OR i.owner_id = $13::int)
+  AND ($13::int IS NULL OR i.owner_id = $13::int)
   -- Filter by width
   AND ($3::int IS NULL OR s.width >= $3::int)
   AND ($4::int IS NULL OR s.width <= $4::int)

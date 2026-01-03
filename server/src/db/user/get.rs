@@ -1,5 +1,5 @@
 use super::super::pagination::DbPagination;
-use chrono::NaiveDateTime;
+use chrono::{DateTime, Utc};
 use serde::Serialize;
 use sqlx::PgPool;
 use tracing::{error, instrument};
@@ -21,7 +21,7 @@ pub struct User {
     pub password_hash: String,
     pub avatar_url: Option<String>,
     pub status: UserStatus,
-    pub created_at: NaiveDateTime,
+    pub created_at: DateTime<Utc>,
 }
 
 #[instrument(skip(pool))]

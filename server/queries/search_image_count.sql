@@ -17,11 +17,11 @@ WHERE
   -- Filter by mime_type
   AND ($7::text IS NULL OR s.mime_type = $7::text)
   -- Filter by created_at
-  AND ($8::timestamp IS NULL OR i.created_at <= $8::timestamp)
-  AND ($9::timestamp IS NULL OR i.created_at >= $9::timestamp)
+  AND ($8::timestamptz IS NULL OR i.created_at <= $8::timestamptz)
+  AND ($9::timestamptz IS NULL OR i.created_at >= $9::timestamptz)
   -- Filter by updated_at
-  AND ($10::timestamp IS NULL OR i.updated_at <= $10::timestamp)
-  AND ($11::timestamp IS NULL OR i.updated_at >= $11::timestamp)
+  AND ($10::timestamptz IS NULL OR i.updated_at <= $10::timestamptz)
+  AND ($11::timestamptz IS NULL OR i.updated_at >= $11::timestamptz)
   -- Filter by is_public
   AND ($12::boolean IS NULL OR i.is_public = $12::boolean)
   -- Filter by album_id

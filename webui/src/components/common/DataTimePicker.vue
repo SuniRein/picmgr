@@ -17,9 +17,17 @@ function syncFromProps() {
     time.value = '';
     return;
   }
-  const datetime = modelValue.toISOString();
-  date.value = datetime.slice(0, 10);
-  time.value = datetime.slice(11, 19);
+
+  const y = modelValue.getFullYear();
+  const m = (modelValue.getMonth() + 1).toString().padStart(2, '0');
+  const d = modelValue.getDate().toString().padStart(2, '0');
+
+  const h = modelValue.getHours().toString().padStart(2, '0');
+  const min = modelValue.getMinutes().toString().padStart(2, '0');
+  const s = modelValue.getSeconds().toString().padStart(2, '0');
+
+  date.value = `${y}-${m}-${d}`;
+  time.value = `${h}:${min}:${s}`;
 }
 
 function updateValue() {
@@ -29,7 +37,7 @@ function updateValue() {
   }
 
   const finalTime = time.value || '00:00:00';
-  const newDate = new Date(`${date.value}T${finalTime}Z`);
+  const newDate = new Date(`${date.value}T${finalTime}`);
 
   if (!Number.isNaN(newDate.getTime())) {
     emits('update:modelValue', newDate);

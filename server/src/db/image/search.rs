@@ -1,5 +1,5 @@
 use super::{super::pagination::DbPagination, get_meta::ImageMeta};
-use chrono::NaiveDateTime;
+use chrono::{DateTime, Utc};
 use serde::Deserialize;
 use sqlx::PgPool;
 use tracing::{error, instrument};
@@ -11,10 +11,10 @@ pub struct DbImageFilter {
     pub min_height: Option<i32>,
     pub max_height: Option<i32>,
     pub mime_types: Option<String>,
-    pub created_before: Option<NaiveDateTime>,
-    pub created_after: Option<NaiveDateTime>,
-    pub updated_before: Option<NaiveDateTime>,
-    pub updated_after: Option<NaiveDateTime>,
+    pub created_before: Option<DateTime<Utc>>,
+    pub created_after: Option<DateTime<Utc>>,
+    pub updated_before: Option<DateTime<Utc>>,
+    pub updated_after: Option<DateTime<Utc>>,
     pub is_public: Option<bool>,
     pub owner_id: Option<i32>,
     pub album_id: Option<i32>,

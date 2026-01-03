@@ -23,11 +23,6 @@ export interface ImageMeta {
   updated_at: string;
 }
 
-export interface ImageSignature {
-  exp: number;
-  sig: string;
-}
-
 export async function getImageData(params: PaginationParams, signal?: AbortSignal) {
   const response = await api.get<PaginationResponse<ImageData>>('/images', { params, signal });
   return response;
@@ -35,6 +30,34 @@ export async function getImageData(params: PaginationParams, signal?: AbortSigna
 
 export async function getImagesCount() {
   return await api.get<{ count: number }>('/images/count');
+}
+
+export interface ImageFilterOption {
+  min_width?: number;
+  max_width?: number;
+  min_height?: number;
+  max_height?: number;
+  mime_type?: string;
+  created_before?: string;
+  created_after?: string;
+  updated_before?: string;
+  updated_after?: string;
+  is_public?: boolean;
+  album_id?: number;
+  tags: string[];
+}
+
+export async function getFilteredImages(filter: ImageFilterOption, pagination: PaginationParams, signal?: AbortSignal) {
+  return await api.post<PaginationResponse<ImageData>>('/images/search', { filter, pagination }, { signal });
+}
+
+export async function getFilteredImageCount(filter: ImageFilterOption) {
+  return await api.post<{ count: number }>('/images/search/count', filter);
+}
+
+export interface ImageSignature {
+  exp: number;
+  sig: string;
 }
 
 export function getImageUrl(id: number, signature: ImageSignature) {

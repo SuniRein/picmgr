@@ -1,6 +1,6 @@
 import { getAlbumDetails, getAlbums, getAlbumsCount, getImageCountInAlbum, getImagesInAlbum } from './albums';
 import { login, refreshToken } from './auth';
-import { getImageData, getImagesCount, getImageUrl, setImageTags, uploadImageRaw } from './images';
+import { getFilteredImageCount, getFilteredImages, getImageData, getImagesCount, getImageUrl, setImageTags, uploadImageRaw } from './images';
 import { getMe } from './user';
 
 export default {
@@ -11,6 +11,8 @@ export default {
 
   getImageData,
   getImagesCount,
+  getFilteredImages,
+  getFilteredImageCount,
   getImageUrl,
   uploadImageRaw,
   setImageTags,

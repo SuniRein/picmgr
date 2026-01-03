@@ -1,4 +1,4 @@
-import type { ImageData } from '@/api';
+import type { ImageData, ImageFilterOption } from '@/api';
 import api from '@/api';
 
 export interface ImageContext {
@@ -12,17 +12,41 @@ export const useImagesStore = defineStore('images', () => {
 
   const { currentPage, pageSize, resetPagination } = usePagination({ initialPageSize: 20, onPageChange: fetchImages });
 
-  const activeAlbumId = ref<number | null>(null);
+  const albumId = ref<number | null>(null);
 
   async function setContext(context: ImageContext = {}) {
     resetPagination();
-    activeAlbumId.value = context.albumId ?? null;
+    albumId.value = context.albumId ?? null;
+  }
+
+  const imageFilter = useImageFilterStore();
+  watch(() => imageFilter.filter, refresh);
+
+  function makeFilterOption(): ImageFilterOption {
+    const filter = imageFilter.filter;
+    return {
+      min_width: filter.minWidth,
+      max_width: filter.maxWidth,
+      min_height: filter.minHeight,
+      max_height: filter.maxHeight,
+      mime_type: filter.mimeType,
+      created_before: filter.createdBefore?.toISOString().slice(0, -1),
+      created_after: filter.createdAfter?.toISOString().slice(0, -1),
+      updated_before: filter.updatedBefore?.toISOString().slice(0, -1),
+      updated_after: filter.updatedAfter?.toISOString().slice(0, -1),
+      album_id: albumId.value ?? undefined,
+      is_public: filter.visibility === 'all' ? undefined : filter.visibility === 'public',
+      tags: filter.tags,
+    };
   }
 
   async function loadTotalCount() {
     let response;
-    if (activeAlbumId.value !== null) {
-      response = await api.getImageCountInAlbum(activeAlbumId.value);
+    if (imageFilter.activeFilterCount > 0) {
+      response = await api.getFilteredImageCount(makeFilterOption());
+    }
+    else if (albumId.value !== null) {
+      response = await api.getImageCountInAlbum(albumId.value);
     }
     else {
       response = await api.getImagesCount();
@@ -44,8 +68,11 @@ export const useImagesStore = defineStore('images', () => {
       };
 
       let response;
-      if (activeAlbumId.value !== null) {
-        response = await api.getImagesInAlbum(activeAlbumId.value, params, abortController.signal);
+      if (imageFilter.activeFilterCount > 0) {
+        response = await api.getFilteredImages(makeFilterOption(), params, abortController.signal);
+      }
+      else if (albumId.value !== null) {
+        response = await api.getImagesInAlbum(albumId.value, params, abortController.signal);
       }
       else {
         response = await api.getImageData(params, abortController.signal);

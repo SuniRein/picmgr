@@ -44,7 +44,8 @@ await load();
     <Separator />
 
     <div class="flex items-center justify-between">
-      <div class="text-sm text-muted-foreground">
+      <div class="flex items-center gap-2 text-sm text-muted-foreground">
+        <ImageFilter />
         共 <span class="font-medium text-foreground">{{ images.total }}</span> 张图片
       </div>
       <div class="flex items-center gap-2">

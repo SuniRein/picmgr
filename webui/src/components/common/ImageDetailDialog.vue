@@ -89,6 +89,9 @@ function cancelTagsEdit() {
                 <Info class="h-5 w-5 text-primary" />
                 资源详情 #{{ image.meta.id }}
               </DialogTitle>
+              <DialogDescription class="sr-only">
+                查看有关此图像的详细信息，包括属性和元数据。
+              </DialogDescription>
             </DialogHeader>
 
             <ScrollArea class="flex-1 overflow-auto">

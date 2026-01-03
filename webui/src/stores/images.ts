@@ -1,10 +1,6 @@
 import type { ImageData, ImageFilterOption, ImageSignature, ThumbnailSize } from '@/api';
 import api from '@/api';
 
-export interface ImageContext {
-  albumId?: number;
-}
-
 export const useImagesStore = defineStore('images', () => {
   const items = ref<ImageData[]>([]);
   const total = ref(0);
@@ -12,15 +8,15 @@ export const useImagesStore = defineStore('images', () => {
 
   const { currentPage, pageSize, resetPagination } = usePagination({ initialPageSize: 20, onPageChange: fetchImages });
 
-  const albumId = ref<number | null>(null);
-
-  async function setContext(context: ImageContext = {}) {
+  async function init() {
     resetPagination();
-    albumId.value = context.albumId ?? null;
+    await refresh();
   }
 
+  const { id: albumId } = storeToRefs(useCurrentAlbumStore());
+
   const imageFilter = useImageFilterStore();
-  watch(() => imageFilter.filter, refresh);
+  watch(() => imageFilter.filter, init);
 
   function makeFilterOption(): ImageFilterOption {
     const filter = imageFilter.filter;
@@ -125,11 +121,10 @@ export const useImagesStore = defineStore('images', () => {
     currentPage,
     pageSize,
 
-    setContext,
-
+    init,
+    refresh,
     loadTotalCount,
     fetchImages,
-    refresh,
 
     getImageUrl,
     getThumbnailUrl,

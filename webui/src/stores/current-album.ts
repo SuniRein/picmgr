@@ -5,10 +5,6 @@ export const useCurrentAlbumStore = defineStore('currentAlbum', () => {
   const albumId = ref<number | null>(null);
   const albumMeta = ref<AlbumMeta | null>(null);
 
-  function setAlbumId(id: number | null) {
-    albumId.value = id;
-  }
-
   async function fetchAlbumMeta() {
     if (albumId.value === null) {
       albumMeta.value = null;
@@ -20,8 +16,8 @@ export const useCurrentAlbumStore = defineStore('currentAlbum', () => {
   }
 
   return {
+    id: albumId,
     meta: readonly(albumMeta),
-    setAlbumId,
     fetchAlbumMeta,
   };
 });

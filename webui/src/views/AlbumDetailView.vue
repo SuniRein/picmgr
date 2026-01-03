@@ -15,13 +15,10 @@ function onPageSizeChange(val: number) {
 }
 
 async function load() {
-  const albumId = Number(route.params.albumId);
-  currentAlbum.setAlbumId(albumId);
-  images.setContext({ albumId });
-
+  currentAlbum.id = Number(route.params.albumId);
   await Promise.all([
     currentAlbum.fetchAlbumMeta(),
-    images.refresh(),
+    images.init(),
   ]);
 }
 await load();

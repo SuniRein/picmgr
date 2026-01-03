@@ -3,6 +3,7 @@ import { Download, FolderPlus, Plus, Trash, Unlock } from 'lucide-vue-next';
 import { ImageUploadModal } from '@/components/upload';
 
 const images = useImagesStore();
+const currentAlbum = useCurrentAlbumStore();
 
 function onPageSizeChange(val: number) {
   images.pageSize = val;
@@ -14,8 +15,8 @@ const selectedImage = ref<ReadOnlyImageData | null>(null);
 const isUploadModalOpen = ref(false);
 
 async function load() {
-  images.setContext();
-  await images.refresh();
+  currentAlbum.id = null;
+  await images.init();
 }
 await load();
 </script>

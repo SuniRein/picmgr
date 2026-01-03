@@ -66,7 +66,7 @@ await load();
         v-for="img in images.items"
         :key="img.meta.id"
         :title="`Image ${img.meta.id}`"
-        :url="images.getImageUrl(img.meta.id, img.signature)"
+        :url="images.getThumbnailUrl(img.meta.id, 'medium', img.signature)"
         :actions="[
           { label: '下载', icon: Download },
           { label: '设为公开', icon: Unlock },

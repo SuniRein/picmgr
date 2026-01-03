@@ -65,6 +65,13 @@ export function getImageUrl(id: number, signature: ImageSignature) {
   return `/api/images/${id}/raw/signed?exp=${exp}&sig=${sig}`;
 }
 
+export type ThumbnailSize = 'small' | 'medium' | 'large';
+
+export function getThumbnailUrl(id: number, size: ThumbnailSize, signature: ImageSignature) {
+  const { exp, sig } = signature;
+  return `/api/images/${id}/thumbnails/${size}/signed?exp=${exp}&sig=${sig}`;
+}
+
 export async function uploadImageRaw(file: File, onProgress?: (percent: number) => void) {
   await api.post('/images/upload/raw', file, {
     headers: {

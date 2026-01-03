@@ -1,4 +1,4 @@
-import type { ImageData, ImageFilterOption } from '@/api';
+import type { ImageData, ImageFilterOption, ImageSignature, ThumbnailSize } from '@/api';
 import api from '@/api';
 
 export interface ImageContext {
@@ -97,8 +97,12 @@ export const useImagesStore = defineStore('images', () => {
     ]);
   }
 
-  function getImageUrl(id: number, signature: ImageData['signature']) {
+  function getImageUrl(id: number, signature: ImageSignature) {
     return api.getImageUrl(id, signature);
+  }
+
+  function getThumbnailUrl(id: number, size: ThumbnailSize, signature: ImageSignature) {
+    return api.getThumbnailUrl(id, size, signature);
   }
 
   async function setTags(id: number, tags: string[]) {
@@ -128,6 +132,7 @@ export const useImagesStore = defineStore('images', () => {
     refresh,
 
     getImageUrl,
+    getThumbnailUrl,
 
     setTags,
   };

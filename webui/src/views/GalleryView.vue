@@ -44,9 +44,11 @@ await load();
     <Separator />
 
     <div class="flex items-center justify-between">
-      <div class="flex items-center gap-2 text-sm text-muted-foreground">
+      <div class="flex items-center gap-2">
         <ImageFilter />
-        共 <span class="font-medium text-foreground">{{ images.total }}</span> 张图片
+        <span class="text-sm text-muted-foreground">
+          共 <span class="font-medium text-foreground">{{ images.total }}</span> 张图片
+        </span>
       </div>
       <div class="flex items-center gap-2">
         <RefreshButton :loading="images.isLoading" @click="images.refresh" />

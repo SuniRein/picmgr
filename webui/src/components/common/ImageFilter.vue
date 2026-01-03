@@ -12,10 +12,10 @@ const maxWidth = refManualReset(() => filter.value.maxWidth?.toString() ?? '');
 const minHeight = refManualReset(() => filter.value.minHeight?.toString() ?? '');
 const maxHeight = refManualReset(() => filter.value.maxHeight?.toString() ?? '');
 const mimeType = refManualReset(() => filter.value.mimeType ?? 'all');
-const createdBefore = refManualReset(() => filter.value.createdBefore?.toDateString() ?? '');
-const createdAfter = refManualReset(() => filter.value.createdAfter?.toDateString() ?? '');
-const updatedBefore = refManualReset(() => filter.value.updatedBefore?.toDateString() ?? '');
-const updatedAfter = refManualReset(() => filter.value.updatedAfter?.toDateString() ?? '');
+const createdBefore = refManualReset(() => filter.value.createdBefore ?? null);
+const createdAfter = refManualReset(() => filter.value.createdAfter ?? null);
+const updatedBefore = refManualReset(() => filter.value.updatedBefore ?? null);
+const updatedAfter = refManualReset(() => filter.value.updatedAfter ?? null);
 const visibility = refManualReset(() => filter.value.visibility);
 
 const mimeTypes = [
@@ -166,6 +166,30 @@ function reset() {
                   </SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            <div class="space-y-2">
+              <Label class="text-xs font-semibold">创建时间</Label>
+              <div class="flex items-center gap-2">
+                <span class="text-sm">从</span>
+                <DataTimePicker v-model="createdAfter" class="flex-1" />
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-sm">到</span>
+                <DataTimePicker v-model="createdBefore" class="flex-1" />
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              <Label class="text-xs font-semibold">更新时间</Label>
+              <div class="flex items-center gap-2">
+                <span class="text-sm">从</span>
+                <DataTimePicker v-model="updatedAfter" class="flex-1" />
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-sm">到</span>
+                <DataTimePicker v-model="updatedBefore" class="flex-1" />
+              </div>
             </div>
 
             <div class="space-y-2">

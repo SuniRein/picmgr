@@ -1,5 +1,6 @@
 import { getAlbumDetails, getAlbums, getAlbumsCount, getImageCountInAlbum, getImagesInAlbum } from './albums';
 import { login, refreshToken } from './auth';
+import { injectRouter } from './base';
 import {
   getFilteredImageCount,
   getFilteredImages,
@@ -20,6 +21,8 @@ import {
   trashImage,
 } from './trash';
 import { getMe } from './user';
+
+export { injectRouter };
 
 export default {
   login,

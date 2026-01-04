@@ -1,3 +1,4 @@
+import type { Router } from 'vue-router';
 import axios from 'axios';
 
 export const api = axios.create({
@@ -19,3 +20,23 @@ async function getAccessToken() {
   const { getValidAccessToken } = useUserStore();
   return await getValidAccessToken();
 }
+
+// Redirect to login on 401 responses
+let router: Router | null = null;
+
+export function injectRouter(r: Router) {
+  router = r;
+}
+
+api.interceptors.response.use(
+  response => response,
+  (error) => {
+    const status = error.response?.status;
+    if (status === 401 && router) {
+      if (router.currentRoute.value.name !== P.LOGIN.name) {
+        router.push({ name: P.LOGIN.name });
+      }
+    }
+    return Promise.reject(error);
+  },
+);

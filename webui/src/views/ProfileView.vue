@@ -41,6 +41,12 @@ const createdAt = computed(() => {
     return v;
   }
 });
+
+const infoDisplay = computed(() => [
+  { label: '用户名', value: user.profile?.username, icon: User },
+  { label: '电子邮箱', value: user.profile?.email, icon: Mail },
+  { label: '注册日期', value: createdAt, icon: Calendar },
+]);
 </script>
 
 <template>
@@ -138,23 +144,20 @@ const createdAt = computed(() => {
             md:grid-cols-2
           "
         >
-          <InfoItem label="用户名" :value="user.profile.username">
-            <template #icon>
-              <User class="h-4 w-4 text-muted-foreground/60" />
-            </template>
-          </InfoItem>
+          <div v-for="item in infoDisplay" :key="item.label" class="flex items-start gap-3">
+            <div class="mt-0.5 shrink-0 text-muted-foreground">
+              <component :is="item.icon" class="h-4 w-4 text-muted-foreground" />
+            </div>
 
-          <InfoItem label="电子邮箱" :value="user.profile.email">
-            <template #icon>
-              <Mail class="h-4 w-4 text-muted-foreground/60" />
-            </template>
-          </InfoItem>
-
-          <InfoItem label="注册日期" :value="createdAt">
-            <template #icon>
-              <Calendar class="h-4 w-4 text-muted-foreground/60" />
-            </template>
-          </InfoItem>
+            <div class="flex flex-col gap-1.5">
+              <span class="text-sm font-bold tracking-widest text-muted-foreground/60 uppercase">
+                {{ item.label }}
+              </span>
+              <span class="text-base leading-none font-semibold text-foreground/90">
+                {{ item.value || '-' }}
+              </span>
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>

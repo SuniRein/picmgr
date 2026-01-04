@@ -93,19 +93,3 @@ export async function uploadImageRaw(file: File, onProgress?: (percent: number) 
 export async function setImageTags(id: number, tags: string[]) {
   await api.put(`/images/${id}/tags`, { tags });
 }
-
-export async function getTrashedImages(params: PaginationParams, signal?: AbortSignal) {
-  return await api.get<PaginationResponse<ImageData>>('/trash/images', { params, signal });
-}
-
-export async function getTrashedImageCount() {
-  return await api.get<{ count: number }>('/trash/images/count');
-}
-
-export async function trashImage(id: number) {
-  await api.delete(`/images/${id}`);
-}
-
-export async function restoreImage(id: number) {
-  await api.post(`/trash/images/${id}/restore`);
-}

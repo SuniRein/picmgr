@@ -135,6 +135,17 @@ export const useImagesStore = defineStore('images', () => {
     await refresh();
   }
 
+  async function deleteTrashedImage(id: number) {
+    await api.deleteTrashedImage(id);
+    await refresh();
+  }
+
+  async function emptyTrash() {
+    const { count } = (await api.deleteAllTrashedImages()).data;
+    await refresh();
+    return count;
+  }
+
   return {
     items: readonly(items),
     total: readonly(total),
@@ -155,6 +166,8 @@ export const useImagesStore = defineStore('images', () => {
 
     trashImage,
     restoreImage,
+    deleteTrashedImage,
+    emptyTrash,
     TRASHED_IMAGE_SAVE_DAYS: 30,
   };
 });

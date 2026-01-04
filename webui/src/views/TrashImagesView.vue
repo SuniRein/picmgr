@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArchiveRestore, Trash } from 'lucide-vue-next';
+import { ArchiveRestore, Trash, Trash2 } from 'lucide-vue-next';
 
 const images = useImagesStore();
 
@@ -16,6 +16,16 @@ function getRemainingDays(deletedAt: Date): number {
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
   return Math.max(0, images.TRASHED_IMAGE_SAVE_DAYS - diffDays);
 }
+
+const imageToDelete = ref<number | null>(null);
+const deleteImageDialogOpen = computed({
+  get: () => imageToDelete.value !== null,
+  set: (value) => {
+    if (!value)
+      imageToDelete.value = null;
+  },
+});
+const emptyTrashDialogOpen = ref(false);
 
 async function load() {
   await images.init('trash');
@@ -38,7 +48,11 @@ await load();
         </p>
       </div>
 
-      <div class="flex items-center gap-2" />
+      <div class="flex items-center gap-2">
+        <Button variant="destructive" size="sm" class="ml-2" @click="emptyTrashDialogOpen = true">
+          <Trash /> 清空回收站
+        </Button>
+      </div>
     </div>
 
     <Separator />
@@ -71,6 +85,7 @@ await load();
         :url="images.getThumbnailUrl(img.meta.id, 'medium', img.signature)"
         :actions="[
           { label: '恢复', icon: ArchiveRestore, handler: () => images.restoreImage(img.meta.id) },
+          { label: '永久删除', icon: Trash2, variant: 'destructive', handler: () => imageToDelete = img.meta.id },
         ]"
         @open="selectedImage = img"
       >
@@ -105,6 +120,22 @@ await load();
       :image="selectedImage"
       :url="selectedImage ? images.getImageUrl(selectedImage.meta.id, selectedImage.signature) : ''"
       @close="selectedImage = null"
+    />
+
+    <ConfirmDialog
+      v-model:open="deleteImageDialogOpen"
+      variant="destructive"
+      title="永久删除图片？"
+      description="图片将从系统中永久删除，删除后将无法恢复。"
+      @confirm="() => images.deleteTrashedImage(imageToDelete!)"
+    />
+
+    <ConfirmDialog
+      v-model:open="emptyTrashDialogOpen"
+      variant="destructive"
+      title="清空回收站？"
+      description="图片将从系统中永久删除，删除后将无法恢复。"
+      @confirm="() => images.emptyTrash()"
     />
   </div>
 </template>

@@ -8,13 +8,17 @@ import {
   getImages,
   getImageUrl,
   getThumbnailUrl,
+  setImageTags,
+  uploadImageRaw,
+} from './images';
+import {
+  deleteAllTrashedImages,
+  deleteTrashedImage,
   getTrashedImageCount,
   getTrashedImages,
   restoreImage,
-  setImageTags,
   trashImage,
-  uploadImageRaw,
-} from './images';
+} from './trash';
 import { getMe } from './user';
 
 export default {
@@ -32,10 +36,13 @@ export default {
   getThumbnailUrl,
   setImageTags,
   uploadImageRaw,
+
   getTrashedImages,
   getTrashedImageCount,
   trashImage,
   restoreImage,
+  deleteTrashedImage,
+  deleteAllTrashedImages,
 
   getAlbums,
   getAlbumsCount,

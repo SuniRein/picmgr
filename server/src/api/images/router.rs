@@ -17,13 +17,10 @@ pub fn create_router() -> OpenApiRouter<PgPool> {
         .routes(routes!(super::get_thumbnail::get_thumbnail_signed))
         .routes(routes!(super::search::get_filtered_image_meta_count))
         .routes(routes!(super::search::get_filtered_image_metas))
-        .merge(upload_router)
         .routes(routes!(
             super::tag::get_image_tags,
             super::tag::set_image_tags,
         ))
-        .routes(routes!(super::trash::get_trashed_image_metas))
-        .routes(routes!(super::trash::get_trashed_image_count))
+        .merge(upload_router)
         .routes(routes!(super::trash::trash_image))
-        .routes(routes!(super::trash::restore_trashed_image))
 }

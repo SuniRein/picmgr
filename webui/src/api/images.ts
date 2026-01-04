@@ -95,17 +95,17 @@ export async function setImageTags(id: number, tags: string[]) {
 }
 
 export async function getTrashedImages(params: PaginationParams, signal?: AbortSignal) {
-  return await api.get<PaginationResponse<ImageData>>('/images/trash', { params, signal });
+  return await api.get<PaginationResponse<ImageData>>('/trash/images', { params, signal });
 }
 
 export async function getTrashedImageCount() {
-  return await api.get<{ count: number }>('/images/trash/count');
+  return await api.get<{ count: number }>('/trash/images/count');
 }
 
 export async function trashImage(id: number) {
-  await api.post(`/images/${id}/trash`);
+  await api.delete(`/images/${id}`);
 }
 
 export async function restoreImage(id: number) {
-  await api.post(`/images/${id}/restore`);
+  await api.post(`/trash/images/${id}/restore`);
 }

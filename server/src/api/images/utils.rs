@@ -41,3 +41,17 @@ where
         ApiError::NotFound
     })
 }
+
+pub async fn check_user_permission(pool: &PgPool, image_id: i32, user_id: i32) -> ApiResult<()> {
+    let permission = image::get_image_permission(pool, image_id)
+        .await?
+        .ok_or_else(|| {
+            info!("image not found");
+            ApiError::NotFound
+        })?;
+    if permission.owner_id != Some(user_id) {
+        info!("permission denied");
+        return Err(ApiError::PermissionDenied);
+    }
+    Ok(())
+}

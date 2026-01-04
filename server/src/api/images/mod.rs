@@ -1,5 +1,5 @@
 pub(super) mod sign;
-mod utils;
+pub(super) mod utils;
 
 mod get_meta;
 mod get_raw;

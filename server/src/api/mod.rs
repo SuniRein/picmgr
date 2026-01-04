@@ -6,6 +6,7 @@ mod stats;
 pub mod albums;
 pub mod auth;
 pub mod images;
+pub mod trash;
 pub mod user;
 pub mod users;
 

@@ -1,6 +1,5 @@
-use super::{
-    super::{claims::UserClaims, doc::IMAGES_TAG, error::ApiResult},
-    utils::check_user_permission,
+use super::super::{
+    claims::UserClaims, doc::TRASH_TAG, error::ApiResult, images::utils::check_user_permission,
 };
 use crate::db::image;
 use axum::{
@@ -12,16 +11,16 @@ use axum::{
 use sqlx::PgPool;
 use tracing::{info, instrument};
 
-/// Trash an image
+/// Restore a trashed image
 ///
-/// Moves the specified image to trash for the authenticated user.
+/// Restores the specified image from trash for the authenticated user.
 #[utoipa::path(
-    delete,
-    tag = IMAGES_TAG,
-    path = "/images/{id}",
+    post,
+    tag = TRASH_TAG,
+    path = "/trash/images/{id}/restore",
     security(("userAuth" = [])),
     responses(
-        (status = NO_CONTENT, description = "image trashed successfully"),
+        (status = NO_CONTENT, description = "image restored successfully"),
         (status = NOT_FOUND, description = "image not found"),
         (status = FORBIDDEN, description = "permission denied"),
         (status = UNAUTHORIZED, description = "invalid or missing token"),
@@ -29,13 +28,13 @@ use tracing::{info, instrument};
 )]
 #[debug_handler]
 #[instrument(skip(pool))]
-pub async fn trash_image(
+pub async fn restore_trashed_image(
     State(pool): State<PgPool>,
     claims: UserClaims,
     Path(image_id): Path<i32>,
 ) -> ApiResult<impl IntoResponse> {
     check_user_permission(&pool, image_id, claims.user_id()).await?;
-    image::trash_image(&pool, image_id).await?;
-    info!("image trashed successfully");
+    image::restore_trashed_image(&pool, image_id).await?;
+    info!("image restored successfully");
     Ok(StatusCode::NO_CONTENT)
 }

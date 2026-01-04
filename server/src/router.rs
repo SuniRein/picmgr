@@ -1,4 +1,4 @@
-use crate::api::{albums, auth, create_api_doc, images, user, users};
+use crate::api::{albums, auth, create_api_doc, images, trash, user, users};
 use axum::Router;
 use sqlx::PgPool;
 use utoipa_axum::router::OpenApiRouter;
@@ -10,7 +10,8 @@ pub fn create_router(pool: PgPool) -> Router {
         .merge(users::create_router())
         .merge(auth::create_router())
         .merge(images::create_router())
-        .merge(albums::create_router());
+        .merge(albums::create_router())
+        .merge(trash::create_router());
 
     let (router, api) = OpenApiRouter::with_openapi(create_api_doc())
         .nest("/api", api_router)

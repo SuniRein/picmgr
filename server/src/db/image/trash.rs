@@ -1,20 +1,42 @@
-use super::{super::pagination::DbPagination, get_meta::ImageMeta};
-use sqlx::PgPool;
+use super::super::pagination::DbPagination;
+use chrono::{DateTime, Utc};
+use serde::Serialize;
+use sqlx::{FromRow, PgPool};
 use tracing::{error, instrument};
+
+#[derive(Debug, FromRow, Serialize, utoipa::ToSchema)]
+pub struct TrashedImageMeta {
+    pub id: i32,
+    pub owner_id: Option<i32>,
+
+    pub size_bytes: i64,
+    pub width: i32,
+    pub height: i32,
+    pub mime_type: String,
+    pub exif: Option<serde_json::Value>,
+
+    pub is_public: bool,
+
+    pub tags: Vec<String>,
+
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+    pub trashed_at: DateTime<Utc>,
+}
 
 #[instrument(skip(pool))]
 pub async fn get_user_trashed_image_metas(
     pool: &PgPool,
     owner_id: i32,
     pagination: DbPagination,
-) -> sqlx::Result<Vec<ImageMeta>> {
+) -> sqlx::Result<Vec<TrashedImageMeta>> {
     sqlx::query_as!(
-        ImageMeta,
+        TrashedImageMeta,
         r#"
         SELECT
           i.id, i.owner_id,
           s.size_bytes, s.width, s.height, s.mime_type, s.exif,
-          i.is_public, i.created_at, i.updated_at,
+          i.is_public, i.created_at, i.updated_at, i.trashed_at AS "trashed_at!",
           COALESCE(tl.tags, '{}'::text[]) AS "tags!"
         FROM image i
         JOIN image_storage s ON i.storage_id = s.id

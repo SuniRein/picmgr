@@ -155,6 +155,7 @@ export const useImagesStore = defineStore('images', () => {
 
     trashImage,
     restoreImage,
+    TRASHED_IMAGE_SAVE_DAYS: 30,
   };
 });
 

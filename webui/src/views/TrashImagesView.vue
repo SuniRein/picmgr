@@ -10,6 +10,13 @@ function onPageSizeChange(val: number) {
 
 const selectedImage = ref<ReadOnlyImageData | null>(null);
 
+function getRemainingDays(deletedAt: Date): number {
+  const now = new Date();
+  const diffTime = now.getTime() - deletedAt.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  return Math.max(0, images.TRASHED_IMAGE_SAVE_DAYS - diffDays);
+}
+
 async function load() {
   await images.init('trash');
 }
@@ -27,7 +34,7 @@ await load();
         </div>
         <p class="text-sm text-muted-foreground">
           管理和浏览您已删除的图片
-          <span class="text-xs">（图片将在30天后被永久删除）</span>
+          <span class="text-xs">（图片将在 {{ images.TRASHED_IMAGE_SAVE_DAYS }} 天后被永久删除）</span>
         </p>
       </div>
 
@@ -66,7 +73,13 @@ await load();
           { label: '恢复', icon: ArchiveRestore, handler: () => images.restoreImage(img.meta.id) },
         ]"
         @open="selectedImage = img"
-      />
+      >
+        <template #extra-info>
+          <Badge v-if="img.meta.trashed_at" class="opacity-80">
+            {{ getRemainingDays(new Date(img.meta.trashed_at)) }} 天
+          </Badge>
+        </template>
+      </ImageCard>
     </div>
 
     <div

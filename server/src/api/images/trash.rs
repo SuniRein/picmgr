@@ -6,18 +6,33 @@ use super::{
         pagination::{PaginatedResponse, PaginationQuery},
         stats::CountResponse,
     },
-    get_meta::ImageMetaResponse,
+    sign::SignedQuery,
 };
-use crate::db::image;
+use crate::db::image::{self, TrashedImageMeta};
 use axum::{
     Json, debug_handler,
     extract::{Path, Query, State},
     http::StatusCode,
     response::IntoResponse,
 };
-use chrono::Utc;
+use chrono::{DateTime, Utc};
+use serde::Serialize;
 use sqlx::PgPool;
 use tracing::{info, instrument};
+
+#[derive(Serialize, utoipa::ToSchema)]
+pub struct TrashedImageMetaResponse {
+    meta: TrashedImageMeta,
+    signature: SignedQuery,
+}
+
+impl TrashedImageMetaResponse {
+    pub fn generate_from(meta: TrashedImageMeta, now: DateTime<Utc>) -> Self {
+        let id = meta.id;
+        let signature = SignedQuery::generate(id, now);
+        Self { meta, signature }
+    }
+}
 
 /// Get metadata for trashed images
 ///
@@ -29,7 +44,7 @@ use tracing::{info, instrument};
     security(("userAuth" = [])),
     params(PaginationQuery),
     responses(
-        (status = OK, description = "success response", body = PaginatedResponse<ImageMetaResponse>),
+        (status = OK, description = "success response", body = PaginatedResponse<TrashedImageMetaResponse>),
         (status = BAD_REQUEST, description = "invalid pagination parameters"),
         (status = UNAUTHORIZED, description = "invalid or missing token"),
     ),
@@ -40,7 +55,7 @@ pub async fn get_trashed_image_metas(
     State(pool): State<PgPool>,
     claims: UserClaims,
     Query(pagination): Query<PaginationQuery>,
-) -> ApiResult<Json<PaginatedResponse<ImageMetaResponse>>> {
+) -> ApiResult<Json<PaginatedResponse<TrashedImageMetaResponse>>> {
     let pagination = pagination.check()?;
 
     let metas =
@@ -51,7 +66,7 @@ pub async fn get_trashed_image_metas(
     Ok(Json(PaginatedResponse::new(
         metas
             .into_iter()
-            .map(|meta| ImageMetaResponse::generate_from(meta, now))
+            .map(|meta| TrashedImageMetaResponse::generate_from(meta, now))
             .collect(),
         pagination,
     )))

@@ -21,6 +21,7 @@ export interface ImageMeta {
 
   created_at: string;
   updated_at: string;
+  trashed_at?: string;
 }
 
 export async function getImage(id: number) {

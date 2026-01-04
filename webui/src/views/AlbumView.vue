@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { FolderPlus, Plus } from 'lucide-vue-next';
-import { AlbumCard, CreateAlbumModal } from '@/components/album';
 
 const router = useRouter();
 const albums = useAlbumsStore();

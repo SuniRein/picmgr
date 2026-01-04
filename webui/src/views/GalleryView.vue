@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { ImageSignature } from '@/api';
 import { CheckSquare, Download, FolderPlus, Plus, Trash2, Unlock } from 'lucide-vue-next';
-import { ImageUploadModal } from '@/components/upload';
 
 const images = useImagesStore();
 
@@ -125,14 +124,14 @@ await load();
 
     <ImageUploadModal v-model:open="isUploadModalOpen" />
 
-    <ImageDetailDialog
+    <ImageDetailModal
       :image="selectedImage"
       :url="selectedImage ? images.getImageUrl(selectedImage.meta.id, selectedImage.signature) : ''"
       @update:tags="tags => images.setTags(selectedImage!.meta.id, tags)"
       @close="selectedImage = null"
     />
 
-    <ImageMultiSelectDialog
+    <ImageMultiSelectBar
       v-model:open="multiSelect.enabled"
       :selected="multiSelect.items.size"
       @select-all="multiSelect.selectAll"

@@ -110,7 +110,7 @@ await load();
       :total-items="images.total"
     />
 
-    <ImageDetailDialog
+    <ImageDetailModal
       readonly
       :image="selectedImage"
       :url="selectedImage ? images.getImageUrl(selectedImage.meta.id, selectedImage.signature) : ''"

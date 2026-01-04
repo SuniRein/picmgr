@@ -139,6 +139,13 @@ await load();
       v-model:open="multiSelect.enabled"
       :selected="multiSelect.items.size"
       @select-all="multiSelect.selectAll"
+      @play="openLightBox"
+    />
+
+    <ImageLightBox
+      v-model:open="isLightboxOpen"
+      v-model:index="lightboxIndex"
+      :ids="lightboxIds"
     />
   </div>
 </template>

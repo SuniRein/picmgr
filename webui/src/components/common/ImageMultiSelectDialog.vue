@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CheckSquare, X } from 'lucide-vue-next';
+import { CheckSquare, Play, X } from 'lucide-vue-next';
 
 interface Props {
   selected?: number;
@@ -8,6 +8,7 @@ defineProps<Props>();
 
 const emit = defineEmits<{
   selectAll: [];
+  play: [];
 }>();
 
 const open = defineModel<boolean>('open');
@@ -39,6 +40,10 @@ const open = defineModel<boolean>('open');
       <div class="flex items-center gap-2">
         <Button variant="ghost" size="icon" title="全选当前页" @click="emit('selectAll')">
           <CheckSquare />
+        </Button>
+
+        <Button variant="ghost" size="icon" title="轮播图片" @click="emit('play')">
+          <Play />
         </Button>
       </div>
 

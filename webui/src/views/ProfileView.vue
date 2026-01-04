@@ -110,12 +110,7 @@ const createdAt = computed(() => {
 
       <CardContent class="space-y-6">
         <div class="flex items-center gap-5">
-          <div
-            class="
-              h-20 w-20 shrink-0 overflow-hidden rounded-full border-2
-              border-muted bg-muted shadow-sm
-            "
-          >
+          <div class="h-20 w-20 shrink-0 overflow-hidden rounded-full border-2 border-muted bg-muted shadow-sm">
             <img
               v-if="user.profile.avatarUrl"
               :src="user.profile.avatarUrl"

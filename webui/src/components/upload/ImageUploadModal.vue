@@ -59,8 +59,8 @@ async function startUpload() {
 
           <div
             class="
-              group relative overflow-hidden rounded-xl border-2 border-dashed
-              border-muted-foreground/20 bg-muted/30 transition-all
+              group relative overflow-hidden rounded-xl border-2 border-dashed border-muted-foreground/20 bg-muted/30
+              transition-all
               hover:border-primary/50
             "
             :class="{ 'border-primary bg-primary/5': isDragging }"
@@ -94,10 +94,7 @@ async function startUpload() {
             <div class="grid grid-cols-4 gap-3 pr-4">
               <div
                 v-for="(item, index) in tasks" :key="index"
-                class="
-                  group relative aspect-square overflow-hidden rounded-lg border
-                  bg-muted
-                "
+                class="group relative aspect-square overflow-hidden rounded-lg border bg-muted"
               >
                 <img
                   :src="item.preview"
@@ -107,10 +104,7 @@ async function startUpload() {
 
                 <div
                   v-if="item.status === 'uploading' || item.status === 'success' || item.status === 'error'"
-                  class="
-                    absolute inset-0 flex items-center justify-center
-                    bg-black/20 backdrop-blur-[1px]
-                  "
+                  class="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-[1px]"
                 >
                   <div
                     v-if="item.status === 'uploading'"
@@ -128,12 +122,7 @@ async function startUpload() {
                         :stroke-dashoffset="125.6 - (125.6 * item.progress) / 100"
                       />
                     </svg>
-                    <span
-                      class="
-                        absolute inset-0 flex items-center justify-center
-                        text-[10px] font-bold text-white
-                      "
-                    >
+                    <span class="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white">
                       {{ item.progress }}%
                     </span>
                   </div>
@@ -152,8 +141,7 @@ async function startUpload() {
                   variant="destructive"
                   size="icon"
                   class="
-                    absolute top-1 right-1 rounded-full bg-background/80 p-1
-                    opacity-0
+                    absolute top-1 right-1 rounded-full bg-background/80 p-1 opacity-0
                     group-hover:opacity-100
                   "
                   @click="upload.removeTask(index)"

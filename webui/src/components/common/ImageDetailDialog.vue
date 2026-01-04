@@ -66,16 +66,12 @@ function cancelTagsEdit() {
         >
           <div
             class="
-              relative flex min-h-75 flex-1 items-center justify-center
-              overflow-hidden rounded-l-lg bg-muted/40 p-4
+              relative flex min-h-75 flex-1 items-center justify-center overflow-hidden rounded-l-lg bg-muted/40 p-4
             "
           >
             <img
               :src="url" :alt="image.meta.id.toString()"
-              class="
-                max-h-full max-w-full object-contain shadow-2xl
-                transition-transform
-              "
+              class="max-h-full max-w-full object-contain shadow-2xl transition-transform"
             >
           </div>
 
@@ -98,12 +94,7 @@ function cancelTagsEdit() {
             <ScrollArea class="flex-1 overflow-auto">
               <div class="space-y-8 p-6">
                 <section>
-                  <h4
-                    class="
-                      mb-4 text-[11px] font-bold tracking-widest
-                      text-muted-foreground/70 uppercase
-                    "
-                  >
+                  <h4 class="mb-4 text-[11px] font-bold tracking-widest text-muted-foreground/70 uppercase">
                     Properties
                   </h4>
                   <div class="space-y-4">
@@ -172,8 +163,7 @@ function cancelTagsEdit() {
                   <div class="mb-3 flex items-center justify-between">
                     <h4
                       class="
-                        flex items-center gap-2 text-[11px] font-bold
-                        tracking-widest text-muted-foreground/70 uppercase
+                        flex items-center gap-2 text-[11px] font-bold tracking-widest text-muted-foreground/70 uppercase
                       "
                     >
                       <Tag class="h-3 w-3" /> Tags
@@ -248,12 +238,7 @@ function cancelTagsEdit() {
 
                 <section v-if="image.meta.exif && Object.keys(image.meta.exif).length">
                   <div class="mb-4 flex items-center gap-3">
-                    <h4
-                      class="
-                        text-[11px] font-bold tracking-widest
-                        text-muted-foreground/60 uppercase
-                      "
-                    >
+                    <h4 class="text-[11px] font-bold tracking-widest text-muted-foreground/60 uppercase">
                       Metadata
                     </h4>
                     <div class="h-0.5 flex-1 bg-border/60" />
@@ -276,24 +261,17 @@ function cancelTagsEdit() {
 
                       <div
                         class="
-                          group relative overflow-hidden rounded-md
-                          bg-secondary/30 px-2 py-1.5 transition-colors
+                          group relative overflow-hidden rounded-md bg-secondary/30 px-2 py-1.5 transition-colors
                           hover:bg-secondary/50
                         "
                       >
-                        <p
-                          class="
-                            font-mono text-[12px] leading-snug break-all
-                            text-foreground/90
-                          "
-                        >
+                        <p class="font-mono text-[12px] leading-snug break-all text-foreground/90">
                           {{ value }}
                         </p>
 
                         <div
                           class="
-                            absolute top-0 left-0 h-full w-0.5 bg-primary/20
-                            opacity-0 transition-opacity
+                            absolute top-0 left-0 h-full w-0.5 bg-primary/20 opacity-0 transition-opacity
                             group-hover:opacity-100
                           "
                         />

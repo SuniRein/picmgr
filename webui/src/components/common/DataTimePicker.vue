@@ -55,8 +55,7 @@ function updateValue() {
       type="date"
       class="
         flex-3 appearance-none bg-background text-center
-        [&::-webkit-calendar-picker-indicator]:hidden
-        [&::-webkit-calendar-picker-indicator]:appearance-none
+        [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none
       "
       @blur="updateValue"
     />
@@ -66,8 +65,7 @@ function updateValue() {
       step="1"
       class="
         flex-2 appearance-none bg-background text-center
-        [&::-webkit-calendar-picker-indicator]:hidden
-        [&::-webkit-calendar-picker-indicator]:appearance-none
+        [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none
       "
       @blur="updateValue"
     />

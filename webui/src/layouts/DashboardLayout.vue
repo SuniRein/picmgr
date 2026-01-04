@@ -157,8 +157,8 @@ await load();
 
     <nav
       class="
-        fixed right-0 bottom-0 left-0 z-50 flex h-16 items-center justify-around
-        border-t bg-background/80 backdrop-blur-md
+        fixed right-0 bottom-0 left-0 z-50 flex h-16 items-center justify-around border-t bg-background/80
+        backdrop-blur-md
         md:hidden
       "
     >

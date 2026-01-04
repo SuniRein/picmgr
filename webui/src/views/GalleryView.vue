@@ -109,10 +109,7 @@ await load();
         <template #extra-info>
           <span
             v-if="img.meta.is_public"
-            class="
-              flex items-center justify-center gap-1 px-1 text-xs
-              text-muted-foreground/90
-            "
+            class="flex items-center justify-center gap-1 px-1 text-xs text-muted-foreground/90"
           >
             <Unlock class="h-3 w-3" /> 公开
           </span>

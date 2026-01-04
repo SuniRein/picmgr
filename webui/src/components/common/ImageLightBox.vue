@@ -45,17 +45,9 @@ useEventListener('keydown', (e) => {
   >
     <div
       v-if="open"
-      class="
-        fixed inset-0 z-100 flex flex-col items-center justify-center
-        bg-black/95 backdrop-blur-sm
-      "
+      class="fixed inset-0 z-100 flex flex-col items-center justify-center bg-black/95 backdrop-blur-sm"
     >
-      <div
-        class="
-          absolute top-0 z-10 flex w-full items-center justify-between p-4
-          text-white
-        "
-      >
+      <div class="absolute top-0 z-10 flex w-full items-center justify-between p-4 text-white">
         <span class="text-sm font-medium">
           {{ index + 1 }} / {{ ids.length }}
         </span>

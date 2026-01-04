@@ -20,17 +20,14 @@ const emit = defineEmits<{
     <ContextMenuTrigger as-child>
       <div
         class="
-          group relative cursor-pointer gap-2 overflow-hidden border-0
-          bg-muted/20 py-0.5 shadow-none transition-colors
+          group relative cursor-pointer gap-2 overflow-hidden border-0 bg-muted/20 py-0.5 shadow-none transition-colors
           hover:bg-muted/40
         "
         @click="emit('open')"
       >
         <div
           v-if="selectionMode"
-          class="
-            absolute top-2 right-2 z-20 flex items-center transition-opacity
-          "
+          class="absolute top-2 right-2 z-20 flex items-center transition-opacity"
           @click.stop
         >
           <Checkbox

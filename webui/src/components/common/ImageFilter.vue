@@ -103,8 +103,7 @@ function reset() {
         <span
           v-if="activeFilterCount > 0"
           class="
-            absolute -top-0.5 -right-0.5 flex h-3 w-3 items-center
-            justify-center rounded-full bg-primary text-[8px]
+            absolute -top-0.5 -right-0.5 flex h-3 w-3 items-center justify-center rounded-full bg-primary text-[8px]
             text-primary-foreground
           "
         >
@@ -114,11 +113,7 @@ function reset() {
     </PopoverTrigger>
 
     <PopoverContent align="start" class="flex w-80 p-0">
-      <ScrollArea
-        class="
-          max-h-[calc(var(--reka-popover-content-available-height)-4px)] flex-1
-        "
-      >
+      <ScrollArea class="max-h-[calc(var(--reka-popover-content-available-height)-4px)] flex-1">
         <div class="space-y-6 p-4">
           <h4 class="mb-4 flex items-center gap-2 border-b pb-2 font-medium">
             <Settings2 class="h-4 w-4" /> 高级筛选

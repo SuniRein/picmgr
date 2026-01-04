@@ -26,8 +26,8 @@ const open = defineModel<boolean>('open');
     <div
       v-if="open"
       class="
-        fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 items-center gap-4
-        rounded-full border bg-background px-6 py-3 shadow-lg ring-1 ring-border
+        fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 items-center gap-4 rounded-full border bg-background px-6
+        py-3 shadow-lg ring-1 ring-border
       "
     >
       <div class="flex items-center gap-2 border-r pr-4 text-sm font-medium">

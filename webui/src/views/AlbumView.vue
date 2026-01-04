@@ -73,16 +73,9 @@ await refresh();
 
     <div
       v-else-if="!albums.isLoading"
-      class="
-        flex h-100 flex-col items-center justify-center rounded-xl border
-        border-dashed bg-muted/10
-      "
+      class="flex h-100 flex-col items-center justify-center rounded-xl border border-dashed bg-muted/10"
     >
-      <div
-        class="
-          flex h-20 w-20 items-center justify-center rounded-full bg-muted/50
-        "
-      >
+      <div class="flex h-20 w-20 items-center justify-center rounded-full bg-muted/50">
         <FolderPlus class="h-10 w-10 text-muted-foreground/60" />
       </div>
       <h3 class="mt-4 text-lg font-medium text-foreground/80">

@@ -97,12 +97,7 @@ await load();
       </ImageCard>
     </div>
 
-    <div
-      v-else class="
-        flex h-64 flex-col items-center justify-center rounded-lg border
-        border-dashed
-      "
-    >
+    <div v-else class="flex h-64 flex-col items-center justify-center rounded-lg border border-dashed">
       <Trash class="h-10 w-10 text-muted-foreground/40" />
       <p class="mt-2 text-sm text-muted-foreground">
         回收站为空

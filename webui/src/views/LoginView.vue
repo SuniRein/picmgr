@@ -50,12 +50,7 @@ function handleGuest() {
         <div class="space-y-2">
           <Label class="text-sm leading-none font-medium">用户名</Label>
           <div class="relative">
-            <User
-              class="
-                pointer-events-none absolute top-1/2 left-2 h-4 w-4
-                -translate-y-1/2 text-muted-foreground
-              "
-            />
+            <User class="pointer-events-none absolute top-1/2 left-2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               v-model="name"
               placeholder="username"
@@ -68,12 +63,7 @@ function handleGuest() {
         <div class="space-y-2">
           <Label class="text-sm leading-none font-medium">密码</Label>
           <div class="relative">
-            <Lock
-              class="
-                pointer-events-none absolute top-1/2 left-2 h-4 w-4
-                -translate-y-1/2 text-muted-foreground
-              "
-            />
+            <Lock class="pointer-events-none absolute top-1/2 left-2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               v-model="password"
               type="password"

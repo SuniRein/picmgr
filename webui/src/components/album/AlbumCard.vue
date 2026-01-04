@@ -21,8 +21,7 @@ const actions: ActionItem[] = [
     <ContextMenuTrigger>
       <Card
         class="
-          group cursor-pointer overflow-hidden border-0 bg-muted/20 shadow-none
-          transition-all
+          group cursor-pointer overflow-hidden border-0 bg-muted/20 shadow-none transition-all
           hover:bg-muted/40
         "
         @click="emit('click', album.id)"
@@ -30,10 +29,7 @@ const actions: ActionItem[] = [
         <CardContent class="p-0">
           <AspectRatio
             :ratio="4 / 3"
-            class="
-              flex items-center justify-center bg-linear-to-br from-primary/10
-              to-primary/5
-            "
+            class="flex items-center justify-center bg-linear-to-br from-primary/10 to-primary/5"
           >
             <Folder
               class="
@@ -67,12 +63,7 @@ const actions: ActionItem[] = [
             </DropdownMenu>
           </div>
 
-          <div
-            class="
-              mt-1 flex w-full items-center gap-2 text-[11px]
-              text-muted-foreground
-            "
-          >
+          <div class="mt-1 flex w-full items-center gap-2 text-[11px] text-muted-foreground">
             <span class="flex items-center gap-1">
               <component :is="album.is_public ? Unlock : Lock" class="h-3 w-3" />
               {{ album.is_public ? '公开' : '私有' }}

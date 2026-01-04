@@ -6,4 +6,6 @@ pub fn create_router() -> OpenApiRouter<PgPool> {
         .routes(routes!(super::get_images::get_trashed_image_metas))
         .routes(routes!(super::get_images::get_trashed_image_count))
         .routes(routes!(super::restore::restore_trashed_image))
+        .routes(routes!(super::delete::delete_trashed_image))
+        .routes(routes!(super::delete::delete_all_user_trashed_images))
 }

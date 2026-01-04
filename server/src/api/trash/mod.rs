@@ -1,3 +1,4 @@
+mod delete;
 mod get_images;
 mod restore;
 

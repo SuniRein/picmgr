@@ -22,7 +22,7 @@ export const useImagesStore = defineStore('images', () => {
   const { id: albumId } = storeToRefs(useCurrentAlbumStore());
 
   const imageFilter = useImageFilterStore();
-  watch(() => imageFilter.filter, () => init);
+  watch(() => imageFilter.filter, () => init());
 
   function makeFilterOption(): ImageFilterOption {
     const filter = imageFilter.filter;

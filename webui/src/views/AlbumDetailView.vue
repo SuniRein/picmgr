@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChevronLeft, Download, ImagePlus, Pencil, Plus, Trash } from 'lucide-vue-next';
+import { ChevronLeft, Download, ImageMinus, ImagePlus, Pencil, Plus } from 'lucide-vue-next';
 
 const route = useRoute();
 const router = useRouter();
@@ -93,7 +93,7 @@ await load();
         :url="images.getThumbnailUrl(img.meta.id, 'medium', img.signature)"
         :actions="[
           { label: '下载', icon: Download },
-          { label: '移出相册', icon: Trash, variant: 'destructive' },
+          { label: '移出相册', icon: ImageMinus, variant: 'destructive' },
         ]"
         @open="selectedImage = img"
       />

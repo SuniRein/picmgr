@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Download, FolderPlus, Plus, Trash, Unlock } from 'lucide-vue-next';
+import { Download, FolderPlus, Plus, Trash2, Unlock } from 'lucide-vue-next';
 import { ImageUploadModal } from '@/components/upload';
 
 const images = useImagesStore();
@@ -74,7 +74,7 @@ await load();
           { label: '下载', icon: Download },
           { label: '设为公开', icon: Unlock },
           { label: '移入相册', icon: FolderPlus },
-          { label: '删除', icon: Trash, variant: 'destructive' },
+          { label: '删除', icon: Trash2, variant: 'destructive' },
         ]"
         @open="selectedImage = img"
       />

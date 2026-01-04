@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ActionItem } from '@/components/common/ActionList.vue';
-import { Calendar, Folder, Lock, MoreHorizontal, Pencil, Trash, Unlock } from 'lucide-vue-next';
+import { Calendar, Folder, Lock, MoreHorizontal, Pencil, Trash2, Unlock } from 'lucide-vue-next';
 
 const { album } = defineProps<{ album: ReadOnlyAlbumMeta }>();
 
@@ -12,7 +12,7 @@ const emit = defineEmits<{
 
 const actions: ActionItem[] = [
   { label: '编辑详情', icon: Pencil, handler: () => emit('edit', album.id) },
-  { label: '删除相册', icon: Trash, handler: () => emit('delete', album.id), variant: 'destructive' },
+  { label: '删除相册', icon: Trash2, handler: () => emit('delete', album.id), variant: 'destructive' },
 ];
 </script>
 

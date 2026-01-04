@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ImageSignature } from '@/api';
-import { Download, FolderPlus, Plus, Trash2, Unlock } from 'lucide-vue-next';
+import { CheckSquare, Download, FolderPlus, Plus, Trash2, Unlock } from 'lucide-vue-next';
 import { ImageUploadModal } from '@/components/upload';
 
 const images = useImagesStore();
@@ -24,6 +24,19 @@ function handleDownload(id: number, signature: ImageSignature) {
 
 const isUploadModalOpen = ref(false);
 
+const currentPageIds = computed(() => images.items.map(item => item.meta.id));
+const multiSelect = reactive(useMultiSelect(currentPageIds));
+
+const isLightboxOpen = ref(false);
+const lightboxIndex = ref(0);
+const lightboxIds = ref([] as number[]);
+
+function openLightBox() {
+  isLightboxOpen.value = true;
+  lightboxIndex.value = 0;
+  lightboxIds.value = Array.from(multiSelect.items);
+}
+
 async function load() {
   await images.init('global');
 }
@@ -45,6 +58,10 @@ await load();
       </div>
 
       <div class="flex items-center gap-2">
+        <Button variant="outline" size="sm" :disabled="multiSelect.enabled" @click="multiSelect.start">
+          <CheckSquare /> 批量管理
+        </Button>
+
         <Button size="sm" class="ml-2" @click="isUploadModalOpen = true">
           <Plus /> 上传图片
         </Button>
@@ -84,7 +101,10 @@ await load();
           { label: '移入相册', icon: FolderPlus },
           { label: '删除', icon: Trash2, variant: 'destructive', handler: () => images.trashImage(img.meta.id) },
         ]"
+        :selection-mode="multiSelect.enabled"
+        :selected="multiSelect.items.has(img.meta.id)"
         @open="selectedImage = img"
+        @toggle-select="val => multiSelect.toggleSelect(img.meta.id, val)"
       >
         <template #extra-info>
           <span
@@ -113,6 +133,12 @@ await load();
       :url="selectedImage ? images.getImageUrl(selectedImage.meta.id, selectedImage.signature) : ''"
       @update:tags="tags => images.setTags(selectedImage!.meta.id, tags)"
       @close="selectedImage = null"
+    />
+
+    <ImageMultiSelectDialog
+      v-model:open="multiSelect.enabled"
+      :selected="multiSelect.items.size"
+      @select-all="multiSelect.selectAll"
     />
   </div>
 </template>

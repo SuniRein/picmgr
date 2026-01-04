@@ -1,7 +1,7 @@
 import type { AlbumMeta } from '@/api/albums';
 import api from '@/api';
 
-export const useCurrentAlbumStore = defineStore('currentAlbum', () => {
+export const useCurrentAlbumStore = defineStore('current-album', () => {
   const albumId = ref<number | null>(null);
   const albumMeta = ref<AlbumMeta | null>(null);
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-vue-next';
 
-const props = defineProps<{
+const { totalItems, pageSize } = defineProps<{
   totalItems: number;
   pageSize: number;
 }>();
@@ -9,9 +9,11 @@ const props = defineProps<{
 const currentPage = defineModel<number>('currentPage', { required: true });
 
 const totalPages = computed(() => {
-  const pages = Math.ceil(props.totalItems / props.pageSize);
+  const pages = Math.ceil(totalItems / pageSize);
   return pages > 0 ? pages : 1;
 });
+const itemStartIndex = computed(() => totalItems > 0 ? (currentPage.value - 1) * pageSize + 1 : 0);
+const itemEndIndex = computed(() => Math.min(currentPage.value * pageSize, totalItems));
 
 const jumpPage = ref(String(currentPage.value));
 watch(currentPage, val => jumpPage.value = String(val));
@@ -44,9 +46,7 @@ function handleJump() {
         sm:text-left
       "
     >
-      第 {{ (currentPage - 1) * pageSize + 1 }}
-      到 {{ Math.min(currentPage * pageSize, totalItems) }} 项
-      ，共 {{ totalItems }} 项
+      第 {{ itemStartIndex }} 到 {{ itemEndIndex }} 项 ，共 {{ totalItems }} 项
     </div>
 
     <div class="flex items-center space-x-2">

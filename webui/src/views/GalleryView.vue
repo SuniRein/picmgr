@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { ImageSignature } from '@/api';
 import { Download, FolderPlus, Plus, Trash2, Unlock } from 'lucide-vue-next';
 import { ImageUploadModal } from '@/components/upload';
 
@@ -10,6 +11,16 @@ function onPageSizeChange(val: number) {
 }
 
 const selectedImage = ref<ReadOnlyImageData | null>(null);
+
+function handleDownload(id: number, signature: ImageSignature) {
+  const url = images.getImageUrl(id, signature);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `image_${id}`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
 
 const isUploadModalOpen = ref(false);
 
@@ -69,7 +80,7 @@ await load();
         :title="`Image ${img.meta.id}`"
         :url="images.getThumbnailUrl(img.meta.id, 'medium', img.signature)"
         :actions="[
-          { label: '下载', icon: Download },
+          { label: '下载', icon: Download, handler: () => handleDownload(img.meta.id, img.signature) },
           { label: '设为公开', icon: Unlock },
           { label: '移入相册', icon: FolderPlus },
           { label: '删除', icon: Trash2, variant: 'destructive', handler: () => images.trashImage(img.meta.id) },

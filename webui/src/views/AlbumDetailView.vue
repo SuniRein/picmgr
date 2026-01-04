@@ -80,7 +80,7 @@ await load();
     <div
       v-if="images.items.length > 0"
       class="
-        grid grid-cols-2 gap-4
+        grid grid-cols-2 gap-2
         md:grid-cols-3
         lg:grid-cols-4
         xl:grid-cols-5
@@ -89,7 +89,6 @@ await load();
       <ImageCard
         v-for="img in images.items"
         :key="img.meta.id"
-        :title="`Image ${img.meta.id}`"
         :url="images.getThumbnailUrl(img.meta.id, 'medium', img.signature)"
         :actions="[
           { label: '下载', icon: Download },

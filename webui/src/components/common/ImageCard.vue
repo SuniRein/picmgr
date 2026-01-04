@@ -4,7 +4,6 @@ import { MoreHorizontal } from 'lucide-vue-next';
 
 defineProps<{
   url: string;
-  title: string;
   actions: ActionItem[];
 }>();
 
@@ -13,16 +12,16 @@ const emit = defineEmits<{ open: [] }>();
 
 <template>
   <ContextMenu>
-    <ContextMenuTrigger>
-      <Card
+    <ContextMenuTrigger as-child>
+      <div
         class="
-          group cursor-pointer overflow-hidden border-0 bg-muted/20 shadow-none
-          transition-colors
+          group cursor-pointer gap-2 overflow-hidden border-0 bg-muted/20 py-0.5
+          shadow-none transition-colors
           hover:bg-muted/40
         "
         @click="emit('open')"
       >
-        <CardContent class="p-0">
+        <div class="relative">
           <AspectRatio :ratio="4 / 3">
             <img
               :src="url"
@@ -34,32 +33,37 @@ const emit = defineEmits<{ open: [] }>();
               loading="lazy"
             >
           </AspectRatio>
-        </CardContent>
 
-        <CardFooter class="flex items-center justify-between p-2 text-sm">
-          <span class="truncate text-xs font-medium">{{ title }}</span>
+          <div class="absolute bottom-1 left-1 flex items-center justify-center">
+            <slot name="extra-info" />
+          </div>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger as-child>
-              <Button
-                variant="ghost"
-                size="icon"
-                class="
-                  h-6 w-6 opacity-0 transition-opacity
-                  group-hover:opacity-100
-                "
-                @click.stop
-              >
-                <MoreHorizontal class="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
+          <div
+            class="absolute right-1 bottom-1 flex items-center justify-center"
+          >
+            <DropdownMenu>
+              <DropdownMenuTrigger as-child>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  class="
+                    h-6 w-6 bg-muted/50 opacity-0 transition-opacity
+                    group-hover:opacity-100
+                    hover:bg-muted/70
+                  "
+                  @click.stop
+                >
+                  <MoreHorizontal />
+                </Button>
+              </DropdownMenuTrigger>
 
-            <DropdownMenuContent align="end">
-              <ActionList type="dropdown" :actions />
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </CardFooter>
-      </Card>
+              <DropdownMenuContent align="end">
+                <ActionList type="dropdown" :actions />
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+      </div>
     </ContextMenuTrigger>
 
     <ContextMenuContent>

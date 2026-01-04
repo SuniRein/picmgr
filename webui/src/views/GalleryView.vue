@@ -68,7 +68,7 @@ await load();
 
     <div
       class="
-        grid grid-cols-2 gap-4
+        grid grid-cols-2 gap-2
         md:grid-cols-3
         lg:grid-cols-4
         xl:grid-cols-5
@@ -77,7 +77,6 @@ await load();
       <ImageCard
         v-for="img in images.items"
         :key="img.meta.id"
-        :title="`Image ${img.meta.id}`"
         :url="images.getThumbnailUrl(img.meta.id, 'medium', img.signature)"
         :actions="[
           { label: '下载', icon: Download, handler: () => handleDownload(img.meta.id, img.signature) },
@@ -86,7 +85,19 @@ await load();
           { label: '删除', icon: Trash2, variant: 'destructive', handler: () => images.trashImage(img.meta.id) },
         ]"
         @open="selectedImage = img"
-      />
+      >
+        <template #extra-info>
+          <span
+            v-if="img.meta.is_public"
+            class="
+              flex items-center justify-center gap-1 px-1 text-xs
+              text-muted-foreground/90
+            "
+          >
+            <Unlock class="h-3 w-3" /> 公开
+          </span>
+        </template>
+      </ImageCard>
     </div>
 
     <PaginationControls

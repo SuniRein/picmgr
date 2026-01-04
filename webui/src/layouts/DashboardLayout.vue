@@ -5,7 +5,7 @@ const navItems = [
   { name: '全部图片', icon: Image, to: P.IMAGES },
   { name: '我的相册', icon: HardDrive, to: P.ALBUMS },
   { name: '收藏夹', icon: Heart, to: '' },
-  { name: '回收站', icon: Trash2, to: '' },
+  { name: '回收站', icon: Trash2, to: P.TRASH_IMAGES },
 ];
 
 const router = useRouter();

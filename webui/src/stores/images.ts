@@ -1,6 +1,8 @@
 import type { ImageData, ImageFilterOption, ImageSignature, ThumbnailSize } from '@/api';
 import api from '@/api';
 
+type imageContext = 'global' | 'album' | 'trash';
+
 export const useImagesStore = defineStore('images', () => {
   const items = ref<ImageData[]>([]);
   const total = ref(0);
@@ -8,7 +10,11 @@ export const useImagesStore = defineStore('images', () => {
 
   const { currentPage, pageSize, resetPagination } = usePagination({ initialPageSize: 20, onPageChange: fetchImages });
 
-  async function init() {
+  const context = ref<imageContext>('global');
+
+  async function init(newContext?: imageContext) {
+    if (newContext)
+      context.value = newContext;
     resetPagination();
     await refresh();
   }
@@ -16,7 +22,7 @@ export const useImagesStore = defineStore('images', () => {
   const { id: albumId } = storeToRefs(useCurrentAlbumStore());
 
   const imageFilter = useImageFilterStore();
-  watch(() => imageFilter.filter, init);
+  watch(() => imageFilter.filter, () => init);
 
   function makeFilterOption(): ImageFilterOption {
     const filter = imageFilter.filter;
@@ -38,11 +44,14 @@ export const useImagesStore = defineStore('images', () => {
 
   async function loadTotalCount() {
     let response;
-    if (imageFilter.activeFilterCount > 0) {
+    if (context.value === 'trash') {
+      response = await api.getTrashedImageCount();
+    }
+    else if (imageFilter.activeFilterCount > 0) {
       response = await api.getFilteredImageCount(makeFilterOption());
     }
-    else if (albumId.value !== null) {
-      response = await api.getImageCountInAlbum(albumId.value);
+    else if (context.value === 'album') {
+      response = await api.getImageCountInAlbum(albumId.value ?? 0);
     }
     else {
       response = await api.getImageCount();
@@ -64,11 +73,14 @@ export const useImagesStore = defineStore('images', () => {
       };
 
       let response;
-      if (imageFilter.activeFilterCount > 0) {
+      if (context.value === 'trash') {
+        response = await api.getTrashedImages(params, abortController.signal);
+      }
+      else if (imageFilter.activeFilterCount > 0) {
         response = await api.getFilteredImages(makeFilterOption(), params, abortController.signal);
       }
-      else if (albumId.value !== null) {
-        response = await api.getImagesInAlbum(albumId.value, params, abortController.signal);
+      else if (context.value === 'album') {
+        response = await api.getImagesInAlbum(albumId.value ?? 0, params, abortController.signal);
       }
       else {
         response = await api.getImages(params, abortController.signal);
@@ -113,6 +125,16 @@ export const useImagesStore = defineStore('images', () => {
     triggerRef(items);
   }
 
+  async function trashImage(id: number) {
+    await api.trashImage(id);
+    await refresh();
+  }
+
+  async function restoreImage(id: number) {
+    await api.restoreImage(id);
+    await refresh();
+  }
+
   return {
     items: readonly(items),
     total: readonly(total),
@@ -130,6 +152,9 @@ export const useImagesStore = defineStore('images', () => {
     getThumbnailUrl,
 
     setTags,
+
+    trashImage,
+    restoreImage,
   };
 });
 

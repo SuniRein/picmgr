@@ -18,7 +18,7 @@ async function load() {
   currentAlbum.id = Number(route.params.albumId);
   await Promise.all([
     currentAlbum.fetchAlbumMeta(),
-    images.init(),
+    images.init('album'),
   ]);
 }
 await load();

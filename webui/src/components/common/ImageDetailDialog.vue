@@ -4,6 +4,7 @@ import { Calendar, Check, ExternalLink, FileType, HardDrive, Info, Maximize, Pen
 interface Props {
   image: ReadOnlyImageData | null;
   url: string;
+  readonly?: boolean;
 }
 
 const props = defineProps<Props>();
@@ -178,36 +179,38 @@ function cancelTagsEdit() {
                       <Tag class="h-3 w-3" /> Tags
                     </h4>
 
-                    <Button
-                      v-if="!isEditingTags"
-                      variant="ghost"
-                      size="icon"
-                      class="
-                        h-6 w-6 text-muted-foreground
-                        hover:text-primary
-                      "
-                      @click="startTagsEdit"
-                    >
-                      <Pencil class="h-3 w-3" />
-                    </Button>
-                    <div v-else class="flex gap-1">
+                    <template v-if="!readonly">
                       <Button
+                        v-if="!isEditingTags"
                         variant="ghost"
                         size="icon"
-                        class="h-6 w-6 text-destructive"
-                        @click="cancelTagsEdit"
+                        class="
+                          h-6 w-6 text-muted-foreground
+                          hover:text-primary
+                        "
+                        @click="startTagsEdit"
                       >
-                        <X class="h-3.5 w-3.5" />
+                        <Pencil class="h-3 w-3" />
                       </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        class="h-6 w-6 text-green-600"
-                        @click="saveTagsEdit"
-                      >
-                        <Check class="h-3.5 w-3.5" />
-                      </Button>
-                    </div>
+                      <div v-else class="flex gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          class="h-6 w-6 text-destructive"
+                          @click="cancelTagsEdit"
+                        >
+                          <X class="h-3.5 w-3.5" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          class="h-6 w-6 text-green-600"
+                          @click="saveTagsEdit"
+                        >
+                          <Check class="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    </template>
                   </div>
 
                   <div v-if="!isEditingTags" class="flex flex-wrap gap-1.5">

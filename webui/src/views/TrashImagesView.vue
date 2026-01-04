@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { Download, FolderPlus, Plus, Trash2, Unlock } from 'lucide-vue-next';
-import { ImageUploadModal } from '@/components/upload';
+import { ArchiveRestore, Trash } from 'lucide-vue-next';
 
 const images = useImagesStore();
 
@@ -11,10 +10,8 @@ function onPageSizeChange(val: number) {
 
 const selectedImage = ref<ReadOnlyImageData | null>(null);
 
-const isUploadModalOpen = ref(false);
-
 async function load() {
-  await images.init('global');
+  await images.init('trash');
 }
 await load();
 </script>
@@ -25,26 +22,22 @@ await load();
       <div class="space-y-1">
         <div class="flex items-center gap-3">
           <h2 class="text-2xl font-bold tracking-tight">
-            我的图库
+            回收站
           </h2>
         </div>
         <p class="text-sm text-muted-foreground">
-          管理和浏览您的所有图片资产
+          管理和浏览您已删除的图片
+          <span class="text-xs">（图片将在30天后被永久删除）</span>
         </p>
       </div>
 
-      <div class="flex items-center gap-2">
-        <Button size="sm" class="ml-2" @click="isUploadModalOpen = true">
-          <Plus /> 上传图片
-        </Button>
-      </div>
+      <div class="flex items-center gap-2" />
     </div>
 
     <Separator />
 
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-2">
-        <ImageFilter />
         <span class="text-sm text-muted-foreground">
           共 <span class="font-medium text-foreground">{{ images.total }}</span> 张图片
         </span>
@@ -56,6 +49,7 @@ await load();
     </div>
 
     <div
+      v-if="images.total > 0"
       class="
         grid grid-cols-2 gap-4
         md:grid-cols-3
@@ -69,13 +63,22 @@ await load();
         :title="`Image ${img.meta.id}`"
         :url="images.getThumbnailUrl(img.meta.id, 'medium', img.signature)"
         :actions="[
-          { label: '下载', icon: Download },
-          { label: '设为公开', icon: Unlock },
-          { label: '移入相册', icon: FolderPlus },
-          { label: '删除', icon: Trash2, variant: 'destructive', handler: () => images.trashImage(img.meta.id) },
+          { label: '恢复', icon: ArchiveRestore, handler: () => images.restoreImage(img.meta.id) },
         ]"
         @open="selectedImage = img"
       />
+    </div>
+
+    <div
+      v-else class="
+        flex h-64 flex-col items-center justify-center rounded-lg border
+        border-dashed
+      "
+    >
+      <Trash class="h-10 w-10 text-muted-foreground/40" />
+      <p class="mt-2 text-sm text-muted-foreground">
+        回收站为空
+      </p>
     </div>
 
     <PaginationControls
@@ -84,12 +87,10 @@ await load();
       :total-items="images.total"
     />
 
-    <ImageUploadModal v-model:open="isUploadModalOpen" />
-
     <ImageDetailDialog
+      readonly
       :image="selectedImage"
       :url="selectedImage ? images.getImageUrl(selectedImage.meta.id, selectedImage.signature) : ''"
-      @update:tags="tags => images.setTags(selectedImage!.meta.id, tags)"
       @close="selectedImage = null"
     />
   </div>

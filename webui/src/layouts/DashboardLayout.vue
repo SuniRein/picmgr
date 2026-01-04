@@ -25,7 +25,59 @@ await load();
 </script>
 
 <template>
-  <div class="flex h-screen bg-background text-foreground">
+  <div
+    class="
+      flex h-screen flex-col bg-background text-foreground
+      md:flex-row
+    "
+  >
+    <header
+      class="
+        flex h-14 items-center justify-between border-b px-4
+        md:hidden
+      "
+    >
+      <h1 class="text-lg font-bold">
+        PicManager
+      </h1>
+
+      <Sheet v-if="user.isLoggedIn">
+        <SheetTrigger as-child>
+          <Button variant="ghost" size="icon" class="rounded-full">
+            <div class="h-8 w-8 rounded-full bg-slate-200" />
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="right" class="w-72">
+          <div class="mt-8 space-y-4">
+            <div class="flex items-center space-x-3 p-2">
+              <div class="h-10 w-10 rounded-full bg-slate-200" />
+              <div>
+                <p class="font-medium">
+                  {{ user.profile?.username }}
+                </p>
+                <p class="text-xs text-muted-foreground">
+                  个人账户
+                </p>
+              </div>
+            </div>
+            <Separator />
+            <Button variant="ghost" class="w-full justify-start" @click="router.push(P.PROFILE)">
+              <User class="mr-2" /> 个人信息
+            </Button>
+            <Button
+              variant="ghost" class="w-full justify-start text-destructive" @click="handleLogout"
+            >
+              <LogOut class="mr-2" /> 注销
+            </Button>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      <Button v-else variant="outline" size="sm" @click="router.push(P.LOGIN)">
+        登录
+      </Button>
+    </header>
+
     <aside
       class="
         hidden w-64 flex-col border-r
@@ -70,12 +122,12 @@ await load();
           <DropdownMenuContent align="end" class="w-56">
             <RouterLink :to="P.PROFILE">
               <DropdownMenuItem>
-                <User class="mr-2 h-4 w-4" /> 个人信息
+                <User class="mr-2" /> 个人信息
               </DropdownMenuItem>
             </RouterLink>
 
-            <DropdownMenuItem @click="handleLogout">
-              <LogOut class="mr-2 h-4 w-4" /> 注销
+            <DropdownMenuItem variant="destructive" @click="handleLogout">
+              <LogOut class="mr-2" /> 注销
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -86,10 +138,50 @@ await load();
       </div>
     </aside>
 
-    <main class="flex flex-1 flex-col overflow-hidden">
-      <ScrollArea class="min-h-0 flex-1 p-6">
+    <main class="flex-1 overflow-hidden">
+      <ScrollArea
+        class="
+          h-full p-4
+          md:p-6
+        "
+      >
         <RouterView />
-      </ScrollArea>
+        <div
+          class="
+            h-16
+            md:hidden
+          "
+        />
+      </Scrollarea>
     </main>
+
+    <nav
+      class="
+        fixed right-0 bottom-0 left-0 z-50 flex h-16 items-center justify-around
+        border-t bg-background/80 backdrop-blur-md
+        md:hidden
+      "
+    >
+      <RouterLink
+        v-for="item in navItems"
+        :key="item.name"
+        v-slot="{ isActive }"
+        :to="item.to"
+        class="flex flex-col items-center justify-center space-y-1 px-3"
+      >
+        <component
+          :is="item.icon"
+          class="h-5 w-5"
+          :class="[isActive ? 'text-primary' : `text-muted-foreground`]"
+        />
+        <span
+          class="text-[10px]"
+          :class="[isActive
+            ? 'font-medium text-primary' : `text-muted-foreground`]"
+        >
+          {{ item.name }}
+        </span>
+      </RouterLink>
+    </nav>
   </div>
 </template>

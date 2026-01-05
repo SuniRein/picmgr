@@ -50,7 +50,12 @@ const infoDisplay = computed(() => [
 </script>
 
 <template>
-  <div class="mx-auto max-w-2xl space-y-6">
+  <div
+    class="
+      mx-auto mt-16 max-w-2xl space-y-6
+      md:mt-32
+    "
+  >
     <Card v-if="isLoading" class="overflow-hidden">
       <CardHeader class="space-y-2">
         <div class="h-6 w-24 animate-pulse rounded bg-muted" />

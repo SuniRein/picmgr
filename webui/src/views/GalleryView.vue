@@ -22,6 +22,23 @@ function handleDownload(id: number, signature: ImageSignature) {
   document.body.removeChild(link);
 }
 
+const imageToDelete = ref<number | null>(null);
+const deleteDialogOpen = computed({
+  get: () => imageToDelete.value !== null,
+  set: (val) => {
+    if (!val)
+      imageToDelete.value = null;
+  },
+});
+
+async function handleDelete() {
+  if (imageToDelete.value) {
+    const id = imageToDelete.value;
+    imageToDelete.value = null;
+    await images.trashImage(id);
+  }
+}
+
 const isUploadModalOpen = ref(false);
 
 const currentPageIds = computed(() => images.items.map(item => item.meta.id));
@@ -102,7 +119,7 @@ await load();
             : { label: '设为公开', icon: Unlock, handler: () => images.setVisibility(img.meta.id, true) },
           { label: '编辑图片', icon: Pencil, handler: () => editedImage = img },
           { label: '移入相册', icon: FolderPlus },
-          { label: '删除', icon: Trash2, variant: 'destructive', handler: () => images.trashImage(img.meta.id) },
+          { label: '删除', icon: Trash2, variant: 'destructive', handler: () => imageToDelete = img.meta.id },
         ]"
         :selection-mode="multiSelect.enabled"
         :selected="multiSelect.items.has(img.meta.id)"
@@ -151,6 +168,14 @@ await load();
       v-model:open="isLightboxOpen"
       v-model:index="lightboxIndex"
       :ids="lightboxIds"
+    />
+
+    <ConfirmDialog
+      v-model:open="deleteDialogOpen"
+      variant="destructive"
+      title="确认删除图片？"
+      description="图片将被移至回收站，可在回收站中恢复。"
+      @confirm="handleDelete"
     />
   </div>
 </template>

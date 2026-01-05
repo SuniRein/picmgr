@@ -14,7 +14,7 @@ use tracing::{info, instrument};
 
 #[derive(Debug, Deserialize, utoipa::ToSchema)]
 pub struct LoginPayload {
-    username: String,
+    identifier: String,
     password: String,
 }
 
@@ -31,12 +31,12 @@ pub struct LoginPayload {
     ),
 )]
 #[debug_handler]
-#[instrument(skip(pool, payload), fields(%payload.username))]
+#[instrument(skip(pool, payload), fields(identifier = %payload.identifier))]
 pub async fn login(
     State(pool): State<PgPool>,
     Json(payload): Json<LoginPayload>,
 ) -> ApiResult<impl IntoResponse> {
-    let user = user::get_user_by_username(&pool, &payload.username)
+    let user = user::get_user_by_identifier(&pool, &payload.identifier)
         .await?
         .ok_or_else(|| {
             info!("user not found");
@@ -66,9 +66,9 @@ pub async fn login(
     ),
 )]
 #[debug_handler]
-#[instrument(skip(payload), fields(%payload.username))]
+#[instrument(skip(payload), fields(%payload.identifier))]
 pub async fn login_as_admin(Json(payload): Json<LoginPayload>) -> ApiResult<impl IntoResponse> {
-    if !verify_admin(&payload.username, &payload.password) {
+    if !verify_admin(&payload.identifier, &payload.password) {
         info!("wrong admin credentials");
         return Err(ApiError::WrongCredentials);
     }

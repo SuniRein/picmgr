@@ -73,6 +73,22 @@ pub async fn get_user_by_email(pool: &PgPool, email: &str) -> sqlx::Result<Optio
 }
 
 #[instrument(skip(pool))]
+pub async fn get_user_by_identifier(pool: &PgPool, identifier: &str) -> sqlx::Result<Option<User>> {
+    sqlx::query_as!(
+        User,
+        r#"
+         SELECT id, username, email, password_hash, avatar_url, status as "status: _", created_at
+         FROM app_user
+         WHERE username = $1 OR email = $1
+        "#,
+        identifier
+    )
+    .fetch_optional(pool)
+    .await
+    .inspect_err(|e| error!(error=?e, "fetch user record failed"))
+}
+
+#[instrument(skip(pool))]
 pub async fn get_all_users(pool: &PgPool, pagination: DbPagination) -> sqlx::Result<Vec<User>> {
     sqlx::query_as!(
         User,

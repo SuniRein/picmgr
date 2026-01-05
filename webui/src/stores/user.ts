@@ -18,8 +18,8 @@ export const useUserStore = defineStore('user', () => {
 
   const profile = ref<UserProfile | null>(null);
 
-  async function login(username: string, password: string) {
-    const response = await api.login({ username, password });
+  async function login(identifier: string, password: string) {
+    const response = await api.login({ identifier, password });
     const { access_token, refresh_token } = response.data;
     accessToken.value = access_token;
     refreshToken.value = refresh_token;

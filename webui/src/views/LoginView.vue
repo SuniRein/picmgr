@@ -3,7 +3,7 @@ import { Lock, User } from 'lucide-vue-next';
 
 const user = useUserStore();
 
-const name = ref('');
+const identifier = ref('');
 const password = ref('');
 const loading = ref(false);
 const errorMsg = ref('');
@@ -12,14 +12,14 @@ const router = useRouter();
 
 async function handleLogin() {
   errorMsg.value = '';
-  if (!name.value || !password.value) {
+  if (!identifier.value || !password.value) {
     errorMsg.value = '请填写用户名和密码';
     return;
   }
 
   loading.value = true;
   try {
-    await user.login(name.value, password.value);
+    await user.login(identifier.value, password.value);
     // Redirect to the main app page after successful login
     router.push(P.IMAGES);
   }
@@ -48,14 +48,14 @@ function handleGuest() {
 
       <CardContent class="space-y-4">
         <div class="space-y-2">
-          <Label class="text-sm leading-none font-medium">用户名</Label>
+          <Label class="text-sm leading-none font-medium">用户名或邮箱</Label>
           <div class="relative">
             <User class="pointer-events-none absolute top-1/2 left-2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              v-model="name"
+              v-model="identifier"
               placeholder="username"
               class="pl-8"
-              :aria-invalid="!!errorMsg && !name"
+              :aria-invalid="!!errorMsg && !identifier"
             />
           </div>
         </div>

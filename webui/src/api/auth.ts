@@ -1,7 +1,7 @@
 import { api } from './base';
 
 export interface LoginCredentials {
-  username: string;
+  identifier: string;
   password: string;
 }
 

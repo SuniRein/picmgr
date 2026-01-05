@@ -1,0 +1,1 @@
+CREATE SEQUENCE IF NOT EXISTS image_album_position_seq START 1 CACHE 20;

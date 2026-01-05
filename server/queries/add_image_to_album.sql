@@ -28,15 +28,10 @@ perm AS (
 ins AS (
   INSERT INTO image_album(album_id, image_id, position)
   SELECT
-      a.id,
+      $1,
       $3,
-      COALESCE(MAX(ia.position), 0) + 1000
-  FROM alb a
-  LEFT JOIN image_album ia ON ia.album_id = a.id
-  WHERE
-    EXISTS (SELECT 1 FROM perm)
-    AND EXISTS (SELECT 1 FROM img)
-  GROUP BY a.id
+      nextval('image_album_position_seq') * 1000
+  FROM perm
   ON CONFLICT (album_id, image_id) DO NOTHING
   RETURNING 1 AS ok
 )

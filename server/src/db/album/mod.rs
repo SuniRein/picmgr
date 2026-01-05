@@ -1,5 +1,6 @@
 mod add_image;
 mod create_album;
+mod delete_album;
 mod get_album;
 mod get_image;
 mod get_permission;
@@ -9,6 +10,7 @@ mod update_album;
 
 pub use add_image::*;
 pub use create_album::*;
+pub use delete_album::*;
 pub use get_album::*;
 pub use get_image::*;
 pub use get_permission::*;

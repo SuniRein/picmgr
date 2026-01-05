@@ -2,6 +2,7 @@ mod utils;
 
 mod add_image;
 mod create_album;
+mod delete_album;
 mod get_album;
 mod get_image;
 mod get_stats;

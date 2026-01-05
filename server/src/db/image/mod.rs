@@ -8,6 +8,7 @@ mod search;
 mod set_thumbnail;
 mod tag;
 mod trash;
+mod update_meta;
 
 pub use create::*;
 pub use delete::*;
@@ -19,3 +20,4 @@ pub use search::*;
 pub use set_thumbnail::*;
 pub use tag::*;
 pub use trash::*;
+pub use update_meta::*;

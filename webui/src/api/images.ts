@@ -93,3 +93,11 @@ export async function uploadImageRaw(file: File, onProgress?: (percent: number) 
 export async function setImageTags(id: number, tags: string[]) {
   await api.put(`/images/${id}/tags`, { tags });
 }
+
+interface UpdateImagePayload {
+  is_public?: boolean;
+}
+
+export async function updateImage(id: number, payload: UpdateImagePayload) {
+  await api.patch(`/images/${id}`, payload);
+}

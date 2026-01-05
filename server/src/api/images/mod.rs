@@ -8,6 +8,7 @@ mod get_thumbnail;
 mod search;
 mod tag;
 mod trash;
+mod update_meta;
 mod upload;
 
 mod router;

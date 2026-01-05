@@ -10,6 +10,7 @@ import {
   getImageUrl,
   getThumbnailUrl,
   setImageTags,
+  updateImage,
   uploadImageRaw,
 } from './images';
 import {
@@ -38,6 +39,7 @@ export default {
   getImageUrl,
   getThumbnailUrl,
   setImageTags,
+  updateImage,
   uploadImageRaw,
 
   getTrashedImages,

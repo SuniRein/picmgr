@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ImageSignature } from '@/api';
-import { CheckSquare, Download, FolderPlus, Pencil, Plus, Trash2, Unlock } from 'lucide-vue-next';
+import { CheckSquare, Download, FolderPlus, Lock, Pencil, Plus, Trash2, Unlock } from 'lucide-vue-next';
 
 const images = useImagesStore();
 
@@ -97,7 +97,9 @@ await load();
         :url="images.getThumbnailUrl(img.meta.id, 'medium', img.signature)"
         :actions="[
           { label: '下载', icon: Download, handler: () => handleDownload(img.meta.id, img.signature) },
-          { label: '设为公开', icon: Unlock },
+          img.meta.is_public
+            ? { label: '设为私有', icon: Lock, handler: () => images.setVisibility(img.meta.id, false) }
+            : { label: '设为公开', icon: Unlock, handler: () => images.setVisibility(img.meta.id, true) },
           { label: '编辑图片', icon: Pencil, handler: () => editedImage = img },
           { label: '移入相册', icon: FolderPlus },
           { label: '删除', icon: Trash2, variant: 'destructive', handler: () => images.trashImage(img.meta.id) },

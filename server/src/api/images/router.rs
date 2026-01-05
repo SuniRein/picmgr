@@ -21,6 +21,7 @@ pub fn create_router() -> OpenApiRouter<PgPool> {
             super::tag::get_image_tags,
             super::tag::set_image_tags,
         ))
+        .routes(routes!(super::update_meta::update_image_meta))
         .merge(upload_router)
         .routes(routes!(super::trash::trash_image))
 }

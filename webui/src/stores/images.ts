@@ -125,6 +125,18 @@ export const useImagesStore = defineStore('images', () => {
     triggerRef(items);
   }
 
+  async function setVisibility(id: number, isPublic: boolean) {
+    const item = items.value.find(item => item.meta.id === id);
+    if (!item) {
+      console.warn(`Image with id ${id} not found in store when setting tags.`);
+      return;
+    }
+
+    await api.updateImage(id, { is_public: isPublic });
+    item.meta = (await api.getImage(id)).data.meta; // refresh metadata
+    triggerRef(items);
+  }
+
   async function trashImage(id: number) {
     await api.trashImage(id);
     await refresh();
@@ -163,6 +175,7 @@ export const useImagesStore = defineStore('images', () => {
     getThumbnailUrl,
 
     setTags,
+    setVisibility,
 
     trashImage,
     restoreImage,

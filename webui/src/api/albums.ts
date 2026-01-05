@@ -62,3 +62,7 @@ export async function updateAlbum(albumId: number, payload: UpdateAlbumPayload) 
 export async function deleteAlbum(albumId: number) {
   await api.delete(`/albums/${albumId}`);
 }
+
+export async function addImageToAlbum(albumId: number, imageId: number) {
+  await api.post(`/albums/${albumId}/images`, { image_id: imageId });
+}

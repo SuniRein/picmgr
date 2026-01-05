@@ -20,11 +20,16 @@ export function useMultiSelect(currentIds: MaybeRef<number[]>) {
     triggerRef(items);
   }
 
+  function clear() {
+    items.reset();
+  }
+
   return {
     enabled,
     items,
     start,
     toggleSelect,
     selectAll,
+    clear,
   };
 }

@@ -1,4 +1,5 @@
 import {
+  addImageToAlbum,
   createAlbum,
   deleteAlbum,
   getAlbumDetails,
@@ -61,11 +62,13 @@ export default {
   getAlbums,
   getAlbumsCount,
   getAlbumDetails,
-  getImagesInAlbum,
-  getImageCountInAlbum,
   createAlbum,
   updateAlbum,
   deleteAlbum,
+
+  getImagesInAlbum,
+  getImageCountInAlbum,
+  addImageToAlbum,
 };
 
 export type * from './albums';

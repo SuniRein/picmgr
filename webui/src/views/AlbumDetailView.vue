@@ -12,6 +12,8 @@ const editedImage = ref<ReadOnlyImageData | null>(null);
 
 const editedAlbum = ref<ReadOnlyAlbumMeta | null>(null);
 
+const isAddImagesModalOpen = ref(false);
+
 function onPageSizeChange(val: number) {
   images.pageSize = val;
   images.currentPage = 1;
@@ -58,7 +60,7 @@ await load();
           <Button variant="outline" size="sm" @click="editedAlbum = currentAlbum.meta">
             <Pencil /> 编辑信息
           </Button>
-          <Button size="sm">
+          <Button size="sm" @click="isAddImagesModalOpen = true">
             <Plus /> 添加图片
           </Button>
         </div>
@@ -107,7 +109,7 @@ await load();
       <p class="mt-2 text-sm text-muted-foreground">
         相册内还没有图片
       </p>
-      <Button variant="link" class="mt-1">
+      <Button variant="link" class="mt-1" @click="isAddImagesModalOpen = true">
         立即添加图片
       </Button>
     </div>
@@ -131,5 +133,13 @@ await load();
     />
 
     <AlbumUpdateModal v-model:album="editedAlbum" @ok="currentAlbum.fetchAlbumMeta" />
+
+    <AlbumAddImagesModal
+      v-model:open="isAddImagesModalOpen"
+      :album-id="currentAlbum.id!"
+      :album-name="currentAlbum.meta!.name"
+      :page-size="50"
+      @finish="(result) => { images.refresh(); console.log('images added result: ', result); }"
+    />
   </div>
 </template>

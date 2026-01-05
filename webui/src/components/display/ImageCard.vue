@@ -4,7 +4,7 @@ import { MoreHorizontal } from 'lucide-vue-next';
 
 defineProps<{
   url: string;
-  actions: ActionItem[];
+  actions?: ActionItem[];
   selected?: boolean;
   selectionMode?: boolean;
 }>();
@@ -17,7 +17,7 @@ const emit = defineEmits<{
 
 <template>
   <ContextMenu>
-    <ContextMenuTrigger as-child>
+    <ContextMenuTrigger as-child :disabled="!actions">
       <div
         class="
           group relative cursor-pointer gap-2 overflow-hidden border-0 bg-muted/20 py-0.5 shadow-none transition-colors
@@ -54,6 +54,7 @@ const emit = defineEmits<{
         </div>
 
         <div
+          v-if="actions"
           class="absolute right-1 bottom-1 flex items-center justify-center"
         >
           <DropdownMenu>
@@ -81,7 +82,7 @@ const emit = defineEmits<{
     </ContextMenuTrigger>
 
     <ContextMenuContent>
-      <ActionList type="context" :actions />
+      <ActionList v-if="actions" type="context" :actions />
     </ContextMenuContent>
   </ContextMenu>
 </template>

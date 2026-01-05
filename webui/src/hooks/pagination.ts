@@ -1,6 +1,6 @@
 interface PaginationOptions {
   initialPageSize: number;
-  onPageChange: (page: number, size: number) => void | Promise<void>;
+  onPageChange?: (page: number, size: number) => void | Promise<void>;
 }
 
 export function usePagination(options: PaginationOptions) {
@@ -12,7 +12,7 @@ export function usePagination(options: PaginationOptions) {
   }
 
   watch([currentPage, pageSize], async ([newPage, newSize]) => {
-    await options.onPageChange(newPage, newSize);
+    await options.onPageChange?.(newPage, newSize);
   });
 
   return {

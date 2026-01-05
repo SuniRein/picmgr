@@ -8,6 +8,7 @@ const images = useImagesStore();
 const currentAlbum = useCurrentAlbumStore();
 
 const selectedImage = ref<ReadOnlyImageData | null>(null);
+const editedImage = ref<ReadOnlyImageData | null>(null);
 
 function onPageSizeChange(val: number) {
   images.pageSize = val;
@@ -92,6 +93,7 @@ await load();
         :url="images.getThumbnailUrl(img.meta.id, 'medium', img.signature)"
         :actions="[
           { label: '下载', icon: Download },
+          { label: '编辑图片', icon: Pencil, handler: () => editedImage = img },
           { label: '移出相册', icon: ImageMinus, variant: 'destructive' },
         ]"
         @open="selectedImage = img"
@@ -119,6 +121,11 @@ await load();
       :url="selectedImage ? images.getImageUrl(selectedImage.meta.id, selectedImage.signature) : ''"
       @update:tags="tags => images.setTags(selectedImage!.meta.id, tags)"
       @close="selectedImage = null"
+    />
+
+    <ImageEditor
+      :src="editedImage ? images.getImageUrl(editedImage.meta.id, editedImage.signature) : ''"
+      @close="editedImage = null"
     />
   </div>
 </template>

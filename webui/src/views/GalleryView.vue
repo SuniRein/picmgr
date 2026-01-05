@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ImageSignature } from '@/api';
-import { CheckSquare, Download, FolderPlus, Plus, Trash2, Unlock } from 'lucide-vue-next';
+import { CheckSquare, Download, FolderPlus, Pencil, Plus, Trash2, Unlock } from 'lucide-vue-next';
 
 const images = useImagesStore();
 
@@ -10,6 +10,7 @@ function onPageSizeChange(val: number) {
 }
 
 const selectedImage = ref<ReadOnlyImageData | null>(null);
+const editedImage = ref<ReadOnlyImageData | null>(null);
 
 function handleDownload(id: number, signature: ImageSignature) {
   const url = images.getImageUrl(id, signature);
@@ -97,6 +98,7 @@ await load();
         :actions="[
           { label: '下载', icon: Download, handler: () => handleDownload(img.meta.id, img.signature) },
           { label: '设为公开', icon: Unlock },
+          { label: '编辑图片', icon: Pencil, handler: () => editedImage = img },
           { label: '移入相册', icon: FolderPlus },
           { label: '删除', icon: Trash2, variant: 'destructive', handler: () => images.trashImage(img.meta.id) },
         ]"
@@ -129,6 +131,11 @@ await load();
       :url="selectedImage ? images.getImageUrl(selectedImage.meta.id, selectedImage.signature) : ''"
       @update:tags="tags => images.setTags(selectedImage!.meta.id, tags)"
       @close="selectedImage = null"
+    />
+
+    <ImageEditor
+      :src="editedImage ? images.getImageUrl(editedImage.meta.id, editedImage.signature) : ''"
+      @close="editedImage = null"
     />
 
     <ImageMultiSelectBar

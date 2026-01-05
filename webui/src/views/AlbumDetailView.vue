@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ImageSignature } from '@/api';
 import { ChevronLeft, Download, ImageMinus, ImagePlus, Pencil, Plus } from 'lucide-vue-next';
+import api from '@/api';
 import { downloadImage } from '@/utils/image';
 
 const route = useRoute();
@@ -15,6 +16,24 @@ const editedImage = ref<ReadOnlyImageData | null>(null);
 const editedAlbum = ref<ReadOnlyAlbumMeta | null>(null);
 
 const isAddImagesModalOpen = ref(false);
+
+const imageToRemove = ref<number | null>(null);
+const removeDialogOpen = computed({
+  get: () => imageToRemove.value !== null,
+  set: (val) => {
+    if (!val)
+      imageToRemove.value = null;
+  },
+});
+
+async function handleRemove() {
+  if (imageToRemove.value) {
+    const imageId = imageToRemove.value;
+    imageToRemove.value = null;
+    await api.removeImageFromAlbum(currentAlbum.id!, imageId);
+    await images.refresh();
+  }
+}
 
 function onPageSizeChange(val: number) {
   images.pageSize = val;
@@ -105,7 +124,7 @@ await load();
         :actions="[
           { label: '下载', icon: Download, handler: () => handleDownload(img.meta.id, img.signature) },
           { label: '编辑图片', icon: Pencil, handler: () => editedImage = img },
-          { label: '移出相册', icon: ImageMinus, variant: 'destructive' },
+          { label: '移出相册', icon: ImageMinus, variant: 'destructive', handler: () => imageToRemove = img.meta.id },
         ]"
         @open="selectedImage = img"
       />
@@ -147,6 +166,14 @@ await load();
       :album-name="currentAlbum.meta!.name"
       :page-size="50"
       @finish="(result) => { images.refresh(); console.log('images added result: ', result); }"
+    />
+
+    <ConfirmDialog
+      v-model:open="removeDialogOpen"
+      variant="destructive"
+      title="将图片移除相册？"
+      description="移除图片仅取消与相册的关联，图片本身不会被删除。"
+      @confirm="handleRemove"
     />
   </div>
 </template>

@@ -7,6 +7,7 @@ import {
   getAlbumsCount,
   getImageCountInAlbum,
   getImagesInAlbum,
+  removeImageFromAlbum,
   updateAlbum,
 } from './albums';
 import { login, refreshToken } from './auth';
@@ -69,6 +70,7 @@ export default {
   getImagesInAlbum,
   getImageCountInAlbum,
   addImageToAlbum,
+  removeImageFromAlbum,
 };
 
 export type * from './albums';

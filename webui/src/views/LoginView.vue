@@ -79,7 +79,7 @@ function handleGuest() {
         </p>
       </CardContent>
 
-      <CardFooter class="flex flex-col gap-3">
+      <CardFooter class="flex flex-col gap-4">
         <Button class="w-full" :disabled="loading" @click="handleLogin">
           <span v-if="!loading">登录</span>
           <span v-else>登录中…</span>
@@ -87,13 +87,16 @@ function handleGuest() {
         <Button variant="secondary" class="w-full" :disabled="loading" @click="handleGuest">
           访客模式
         </Button>
-        <p class="text-center text-xs text-muted-foreground">
-          没有账号？<a
-            class="
-              underline-offset-4
+        <p class="w-full text-center text-sm text-muted-foreground">
+          没有账号
+          <RouterLink
+            :to="P.REGISTER" class="
+              font-medium text-primary underline-offset-4
               hover:underline
             "
-          >点击注册</a>
+          >
+            点击注册
+          </RouterLink>
         </p>
       </CardFooter>
     </Card>

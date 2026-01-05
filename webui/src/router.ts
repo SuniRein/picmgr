@@ -7,11 +7,13 @@ import AlbumView from '@/views/AlbumView.vue';
 import GalleryView from '@/views/GalleryView.vue';
 import LoginView from '@/views/LoginView.vue';
 import ProfileView from '@/views/ProfileView.vue';
+import RegisterView from '@/views/RegisterView.vue';
 import TrashImagesView from '@/views/TrashImagesView.vue';
 
 const R = {
   HOME: 'Home',
   LOGIN: 'Login',
+  REGISTER: 'Register',
   IMAGES: 'Images',
   ALBUMS: 'Albums',
   ALBUM_DETAIL: 'AlbumDetail',
@@ -22,6 +24,7 @@ const R = {
 export const P = {
   HOME: { name: R.HOME },
   LOGIN: { name: R.LOGIN },
+  REGISTER: { name: R.REGISTER },
   IMAGES: { name: R.IMAGES },
   ALBUMS: { name: R.ALBUMS },
   ALBUM_DETAIL: (albumId: number) => ({ name: R.ALBUM_DETAIL, params: { albumId: String(albumId) } }),
@@ -31,6 +34,7 @@ export const P = {
 
 const routes = [
   { path: '/login', name: R.LOGIN, component: LoginView },
+  { path: '/register', name: R.REGISTER, component: RegisterView },
   {
     path: '/',
     component: DashboardLayout,

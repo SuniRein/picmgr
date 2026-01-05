@@ -10,7 +10,7 @@ import {
   removeImageFromAlbum,
   updateAlbum,
 } from './albums';
-import { login, refreshToken } from './auth';
+import { login, refreshToken, register } from './auth';
 import { injectRouter } from './base';
 import {
   getFilteredImageCount,
@@ -38,6 +38,7 @@ export { injectRouter };
 
 export default {
   login,
+  register,
   refreshToken,
 
   getMe,

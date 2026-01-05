@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ImageSignature } from '@/api';
-import { CheckSquare, Download, FolderPlus, Lock, Pencil, Plus, Trash2, Unlock } from 'lucide-vue-next';
+import { CheckSquare, Download, FolderPlus, ImagePlus, Lock, Pencil, Plus, Trash2, Unlock } from 'lucide-vue-next';
 import { downloadImage } from '@/utils/image';
 
 const images = useImagesStore();
@@ -97,6 +97,7 @@ await load();
     </div>
 
     <div
+      v-if="images.items.length > 0"
       class="
         grid grid-cols-2 gap-2
         md:grid-cols-3
@@ -131,6 +132,16 @@ await load();
           </span>
         </template>
       </ImageCard>
+    </div>
+
+    <div v-else class="flex h-64 flex-col items-center justify-center rounded-lg border border-dashed">
+      <ImagePlus class="h-10 w-10 text-muted-foreground/40" />
+      <p class="mt-2 text-sm text-muted-foreground">
+        图库内还没有图片
+      </p>
+      <Button variant="link" class="mt-1" @click="isUploadModalOpen = true">
+        立即添加图片
+      </Button>
     </div>
 
     <PaginationControls

@@ -1,5 +1,6 @@
 import {
   createAlbum,
+  deleteAlbum,
   getAlbumDetails,
   getAlbums,
   getAlbumsCount,
@@ -64,6 +65,7 @@ export default {
   getImageCountInAlbum,
   createAlbum,
   updateAlbum,
+  deleteAlbum,
 };
 
 export type * from './albums';

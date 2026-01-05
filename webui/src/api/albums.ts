@@ -58,3 +58,7 @@ export interface UpdateAlbumPayload {
 export async function updateAlbum(albumId: number, payload: UpdateAlbumPayload) {
   return api.patch<AlbumMeta>(`/albums/${albumId}`, payload);
 }
+
+export async function deleteAlbum(albumId: number) {
+  await api.delete(`/albums/${albumId}`);
+}

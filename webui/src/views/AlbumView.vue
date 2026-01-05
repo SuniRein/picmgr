@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { FolderPlus, Plus } from 'lucide-vue-next';
+import api from '@/api';
 
 const router = useRouter();
 const albums = useAlbumsStore();
@@ -11,6 +12,23 @@ function onPageSizeChange(val: number) {
 
 const isCreateModalOpen = ref(false);
 const editedAlbum = ref<ReadOnlyAlbumMeta | null>(null);
+
+const albumToDelete = ref<number | null>(null);
+const deleteDialogOpen = computed({
+  get: () => albumToDelete.value !== null,
+  set: (val) => {
+    if (!val)
+      albumToDelete.value = null;
+  },
+});
+
+async function handleDeleteAlbum() {
+  if (albumToDelete.value) {
+    await api.deleteAlbum(albumToDelete.value);
+    albumToDelete.value = null;
+    await albums.refresh();
+  }
+}
 
 async function load() {
   await albums.refresh();
@@ -66,6 +84,7 @@ await load();
         :album="album"
         @click="router.push(P.ALBUM_DETAIL(album.id))"
         @edit="editedAlbum = album"
+        @delete="albumToDelete = album.id"
       />
     </div>
 
@@ -95,5 +114,13 @@ await load();
 
     <AlbumCreateModal v-model:open="isCreateModalOpen" @ok="albums.refresh" />
     <AlbumUpdateModal v-model:album="editedAlbum" @ok="albums.refresh" />
+
+    <ConfirmDialog
+      v-model:open="deleteDialogOpen"
+      variant="destructive"
+      title="确认删除相册？"
+      description="删除相册后，其中的图片将不会被删除，仍可在图片库中查看。"
+      @confirm="handleDeleteAlbum"
+    />
   </div>
 </template>

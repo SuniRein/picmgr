@@ -38,3 +38,13 @@ export async function getImageCountInAlbum(albumId: number) {
   const response = await api.get<{ count: number }>(`/albums/${albumId}/images/count`);
   return response;
 }
+
+export interface CreateAlbumPayload {
+  name: string;
+  description: string;
+  is_public: boolean;
+}
+
+export async function createAlbum(payload: CreateAlbumPayload) {
+  return api.post<{ id: number }>('/albums', payload);
+}

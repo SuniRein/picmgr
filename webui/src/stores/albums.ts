@@ -36,6 +36,13 @@ export const useAlbumsStore = defineStore('albums', () => {
     }
   }
 
+  async function refresh() {
+    await Promise.all([
+      loadTotalCount(),
+      fetchAlbums(),
+    ]);
+  }
+
   return {
     items: readonly(items),
     total: readonly(total),
@@ -46,6 +53,7 @@ export const useAlbumsStore = defineStore('albums', () => {
 
     loadTotalCount,
     fetchAlbums,
+    refresh,
   };
 });
 

@@ -11,13 +11,10 @@ function onPageSizeChange(val: number) {
 
 const isCreateModalOpen = ref(false);
 
-async function refresh() {
-  await Promise.all([
-    albums.loadTotalCount(),
-    albums.fetchAlbums(),
-  ]);
+async function load() {
+  await albums.refresh();
 }
-await refresh();
+await load();
 </script>
 
 <template>
@@ -48,7 +45,7 @@ await refresh();
         共 <span class="font-medium text-foreground">{{ albums.total }}</span> 个相册
       </div>
       <div class="flex items-center gap-2">
-        <RefreshButton :loading="albums.isLoading" @click="refresh" />
+        <RefreshButton :loading="albums.isLoading" @click="albums.refresh" />
         <PageSizeSelector :page-size="albums.pageSize" @update:page-size="onPageSizeChange" />
       </div>
     </div>
@@ -84,7 +81,7 @@ await refresh();
         创建一个相册来更好地归类你的图片
       </p>
       <Button class="mt-6" variant="outline" @click="isCreateModalOpen = true">
-        <Plus class="h-4 w-4" /> 立即创建
+        <Plus /> 立即创建
       </Button>
     </div>
 
@@ -94,6 +91,6 @@ await refresh();
       :total-items="albums.total"
     />
 
-    <CreateAlbumModal v-model:open="isCreateModalOpen" />
+    <CreateAlbumModal v-model:open="isCreateModalOpen" @ok="albums.refresh" />
   </div>
 </template>

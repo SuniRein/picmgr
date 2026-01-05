@@ -1,4 +1,11 @@
-import { getAlbumDetails, getAlbums, getAlbumsCount, getImageCountInAlbum, getImagesInAlbum } from './albums';
+import {
+  createAlbum,
+  getAlbumDetails,
+  getAlbums,
+  getAlbumsCount,
+  getImageCountInAlbum,
+  getImagesInAlbum,
+} from './albums';
 import { login, refreshToken } from './auth';
 import { injectRouter } from './base';
 import {
@@ -54,6 +61,7 @@ export default {
   getAlbumDetails,
   getImagesInAlbum,
   getImageCountInAlbum,
+  createAlbum,
 };
 
 export type * from './albums';

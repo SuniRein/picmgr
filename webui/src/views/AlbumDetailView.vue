@@ -10,6 +10,8 @@ const currentAlbum = useCurrentAlbumStore();
 const selectedImage = ref<ReadOnlyImageData | null>(null);
 const editedImage = ref<ReadOnlyImageData | null>(null);
 
+const editedAlbum = ref<ReadOnlyAlbumMeta | null>(null);
+
 function onPageSizeChange(val: number) {
   images.pageSize = val;
   images.currentPage = 1;
@@ -53,7 +55,7 @@ await load();
         </div>
 
         <div class="flex items-center gap-2">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" @click="editedAlbum = currentAlbum.meta">
             <Pencil /> 编辑信息
           </Button>
           <Button size="sm">
@@ -127,5 +129,7 @@ await load();
       :src="editedImage ? images.getImageUrl(editedImage.meta.id, editedImage.signature) : ''"
       @close="editedImage = null"
     />
+
+    <AlbumUpdateModal v-model:album="editedAlbum" @ok="currentAlbum.fetchAlbumMeta" />
   </div>
 </template>

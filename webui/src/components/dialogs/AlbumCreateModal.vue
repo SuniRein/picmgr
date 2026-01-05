@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AlertCircle } from 'lucide-vue-next';
+import { AlertCircle, Loader2 } from 'lucide-vue-next';
 import api from '@/api';
 
 const emit = defineEmits<{ ok: [] }>();
@@ -102,8 +102,8 @@ function resetForm() {
           取消
         </Button>
         <Button :disabled="loading" @click="handleSubmit">
-          <span v-if="loading">创建中...</span>
-          <span v-else>确认创建</span>
+          <Loader2 v-if="loading" class="animate-spin" />
+          {{ loading ? '创建中...' : '确认创建' }}
         </Button>
       </DialogFooter>
     </DialogContent>

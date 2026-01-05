@@ -10,6 +10,7 @@ function onPageSizeChange(val: number) {
 }
 
 const isCreateModalOpen = ref(false);
+const editedAlbum = ref<ReadOnlyAlbumMeta | null>(null);
 
 async function load() {
   await albums.refresh();
@@ -63,7 +64,8 @@ await load();
         v-for="album in albums.items"
         :key="album.id"
         :album="album"
-        @click="id => router.push(P.ALBUM_DETAIL(id))"
+        @click="router.push(P.ALBUM_DETAIL(album.id))"
+        @edit="editedAlbum = album"
       />
     </div>
 
@@ -91,6 +93,7 @@ await load();
       :total-items="albums.total"
     />
 
-    <CreateAlbumModal v-model:open="isCreateModalOpen" @ok="albums.refresh" />
+    <AlbumCreateModal v-model:open="isCreateModalOpen" @ok="albums.refresh" />
+    <AlbumUpdateModal v-model:album="editedAlbum" @ok="albums.refresh" />
   </div>
 </template>

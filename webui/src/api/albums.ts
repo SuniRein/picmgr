@@ -9,7 +9,7 @@ export interface AlbumMeta {
   name: string;
   description: string;
 
-  is_public: string;
+  is_public: boolean;
 
   created_at: string;
   updated_at: string;
@@ -47,4 +47,14 @@ export interface CreateAlbumPayload {
 
 export async function createAlbum(payload: CreateAlbumPayload) {
   return api.post<{ id: number }>('/albums', payload);
+}
+
+export interface UpdateAlbumPayload {
+  name?: string;
+  description?: string;
+  is_public: boolean;
+}
+
+export async function updateAlbum(albumId: number, payload: UpdateAlbumPayload) {
+  return api.patch<AlbumMeta>(`/albums/${albumId}`, payload);
 }

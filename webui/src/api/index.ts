@@ -5,6 +5,7 @@ import {
   getAlbumsCount,
   getImageCountInAlbum,
   getImagesInAlbum,
+  updateAlbum,
 } from './albums';
 import { login, refreshToken } from './auth';
 import { injectRouter } from './base';
@@ -62,6 +63,7 @@ export default {
   getImagesInAlbum,
   getImageCountInAlbum,
   createAlbum,
+  updateAlbum,
 };
 
 export type * from './albums';

@@ -5,14 +5,14 @@ import { Calendar, Folder, Lock, MoreHorizontal, Pencil, Trash2, Unlock } from '
 const { album } = defineProps<{ album: ReadOnlyAlbumMeta }>();
 
 const emit = defineEmits<{
-  click: [id: number];
-  edit: [id: number];
-  delete: [id: number];
+  click: [];
+  edit: [];
+  delete: [];
 }>();
 
 const actions: ActionItem[] = [
-  { label: '编辑详情', icon: Pencil, handler: () => emit('edit', album.id) },
-  { label: '删除相册', icon: Trash2, handler: () => emit('delete', album.id), variant: 'destructive' },
+  { label: '编辑详情', icon: Pencil, handler: () => emit('edit') },
+  { label: '删除相册', icon: Trash2, handler: () => emit('delete'), variant: 'destructive' },
 ];
 </script>
 
@@ -24,7 +24,7 @@ const actions: ActionItem[] = [
           group cursor-pointer overflow-hidden border-0 bg-muted/20 shadow-none transition-all
           hover:bg-muted/40
         "
-        @click="emit('click', album.id)"
+        @click="emit('click')"
       >
         <CardContent class="p-0">
           <AspectRatio

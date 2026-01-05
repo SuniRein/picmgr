@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ImageSignature } from '@/api';
 import { CheckSquare, Download, FolderPlus, Lock, Pencil, Plus, Trash2, Unlock } from 'lucide-vue-next';
+import { downloadImage } from '@/utils/image';
 
 const images = useImagesStore();
 
@@ -14,12 +15,7 @@ const editedImage = ref<ReadOnlyImageData | null>(null);
 
 function handleDownload(id: number, signature: ImageSignature) {
   const url = images.getImageUrl(id, signature);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `image_${id}`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  downloadImage(`image-${id}`, url);
 }
 
 const imageToDelete = ref<number | null>(null);

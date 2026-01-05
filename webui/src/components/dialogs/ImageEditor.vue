@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Download, FlipHorizontal, FlipVertical, ImageIcon, RotateCw, Undo2 } from 'lucide-vue-next';
+import { downloadImage } from '@/utils/image';
 
 const props = defineProps<{ src: string }>();
 
@@ -82,11 +83,8 @@ function applyFilters() {
 
 watch(settings, applyFilters, { deep: true });
 
-function downloadImage() {
-  const link = document.createElement('a');
-  link.download = 'edited-image.png';
-  link.href = canvasRef.value!.toDataURL();
-  link.click();
+function handleDownload() {
+  downloadImage('edited-image', canvasRef.value!.toDataURL());
 }
 
 function reset() {
@@ -154,7 +152,7 @@ function reset() {
               <Undo2 class="h-4 w-4" />
             </Button>
             <div class="mx-1 h-4 w-px bg-zinc-200" />
-            <Button variant="ghost" size="sm" @click="downloadImage">
+            <Button variant="ghost" size="sm" @click="handleDownload">
               <Download class="mr-2" /> 导出图片
             </Button>
           </div>

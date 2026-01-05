@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import type { ImageSignature } from '@/api';
 import { ChevronLeft, Download, ImageMinus, ImagePlus, Pencil, Plus } from 'lucide-vue-next';
+import { downloadImage } from '@/utils/image';
 
 const route = useRoute();
 const router = useRouter();
@@ -17,6 +19,11 @@ const isAddImagesModalOpen = ref(false);
 function onPageSizeChange(val: number) {
   images.pageSize = val;
   images.currentPage = 1;
+}
+
+function handleDownload(id: number, signature: ImageSignature) {
+  const url = images.getImageUrl(id, signature);
+  downloadImage(`image-${id}`, url);
 }
 
 async function load() {
@@ -96,7 +103,7 @@ await load();
         :key="img.meta.id"
         :url="images.getThumbnailUrl(img.meta.id, 'medium', img.signature)"
         :actions="[
-          { label: '下载', icon: Download },
+          { label: '下载', icon: Download, handler: () => handleDownload(img.meta.id, img.signature) },
           { label: '编辑图片', icon: Pencil, handler: () => editedImage = img },
           { label: '移出相册', icon: ImageMinus, variant: 'destructive' },
         ]"

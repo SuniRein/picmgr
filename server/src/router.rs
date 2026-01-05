@@ -1,6 +1,7 @@
 use crate::api::{albums, auth, create_api_doc, images, trash, user, users};
 use axum::Router;
 use sqlx::PgPool;
+use tower_http::services::ServeDir;
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_swagger_ui::SwaggerUi;
 
@@ -18,5 +19,10 @@ pub fn create_router(pool: PgPool) -> Router {
         .with_state(pool)
         .split_for_parts();
 
-    router.merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", api))
+    let spa = ServeDir::new("./static")
+        .not_found_service(tower_http::services::ServeFile::new("./static/index.html"));
+
+    router
+        .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", api))
+        .fallback_service(spa)
 }

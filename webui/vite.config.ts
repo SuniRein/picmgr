@@ -10,9 +10,6 @@ import { defineConfig } from 'vite';
 
 export default defineConfig(() => {
   const VITE_SERVER_ADDR = process.env.VITE_SERVER_ADDR;
-  if (!VITE_SERVER_ADDR) {
-    throw new Error('SERVER_ADDR environment variable is not set');
-  }
 
   return {
     plugins: [
@@ -33,10 +30,8 @@ export default defineConfig(() => {
         '@': path.resolve(__dirname, './src'),
       },
     },
-    server: {
-      proxy: {
-        '/api': VITE_SERVER_ADDR,
-      },
-    },
+    ...(VITE_SERVER_ADDR
+      ? { server: { proxy: { '/api': VITE_SERVER_ADDR } } }
+      : {}),
   };
 });

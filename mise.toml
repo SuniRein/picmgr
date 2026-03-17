@@ -1,0 +1,8 @@
+[env]
+DATABASE_URL = { required = "Database connection string" }
+JWT_SECRET = { required = "Secret for JWT" }
+SIGN_SECRET = { required = "Secret for image signature" }
+
+VITE_SERVER_ADDR = "http://localhost:9000"
+
+CARGO_LOG = "picmgr_server=debug"

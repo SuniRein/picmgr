@@ -36,7 +36,7 @@ export const useImagesStore = defineStore('images', () => {
       created_after: filter.createdAfter?.toISOString(),
       updated_before: filter.updatedBefore?.toISOString(),
       updated_after: filter.updatedAfter?.toISOString(),
-      album_id: albumId.value ?? undefined,
+      album_id: context.value === 'album' ? albumId.value ?? undefined : undefined,
       is_public: filter.visibility === 'all' ? undefined : filter.visibility === 'public',
       tags: filter.tags,
     };
